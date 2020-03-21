@@ -1,6 +1,6 @@
 import ROOT as r
 import numpy as np
-
+import matplotlib.pyplot as plt
 # H 25
 # Y 35
 # X 45
@@ -110,13 +110,33 @@ def deltaR(phieta1,phieta2):
         DR       = np.sqrt(DRsquare)
         return DR
     except:
+        print("Couldn't  calculate DR")
         return 99999.
 
-tfile = r.TFile.Open("MX-1100_TuneCP5_13TeV_file1.root")
+def plotHistogram(data,outfile,title,xlabel,ylabel="N"):
+    plt.hist(data,100)
+    plt.xlabel(xlabel)
+    plt.title(title)
+    plt.grid(True)
+    plt.savefig(outfile)
+    plt.clf()
+
+
+tfile = r.TFile.Open("E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root")
 
 print("Number of entries: {0}".format(tfile.Events.GetEntriesFast()))
+matchedHiggs        = 0
+matchedY            = 0
+matchedBoth         = 0
+matchedHiggsMasses  = []
+matchedHiggsPts     = []
+matchedYMasses      = []
+matchedYPts         = []
+
 for i,event in enumerate(tfile.Events):
-    
+    # if(i>1000):
+    #     break
+
     if(i%100000==0):
         print(i)
 
@@ -127,8 +147,9 @@ for i,event in enumerate(tfile.Events):
     matchedHiggsJetIdxs = []
     matchedYJetIdxs     = []
     hDeltaRs            = []
-    YDeltaRs            = []      
-    
+    YDeltaRs            = []
+    matchedHiggsFlag    = False
+    matchedYFlag        = False
 
     for fatJetIdx in range(event.nFatJet):
         fatJetPhiEta = event.FatJet_phi[fatJetIdx],event.FatJet_eta[fatJetIdx]
@@ -144,10 +165,16 @@ for i,event in enumerate(tfile.Events):
         if (h_JetDR<0.8 and b1_JetDR<0.8 and b2_JetDR<0.8):
             matchedHiggsJetIdxs.append(fatJetIdx)
             hDeltaRs.append(h_JetDR)
+            matchedHiggsFlag=True
+            matchedHiggsMasses.append(event.FatJet_mass[fatJetIdx])
+            matchedHiggsPts.append(event.FatJet_pt[fatJetIdx])
 
         if (Y_JetDR<0.8 and b3_JetDR<0.8 and b4_JetDR<0.8):
             matchedYJetIdxs.append(fatJetIdx)
             YDeltaRs.append(Y_JetDR)
+            matchedYFlag=True
+            matchedYMasses.append(event.FatJet_mass[fatJetIdx])
+            matchedYPts.append(event.FatJet_pt[fatJetIdx])
 
 
     if(len(matchedHiggsJetIdxs)>1):
@@ -167,5 +194,20 @@ for i,event in enumerate(tfile.Events):
         print("DeltaRs (AK8-Y) {0},{1}".format(*YDeltaRs))
         print('\n')
 
-    if(len(matchedYJetIdxs)==1 and len(matchedHiggsJetIdxs)==1):
-        print("Managed to match both H and Y")
+    if matchedHiggsFlag:
+        matchedHiggs+=1
+
+    if matchedYFlag:
+        matchedY+=1
+
+    if matchedYFlag and matchedHiggsFlag:
+        matchedBoth+=1
+
+print(matchedHiggs)
+print(matchedY)
+print(matchedBoth)
+
+plotHistogram(matchedHiggsMasses,"FatJetMass_fromHiggs.png","AK8 from H mass histogram","Mass [GeV]")
+plotHistogram(matchedYMasses,"FatJetMass_fromY.png","AK8 from Y mass histogram","Mass [GeV]")
+plotHistogram(matchedHiggsPts,"FatJetPt_fromHiggs.png","AK8 from H pt histogram","Mass [GeV]")
+plotHistogram(matchedYPts,"FatJetPt_fromY.png","AK8 from Y pt histogram","Mass [GeV]")
