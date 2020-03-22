@@ -1,6 +1,7 @@
 import ROOT as r
 import numpy as np
 import matplotlib.pyplot as plt
+from time import sleep
 # H 25
 # Y 35
 # X 45
@@ -123,13 +124,30 @@ def plotHistogram(data,outfile,title,xlabel,ylabel="N"):
 
 
 def plotHistogram(data,outfile,title,xlabel,xlow,xup):
-    plt.hist(data,100)
+    plt.hist(data,100,(xlow,xup))
     plt.xlabel(xlabel)
     plt.title(title)
     plt.grid(True)
     plt.savefig(outfile)
     plt.clf()
 
+def plotRootHistogram(h1,h2,h3,h4,outfile):
+    #outfile should be name.png"
+    c = r.TCanvas("c","c",900,700)
+    r.gStyle.SetOptStat(111111)
+    c.Divide(2,2)
+    c.cd(1)
+    h1.Draw()
+    c.cd(2)
+    h2.Draw()
+    c.cd(3)
+    h3.Draw()
+    c.cd(4)
+    h4.Draw()
+    c.Modified()
+    c.Update()
+    sleep(5)
+    c.SaveAs(outfile)
 
 def analyzeFile(infile,outPrefix):
     tfile = r.TFile.Open(infile)
@@ -142,6 +160,11 @@ def analyzeFile(infile,outPrefix):
     matchedHiggsPts     = []
     matchedYMasses      = []
     matchedYPts         = []
+    histHiggsAK8Mass    = r.TH1F( "hMass", "H matched AK8 jet mass", 100, 0., 500. )
+    histYAK8Mass        = r.TH1F( "YMass", "Y matched AK8 jet mass", 100, 0., 500. )
+    histHiggsAK8Pt      = r.TH1F( "hPt"  , "H matched AK8 jet pt"  , 100, 0., 2000. )
+    histYAK8Pt          = r.TH1F( "YPt"  , "Y matched AK8 jet pt"  , 100, 0., 2000. )
+
 
     for i,event in enumerate(tfile.Events):
         # if(i>1000):
@@ -176,15 +199,23 @@ def analyzeFile(infile,outPrefix):
                 matchedHiggsJetIdxs.append(fatJetIdx)
                 hDeltaRs.append(h_JetDR)
                 matchedHiggsFlag=True
-                matchedHiggsMasses.append(event.FatJet_mass[fatJetIdx])
-                matchedHiggsPts.append(event.FatJet_pt[fatJetIdx])
+                mass = event.FatJet_mass[fatJetIdx]
+                pt   = event.FatJet_pt[fatJetIdx]
+                histHiggsAK8Mass.Fill(mass)
+                histHiggsAK8Pt.Fill(pt)
+                matchedHiggsMasses.append(mass)
+                matchedHiggsPts.append(pt)
 
             if (Y_JetDR<0.8 and b3_JetDR<0.8 and b4_JetDR<0.8):
                 matchedYJetIdxs.append(fatJetIdx)
                 YDeltaRs.append(Y_JetDR)
+                mass = event.FatJet_mass[fatJetIdx]
+                pt   = event.FatJet_pt[fatJetIdx]
+                histYAK8Mass.Fill(mass)
+                histYAK8Pt.Fill(pt)
                 matchedYFlag=True
-                matchedYMasses.append(event.FatJet_mass[fatJetIdx])
-                matchedYPts.append(event.FatJet_pt[fatJetIdx])
+                matchedYMasses.append(mass)
+                matchedYPts.append(pt)
 
 
         if(len(matchedHiggsJetIdxs)>1):
@@ -217,10 +248,13 @@ def analyzeFile(infile,outPrefix):
     print(matchedY)
     print(matchedBoth)
 
-    plotHistogram(matchedHiggsMasses,outPrefix+"_FatJetMass_fromHiggs.png","AK8 from H mass histogram","Mass [GeV]",0.,600.)
-    plotHistogram(matchedYMasses,outPrefix+"_FatJetMass_fromY.png","AK8 from Y mass histogram","Mass [GeV]",0.,600.)
-    plotHistogram(matchedHiggsPts,outPrefix+"_FatJetPt_fromHiggs.png","AK8 from H pt histogram","Pt [GeV]",0.,2500.)
-    plotHistogram(matchedYPts,outPrefix+"_FatJetPt_fromY.png","AK8 from Y pt histogram","Pt [GeV]",0.,2500.)
+    plotRootHistogram(histHiggsAK8Mass,histYAK8Mass,histHiggsAK8Pt,histYAK8Pt,"allhistos.png")
+
+    #plotHistogram(matchedHiggsMasses,outPrefix+"_FatJetMass_fromHiggs.png","AK8 from H mass histogram","Mass [GeV]",0.,600.)
+    #plotHistogram(matchedYMasses,outPrefix+"_FatJetMass_fromY.png","AK8 from Y mass histogram","Mass [GeV]",0.,600.)
+    #plotHistogram(matchedHiggsPts,outPrefix+"_FatJetPt_fromHiggs.png","AK8 from H pt histogram","Pt [GeV]",0.,2500.)
+    #plotHistogram(matchedYPts,outPrefix+"_FatJetPt_fromY.png","AK8 from Y pt histogram","Pt [GeV]",0.,2500.)
 
 
-analyzeFile("E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root","mx2000")
+if __name__ == '__main__':
+    analyzeFile("E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root","mx2000")
