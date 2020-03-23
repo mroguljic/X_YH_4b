@@ -256,6 +256,8 @@ def processAllYMassPoints(infile):
     matchedY_histograms = {}
     HefficienciesHistos = {}
     YefficienciesHistos = {}
+    Hak8MassHistos      = {}
+    Yak8MassHistos      = {}
 
     massPoints = ["90","100","125","150","200","250","300","400","500","600","700","800","900","1000","1200","1400","1600","1800"]
     for massPoint in massPoints:
@@ -265,12 +267,14 @@ def processAllYMassPoints(infile):
         matchedY_histograms[massPoint] = r.TH1F("matchedY_{0}".format(massPoint)    ,"Y with matched AK8"           ,100,0.,2000.)
         HefficienciesHistos[massPoint] = r.TH1F("Heffiencies_{0}".format(massPoint) ,"H matching efficencies"       ,100,0.,2000.)
         YefficienciesHistos[massPoint] = r.TH1F("Yeffiencies_{0}".format(massPoint) ,"Y matching efficencies"       ,100,0.,2000.)
+        Hak8MassHistos[massPoint]      = r.TH1F("Hak8mass_{0}".format(massPoint)    ,"H-AK8 mass distribution"      ,100,0.,1000.)
+        Yak8MassHistos[massPoint]      = r.TH1F("Yak8mass_{0}".format(massPoint) ,"Y-AK8 mass distribution"         ,100,0.,1000.)
 
 
     for i,event in enumerate(tfile.Events):
 
-        if(i>1000):
-            break
+        # if(i>1000):
+        #     break
 
         if(i%100000==0):
             print("Processing event {0}\n".format(i))
@@ -286,16 +290,18 @@ def processAllYMassPoints(infile):
             failedH_histograms[str(massPoint)].Fill(higgsPt)
         else:
             matchedH_histograms[str(massPoint)].Fill(higgsPt)
+            Hak8MassHistos[str(massPoint)].Fill(event.FatJet_mass[matchedHidx])
         if(matchedYidx==-1):
             failedY_histograms[str(massPoint)].Fill(YPt)
         else:
-            matchedY_histograms[str(massPoint)].Fill(YPt)        
+            matchedY_histograms[str(massPoint)].Fill(YPt)  
+            Yak8MassHistos[str(massPoint)].Fill(event.FatJet_mass[matchedYidx])      
 
     for massPoint in massPoints:
         HefficienciesHistos[massPoint].Divide(matchedH_histograms[massPoint],failedH_histograms[massPoint]+matchedH_histograms[massPoint])
         YefficienciesHistos[massPoint].Divide(matchedY_histograms[massPoint],failedY_histograms[massPoint]+matchedY_histograms[massPoint])
 
-    writehistlist([failedH_histograms,failedY_histograms,matchedH_histograms,matchedY_histograms,HefficienciesHistos,YefficienciesHistos],"test.root")
+    writehistlist([failedH_histograms,failedY_histograms,matchedH_histograms,matchedY_histograms,HefficienciesHistos,YefficienciesHistos,Hak8MassHistos,Yak8MassHistos],"test.root")
 
 
 def processSingleYMassPoint(infile,massPoint):
