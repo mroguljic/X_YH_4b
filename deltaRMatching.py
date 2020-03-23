@@ -24,6 +24,13 @@ def getHiggsIndex(event):
     return(higgsIndex)
 
 
+def getHigssPt(event):
+    higgsIndex = getHiggsIndex(event)
+    if(higgsIndex==-1):
+        return -1
+    higgsPt = event.GenPart_pt[higgsIndex]
+    return higgsPt
+
 def getHigssPhiEta(event):
     higgsIndex = getHiggsIndex(event)
     
@@ -46,6 +53,12 @@ def getYIndex(event):
             return(YIndex)
     return(YIndex)
 
+def getYPt(event):
+    YIndex = getYIndex(event)
+    if(YIndex==-1):
+        return -1
+    YPt = event.GenPart_pt[YIndex]
+    return YPt
 
 def getYPhiEta(event):
     YIndex = getYIndex(event)
@@ -146,8 +159,130 @@ def plotRootHistogram(h1,h2,h3,h4,outfile):
     h4.Draw()
     c.Modified()
     c.Update()
-    sleep(5)
+    sleep(1)
     c.SaveAs(outfile)
+
+def getYGenMassPoint(event):
+    if(event.GenModel_YMass_90==1):
+        return 90
+    elif(event.GenModel_YMass_100==1):
+        return 100
+    elif(event.GenModel_YMass_125==1):
+        return 125
+    elif(event.GenModel_YMass_150==1):
+        return 150
+    elif(event.GenModel_YMass_200==1):
+        return 200
+    elif(event.GenModel_YMass_250==1):
+        return 250
+    elif(event.GenModel_YMass_300==1):
+        return 300
+    elif(event.GenModel_YMass_400==1):
+        return 400
+    elif(event.GenModel_YMass_500==1):
+        return 500
+    elif(event.GenModel_YMass_600==1):
+        return 600
+    elif(event.GenModel_YMass_700==1):
+        return 700
+    elif(event.GenModel_YMass_800==1):
+        return 800
+    elif(event.GenModel_YMass_900==1):
+        return 900
+    elif(event.GenModel_YMass_1000==1):
+        return 1000
+    elif(event.GenModel_YMass_1200==1):
+        return 1200
+    elif(event.GenModel_YMass_1400==1):
+        return 1400
+    elif(event.GenModel_YMass_1600==1):
+        return 1600
+    elif(event.GenModel_YMass_1800==1):
+        return 1800
+    else:
+        print("Unknown Y gen mass")
+        return 0
+
+def doHiggsMatching(event):
+    #Returns idx of the first ak8 matched to H, -1 otherwise
+    higgsPhiEta         = getHigssPhiEta(event)
+    b1PhiEta,b2PhiEta   = getBFromHiggsPhiEta(event)
+    for fatJetIdx in range(event.nFatJet):
+        fatJetPhiEta = event.FatJet_phi[fatJetIdx],event.FatJet_eta[fatJetIdx]
+        
+        h_JetDR  = deltaR(fatJetPhiEta,higgsPhiEta)
+        b1_JetDR = deltaR(fatJetPhiEta,b1PhiEta)
+        b2_JetDR = deltaR(fatJetPhiEta,b2PhiEta)
+
+        if (h_JetDR<0.8 and b1_JetDR<0.8 and b2_JetDR<0.8):
+            return fatJetIdx
+
+    return -1
+
+def doYMatching(event):
+    #Returns idx of the first ak8 matched to Y, -1 otherwise
+    YPhiEta             = getYPhiEta(event)
+    b3PhiEta,b4PhiEta   = getBFromYPhiEta(event)
+    for fatJetIdx in range(event.nFatJet):
+        fatJetPhiEta = event.FatJet_phi[fatJetIdx],event.FatJet_eta[fatJetIdx]
+        
+        Y_JetDR  = deltaR(fatJetPhiEta,YPhiEta)
+        b3_JetDR = deltaR(fatJetPhiEta,b3PhiEta)
+        b4_JetDR = deltaR(fatJetPhiEta,b4PhiEta)  
+
+        if (Y_JetDR<0.8 and b3_JetDR<0.8 and b4_JetDR<0.8):
+            return fatJetIdx
+    return -1
+
+def processSingleYMassPoint(infile,massPoint):
+    tfile = r.TFile.Open(infile)
+
+    print("Number of entries: {0}".format(tfile.Events.GetEntriesFast()))
+
+
+    HfailedMatch_Hpt    = r.TH1F("failedMatchH","Higgs with failed DR matching",100,0.,2000.)
+    YfailedMatch_Ypt    = r.TH1F("failedMatchY","Y with failed DR matching"    ,100,0.,2000.)
+    HpassedMatch_Hpt    = r.TH1F("passedMatchH","Higgs with passed DR matching",100,0.,2000.)
+    YpassedMatch_Ypt    = r.TH1F("passedMatchY","Y with passed DR matching"    ,100,0.,2000.)
+    HptEff_Hpt          = r.TH1F("effMatchH"   ,"Higgs DR matching efficiency" ,100,0.,2000.)
+    YptEff_Ypt          = r.TH1F("effMatchY"   ,"Y DR matching efficiency"     ,100,0.,2000.)
+
+    HfailedMatch_Hpt.SetXTitle("Higgs Pt [GeV]")
+    HpassedMatch_Hpt.SetXTitle("Higgs Pt [GeV]")
+    YpassedMatch_Ypt.SetXTitle("Y Pt [GeV]")
+    YfailedMatch_Ypt.SetXTitle("Y Pt [GeV]")
+
+    for i,event in enumerate(tfile.Events):
+
+        if(i%100000==0):
+            print("Processing event {0}\n".format(i))
+
+        # if(i>10000):
+        #    break
+
+        massPointVeto = getattr(event,"GenModel_YMass_{0}".format(massPoint))
+        if(massPointVeto==0):
+           continue
+        higgsPt     = getHigssPt(event)
+        YPt         = getYPt(event)
+        matchedHidx = doHiggsMatching(event)
+        matchedYidx = doYMatching(event)
+        if(matchedHidx==-1):
+            HfailedMatch_Hpt.Fill(higgsPt)
+        else:
+            HpassedMatch_Hpt.Fill(higgsPt)
+        if(matchedYidx==-1):
+            YfailedMatch_Ypt.Fill(YPt)
+        else:
+            YpassedMatch_Ypt.Fill(YPt)
+
+    plotRootHistogram(HfailedMatch_Hpt,YfailedMatch_Ypt,HpassedMatch_Hpt,YpassedMatch_Ypt,"Pass_fail_{0}.png".format(massPoint))
+    HptEff_Hpt.Divide(HpassedMatch_Hpt,HfailedMatch_Hpt+HpassedMatch_Hpt)
+    YptEff_Ypt.Divide(YpassedMatch_Ypt,YfailedMatch_Ypt+YpassedMatch_Ypt)
+    HptEff_Hpt.SetXTitle("Higgs Pt [GeV]")
+    YptEff_Ypt.SetXTitle("Y Pt [GeV]")
+    plotRootHistogram(HptEff_Hpt,HptEff_Hpt,YptEff_Ypt,YptEff_Ypt,"Efficienies_{0}.png".format(massPoint))
+
 
 def analyzeFile(infile,outPrefix):
     tfile = r.TFile.Open(infile)
@@ -165,13 +300,12 @@ def analyzeFile(infile,outPrefix):
     histHiggsAK8Pt      = r.TH1F( "hPt"  , "H matched AK8 jet pt"  , 100, 0., 2000. )
     histYAK8Pt          = r.TH1F( "YPt"  , "Y matched AK8 jet pt"  , 100, 0., 2000. )
 
-
     for i,event in enumerate(tfile.Events):
-        # if(i>1000):
+        # if(i>100):
         #     break
 
         if(i%100000==0):
-            print(i)
+            print("Processing event {0}\n".format(i))
 
         higgsPhiEta         = getHigssPhiEta(event)
         YPhiEta             = getYPhiEta(event)
@@ -209,8 +343,8 @@ def analyzeFile(infile,outPrefix):
             if (Y_JetDR<0.8 and b3_JetDR<0.8 and b4_JetDR<0.8):
                 matchedYJetIdxs.append(fatJetIdx)
                 YDeltaRs.append(Y_JetDR)
-                mass = event.FatJet_mass[fatJetIdx]
-                pt   = event.FatJet_pt[fatJetIdx]
+                mass        = event.FatJet_mass[fatJetIdx]
+                pt          = event.FatJet_pt[fatJetIdx]
                 histYAK8Mass.Fill(mass)
                 histYAK8Pt.Fill(pt)
                 matchedYFlag=True
@@ -257,4 +391,7 @@ def analyzeFile(infile,outPrefix):
 
 
 if __name__ == '__main__':
-    analyzeFile("E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root","mx2000")
+    #analyzeFile("E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root","mx2000")
+    massPoints = ["90","100","125","150","200","250","300","400","500","600","700","800","900","1000","1200","1400","1600","1800","2000"]
+    for massPoint in massPoints:
+        processSingleYMassPoint("E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root",massPoint)
