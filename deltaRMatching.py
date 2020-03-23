@@ -236,12 +236,12 @@ def doYMatching(event):
 
 def writehistlist(dictList, outfile):
 #dictList is a list of dictionaries with key being mass point and value being corresponding histogram
-    tList = r.TList();
     f = r.TFile(outfile,"RECREATE")
     for collection in dictList:
         for massPoint in collection:
-            tList.Add(collection[massPoint])
-            collection[massPoint].Write()
+            temp = collection[massPoint]
+            temp.SetXTitle("Matched boson Gen Pt [GeV]")
+            temp.Write()
     f.ls()
 
 
@@ -257,7 +257,7 @@ def processAllYMassPoints(infile):
     HefficienciesHistos = {}
     YefficienciesHistos = {}
 
-    massPoints = ["90","100","125","150","200","250","300","400","500","600","700","800","900","1000","1200","1400","1600","1800","2000"]
+    massPoints = ["90","100","125","150","200","250","300","400","500","600","700","800","900","1000","1200","1400","1600","1800"]
     for massPoint in massPoints:
         failedH_histograms[massPoint]  = r.TH1F("failedMatchH_{0}".format(massPoint),"Higgs with failed DR matching",100,0.,2000.)
         failedY_histograms[massPoint]  = r.TH1F("failedMatchY_{0}".format(massPoint),"Y with failed DR matching"    ,100,0.,2000.)
@@ -268,6 +268,9 @@ def processAllYMassPoints(infile):
 
 
     for i,event in enumerate(tfile.Events):
+
+        if(i>1000):
+            break
 
         if(i%100000==0):
             print("Processing event {0}\n".format(i))
@@ -453,7 +456,7 @@ def analyzeFile(infile,outPrefix):
 
 if __name__ == '__main__':
     #analyzeFile("E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root","mx2000")
-    massPoints = ["90","100","125","150","200","250","300","400","500","600","700","800","900","1000","1200","1400","1600","1800","2000"]
+    massPoints = ["90","100","125","150","200","250","300","400","500","600","700","800","900","1000","1200","1400","1600","1800"]
     # for massPoint in massPoints:
     #     processSingleYMassPoint("E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root",massPoint)
     processAllYMassPoints("E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root")
