@@ -144,6 +144,19 @@ def plotHistogram(data,outfile,title,xlabel,xlow,xup):
     plt.savefig(outfile)
     plt.clf()
 
+def calcEfficiency(hPass,hFail,name):
+#Returns TEfficiency with *properly* calculated stat. uncertainties
+    hPass.Sumw2()
+    hFail.Sumw2()
+
+    hTot    = hPass.Clone("tot")
+    hTot.Add(hPass,hFail)
+    eff     = r.TEfficiency(hPass,hTot)
+    eff.SetName(name)
+    return eff
+
+
+
 def plotRootHistogram(h1,h2,h3,h4,outfile):
     #outfile should be name.png"
     c = r.TCanvas("c","c",900,700)
@@ -240,7 +253,10 @@ def writehistlist(dictList, outfile):
     for collection in dictList:
         for massPoint in collection:
             temp = collection[massPoint]
-            temp.SetXTitle("Matched boson Gen Pt [GeV]")
+            try:
+                temp.SetXTitle("Matched boson Gen Pt [GeV]")
+            except:
+                pass
             temp.Write()
     f.ls()
 
@@ -265,15 +281,15 @@ def processAllYMassPoints(infile):
         failedY_histograms[massPoint]  = r.TH1F("failedMatchY_{0}".format(massPoint),"Y with failed DR matching"    ,100,0.,2000.)
         matchedH_histograms[massPoint] = r.TH1F("matchedH_{0}".format(massPoint)    ,"Higgs with DR matched AK8"    ,100,0.,2000.)
         matchedY_histograms[massPoint] = r.TH1F("matchedY_{0}".format(massPoint)    ,"Y with matched AK8"           ,100,0.,2000.)
-        HefficienciesHistos[massPoint] = r.TH1F("Heffiencies_{0}".format(massPoint) ,"H matching efficencies"       ,100,0.,2000.)
-        YefficienciesHistos[massPoint] = r.TH1F("Yeffiencies_{0}".format(massPoint) ,"Y matching efficencies"       ,100,0.,2000.)
+        HefficienciesHistos[massPoint] = r.TEfficiency()
+        YefficienciesHistos[massPoint] = r.TEfficiency()
         Hak8MassHistos[massPoint]      = r.TH1F("Hak8mass_{0}".format(massPoint)    ,"H-AK8 mass distribution"      ,100,0.,1000.)
         Yak8MassHistos[massPoint]      = r.TH1F("Yak8mass_{0}".format(massPoint) ,"Y-AK8 mass distribution"         ,100,0.,1000.)
 
 
     for i,event in enumerate(tfile.Events):
 
-        # if(i>1000):
+        # if(i>10000):
         #     break
 
         if(i%100000==0):
@@ -290,18 +306,22 @@ def processAllYMassPoints(infile):
             failedH_histograms[str(massPoint)].Fill(higgsPt)
         else:
             matchedH_histograms[str(massPoint)].Fill(higgsPt)
-            Hak8MassHistos[str(massPoint)].Fill(event.FatJet_mass[matchedHidx])
+            Hak8MassHistos[str(massPoint)].Fill(event.FatJet_msoftdrop[matchedHidx])
         if(matchedYidx==-1):
             failedY_histograms[str(massPoint)].Fill(YPt)
         else:
             matchedY_histograms[str(massPoint)].Fill(YPt)  
-            Yak8MassHistos[str(massPoint)].Fill(event.FatJet_mass[matchedYidx])      
+            Yak8MassHistos[str(massPoint)].Fill(event.FatJet_msoftdrop[matchedYidx])      
 
     for massPoint in massPoints:
-        HefficienciesHistos[massPoint].Divide(matchedH_histograms[massPoint],failedH_histograms[massPoint]+matchedH_histograms[massPoint])
-        YefficienciesHistos[massPoint].Divide(matchedY_histograms[massPoint],failedY_histograms[massPoint]+matchedY_histograms[massPoint])
+        effNameH = "effMatchH_{0}".format(massPoint)
+        effNameY = "effMatchY_{0}".format(massPoint)
+        HefficienciesHistos[massPoint] = calcEfficiency(matchedH_histograms[massPoint],failedH_histograms[massPoint],effNameH)
+        YefficienciesHistos[massPoint] = calcEfficiency(matchedY_histograms[massPoint],failedY_histograms[massPoint],effNameY)
+        #HefficienciesHistos[massPoint].Divide(matchedH_histograms[massPoint],failedH_histograms[massPoint]+matchedH_histograms[massPoint])
+        #YefficienciesHistos[massPoint].Divide(matchedY_histograms[massPoint],failedY_histograms[massPoint]+matchedY_histograms[massPoint])
 
-    writehistlist([failedH_histograms,failedY_histograms,matchedH_histograms,matchedY_histograms,HefficienciesHistos,YefficienciesHistos,Hak8MassHistos,Yak8MassHistos],"test.root")
+    writehistlist([failedH_histograms,failedY_histograms,matchedH_histograms,matchedY_histograms,HefficienciesHistos,YefficienciesHistos,Hak8MassHistos,Yak8MassHistos],"test_eff.root")
 
 
 def processSingleYMassPoint(infile,massPoint):
@@ -403,7 +423,7 @@ def analyzeFile(infile,outPrefix):
                 matchedHiggsJetIdxs.append(fatJetIdx)
                 hDeltaRs.append(h_JetDR)
                 matchedHiggsFlag=True
-                mass = event.FatJet_mass[fatJetIdx]
+                mass = event.FatJet_msoftdrop[fatJetIdx]
                 pt   = event.FatJet_pt[fatJetIdx]
                 histHiggsAK8Mass.Fill(mass)
                 histHiggsAK8Pt.Fill(pt)
@@ -413,7 +433,7 @@ def analyzeFile(infile,outPrefix):
             if (Y_JetDR<0.8 and b3_JetDR<0.8 and b4_JetDR<0.8):
                 matchedYJetIdxs.append(fatJetIdx)
                 YDeltaRs.append(Y_JetDR)
-                mass        = event.FatJet_mass[fatJetIdx]
+                mass        = event.FatJet_msoftdrop[fatJetIdx]
                 pt          = event.FatJet_pt[fatJetIdx]
                 histYAK8Mass.Fill(mass)
                 histYAK8Pt.Fill(pt)
@@ -426,7 +446,7 @@ def analyzeFile(infile,outPrefix):
             print("Matched more than one AK8 to Higgs")
             print("Higgs phi {0}, eta {1}".format(*higgsPhiEta))
             for j,idx in enumerate(matchedHiggsJetIdxs):
-                print("Jet{0} - pt {1}, mass {2}, phi {3}, eta {4}".format(j,event.FatJet_mass[idx],event.FatJet_pt[idx],event.FatJet_phi[idx],event.FatJet_eta[idx],))
+                print("Jet{0} - pt {1}, mass {2}, phi {3}, eta {4}".format(j,event.FatJet_msoftdrop[idx],event.FatJet_pt[idx],event.FatJet_phi[idx],event.FatJet_eta[idx],))
             print("DeltaRs (AK8-Higgs) {0},{1}".format(*hDeltaRs))
             print('\n')
 
@@ -435,7 +455,7 @@ def analyzeFile(infile,outPrefix):
             print("Matched more than one AK8 to Y")
             print("Y phi {0}, eta {1}".format(*YPhiEta))
             for j,idx in enumerate(matchedYJetIdxs):
-                print("Jet{0} - pt {1}, mass {2}, phi {3}, eta {4}".format(j,event.FatJet_mass[idx],event.FatJet_pt[idx],event.FatJet_phi[idx],event.FatJet_eta[idx],))
+                print("Jet{0} - pt {1}, mass {2}, phi {3}, eta {4}".format(j,event.FatJet_msoftdrop[idx],event.FatJet_pt[idx],event.FatJet_phi[idx],event.FatJet_eta[idx],))
             print("DeltaRs (AK8-Y) {0},{1}".format(*YDeltaRs))
             print('\n')
 
