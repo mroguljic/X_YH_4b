@@ -30,7 +30,7 @@ def plotSingleMassPoint(inputfile,outfile,massPoint):
     c.SaveAs(outfile)
 
 
-def singleCanvas(inputfile,outputFile,massPoints):
+def drEfficiencyPlot(inputfile,outputFile,massPoints):
     inFile  = r.TFile(inputfile)
 
     colorCodes = [1,2,4,7,8,20,29]
@@ -145,4 +145,4 @@ if __name__ == '__main__':
     #     plotSingleMassPoint("test.root",outfile,massPoint)
 
     mPointsForSingleCanvas = ["100","150","200","250","300","400"]
-    singleCanvas("test_eff.root","singleCanvas.png",mPointsForSingleCanvas)
+    drEfficiencyPlot("test_eff.root","singleCanvas.png",mPointsForSingleCanvas)
