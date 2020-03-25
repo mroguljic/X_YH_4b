@@ -39,16 +39,25 @@ def singleCanvas(inputfile,outputFile,massPoints):
     c = r.TCanvas("c","c",1500,1200)
     r.gStyle.SetOptStat(0)
     c.Divide(2,2)
-
+#---Setting up the axes range, label and plot titles---#
     h1Dummy = r.TH2F("h1Dummy","DR matching efficiency for H",100,0.,2000.,100,0.,1.05)
-    h2Dummy = r.TH2F("h2Dummy","DR matching eff for Y",100,0.,2000.,100,0.,1.05)
+    h2Dummy = r.TH2F("h2Dummy","DR matching efficiency for Y",100,0.,2000.,100,0.,1.05)
     h3Dummy = r.TH2F("h3Dummy","DR H-matched AK8 softdrop mass",100,0.,400.,100,0.,8400.)
     h4Dummy = r.TH2F("h4Dummy","DR Y-matched AK8 softdrop mass",100,0.,500.,100,0.,9200.)
     h1Dummy.SetXTitle("Pt [GeV]")
     h2Dummy.SetXTitle("Pt [GeV]")
     h1Dummy.SetYTitle("N_matched/N_total")
     h2Dummy.SetYTitle("N_matched/N_total")
-
+    h3Dummy.SetXTitle("AK8 softdrop mass [GeV]")
+    h4Dummy.SetXTitle("AK8 softdrop mass [GeV]")
+    h1Dummy.GetXaxis().SetTitleSize(0.05)
+    h2Dummy.GetXaxis().SetTitleSize(0.05)
+    h3Dummy.GetXaxis().SetTitleSize(0.05)
+    h4Dummy.GetXaxis().SetTitleSize(0.05)
+    h1Dummy.GetYaxis().SetTitleSize(0.05)
+    h2Dummy.GetYaxis().SetTitleSize(0.05)
+    h3Dummy.GetYaxis().SetTitleSize(0.05)
+    h4Dummy.GetYaxis().SetTitleSize(0.05)
     c.cd(1)
     h1Dummy.Draw()
     c.cd(2)
@@ -57,6 +66,7 @@ def singleCanvas(inputfile,outputFile,massPoints):
     h3Dummy.Draw()
     c.cd(4)
     h4Dummy.Draw()
+#-----------------------------------------------------#
     for i,massPoint in enumerate(massPoints):
  
         colorIdx = i%nColors
@@ -67,10 +77,10 @@ def singleCanvas(inputfile,outputFile,massPoints):
         h3      = inFile.Get("Hak8mass_{0}".format(massPoint))
         h4      = inFile.Get("Yak8mass_{0}".format(massPoint))
 
-        h1.SetTitle("Heffiencies_{0}".format(massPoint))
-        h2.SetTitle("DR eff vs Pt for Y_{0}GeV".format(massPoint))
-        h3.SetTitle("Hak8mass_{0}".format(massPoint))
-        h4.SetTitle("Yak8mass_{0}".format(massPoint))
+        h1.SetTitle("Y mass = {0} GeV".format(massPoint))
+        h2.SetTitle("Y mass = {0} GeV".format(massPoint))
+        h3.SetTitle("Y mass = {0} GeV".format(massPoint))
+        h4.SetTitle("Y mass = {0} GeV".format(massPoint))
 
         h1.SetLineColor(color) 
         h2.SetLineColor(color) 
@@ -79,10 +89,10 @@ def singleCanvas(inputfile,outputFile,massPoints):
         #h1.SetFillColor(color) 
         #h2.SetFillColor(color) 
         h3.SetFillColor(color) 
-        h4.SetFillColor(color) 
-       
-        c.cd(1)
-        h1.Draw("SAME")
+        h4.SetFillColor(color)
+        if(i==0):
+            c.cd(1)
+            h1.Draw("SAME")
         c.cd(2)
         h2.Draw("SAME")
         c.cd(3)
@@ -92,10 +102,35 @@ def singleCanvas(inputfile,outputFile,massPoints):
         c.Modified()
         c.Update()
 
-    c.cd(1).BuildLegend(0.6,0.1,0.9,0.4)
-    c.cd(2).BuildLegend(0.6,0.1,0.9,0.4)
-    c.cd(3).BuildLegend(0.6,0.1,0.9,0.4)
-    c.cd(4).BuildLegend(0.6,0.1,0.9,0.4)
+    c.cd(1)
+    legend1 = r.TLegend(0.6,0.1,0.9,0.4)
+    legend1.AddEntry("effMatchH_{0}".format(massPoints[0]))
+    c.cd(2)
+    legend2 = r.TLegend(0.6,0.1,0.9,0.4)
+    for massPoint in massPoints:
+        legend2.AddEntry("effMatchY_{0}".format(massPoint))
+    c.cd(3)
+    legend3 = r.TLegend(0.6,0.1,0.9,0.4)
+    for massPoint in massPoints:
+        legend3.AddEntry("Hak8mass_{0}".format(massPoint))
+    c.cd(4)
+    legend4 = r.TLegend(0.6,0.4,0.9,0.7)
+    for massPoint in massPoints:
+        legend4.AddEntry("Yak8mass_{0}".format(massPoint))
+
+    c.cd(1)
+    legend1.Draw()
+    c.cd(2)
+    legend2.Draw()
+    c.cd(3)
+    legend3.Draw()
+    c.cd(4)
+    legend4.Draw()
+
+    # c.cd(1).BuildLegend(0.6,0.1,0.9,0.4)
+    # c.cd(2).BuildLegend(0.6,0.1,0.9,0.4)
+    # c.cd(3).BuildLegend(0.6,0.1,0.9,0.4)
+    # c.cd(4).BuildLegend(0.6,0.1,0.9,0.4)
 
 
 
