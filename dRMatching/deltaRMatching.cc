@@ -10,26 +10,47 @@ UInt_t getYIdx(Int_t* GenPart_pdgId, UInt_t nGenPart);
 std::vector<int> getBFromHIdxs(Int_t* GenPart_pdgId,Int_t* GenPart_genPartIdxMother, UInt_t nGenPart);
 std::vector<int> getBFromYIdxs(Int_t* GenPart_pdgId,Int_t* GenPart_genPartIdxMother, UInt_t nGenPart);
 Float_t deltaR(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2);
+std::vector<Int_t> doDRMatching(FastNanoAOD &reader, int i);
 
+
+
+
+//add function argument to be inputfile
 void deltaRMatching(){
 
-TFile*   f    = new TFile("../E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root","READ");
-TTree*  tree = (TTree* )f->Get("Events");
+    TFile*  f    = new TFile("../E2FC3D3A-4D94-494D-BD56-524A28EF3C3F.root","READ");
+    TTree*  tree = (TTree* )f->Get("Events");
 
-FastNanoAOD reader = FastNanoAOD(tree);
-Long64_t nEntries = reader.fChain->GetEntriesFast();
-
-UInt_t   nFatJet, nGenPart;
-Float_t  *FatJet_phi,*FatJet_eta,*GenPart_phi,*GenPart_eta;  
-Int_t    *GenPart_pdgId,*GenPart_genPartIdxMother;
+    FastNanoAOD reader = FastNanoAOD(tree);
+    Long64_t nEntries = reader.fChain->GetEntriesFast();
 
 
-//replace i<10 with nEntries
-for(int i=0;i<nEntries;i++){
-    if(i%100000==0){
-        cout<<i<<"\n";
+
+
+    //replace i<10 with nEntries
+    for(int i=0;i<nEntries;i++){
+        if(i%100000==0){
+            cout<<i<<"\n";
+        }
+        std::vector<Int_t> matchedFatJets = doDRMatching(reader,i);
+        //cout<<matchedFatJets[0]<<" "<<matchedFatJets[1]<<"\n";
     }
+
+}
+
+
+std::vector<Int_t> doDRMatching(FastNanoAOD &reader, int i){
+//Returns FatJet indices in event i matched to H and Y, respectively
+//Example: <1,3> would mean FatJet[1] is matched to H, FatJet[3] to Y
+//Returns -1 if no match for a particular boson
+//Example: <4,-1> would mean FatJet[4] is matched to H, but no FatJets are matched to Y
+    UInt_t   nFatJet, nGenPart;
+    Float_t  *FatJet_phi,*FatJet_eta,*GenPart_phi,*GenPart_eta;  
+    Int_t    *GenPart_pdgId,*GenPart_genPartIdxMother;
+
     reader.GetEntry(i);
+
+
     nFatJet = reader.nFatJet;
     nGenPart = reader.nGenPart;
     
@@ -83,11 +104,10 @@ for(int i=0;i<nEntries;i++){
 
     }
 
-    //cout<<YFatJetMatchIdx<<" "<<HFatJetMatchIdx<<"\n";
-
-
-}
-    
+    std::vector<Int_t> matchedFatJets;
+    matchedFatJets.push_back(HFatJetMatchIdx);
+    matchedFatJets.push_back(YFatJetMatchIdx);
+    return matchedFatJets;
 }
 
 Float_t deltaR(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2){
@@ -116,6 +136,9 @@ UInt_t getYIdx(Int_t* GenPart_pdgId, UInt_t nGenPart){
     cout<<"Warning: Couldn't find Y\n";
     return -1;
 }
+
+
+
 
 std::vector<int> getBFromHIdxs(Int_t* GenPart_pdgId,Int_t* GenPart_genPartIdxMother, UInt_t nGenPart){
 //Returns the indices of 2 b quarks from H decay
