@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "FastNanoAOD.h"
 #include "FastNanoAOD.C"
+#include <iostream>
 
 Float_t getYMass(FastNanoAOD &reader, Int_t i){
     UInt_t   nFatJet, nGenPart;
@@ -36,7 +37,7 @@ void testMacro(){
     //replace i<10 with nEntries
     for(Int_t i=0;i<100000;i++){
         Float_t YMass = getYMass(reader,i);
-        cout<<YMass<<"\n";
+        std::cout<<YMass<<"\n";
     }
 
 }
