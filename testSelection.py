@@ -32,18 +32,21 @@ customc.Import('./JHUanalyzer/Framework/AnalysisModules/deltaRMatching.cc')
 start_time = time.time()
 # Initialize
 a = analyzer(options.input)
-a.Define("myMatchedJets","doDRMatching(nFatJet, nGenPart, FatJet_phi, FatJet_eta, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
+#a.Define("myMatchedJets","doDRMatching(nFatJet, nGenPart, FatJet_phi, FatJet_eta, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
 
 
 preselection1 = CutGroup('preselection1')
 preselection1.Add("nFatJets","nFatJet > 1")
 
 newcolumns = VarGroup("newcolumns")
-newcolumns.Add("matchedH","myMatchedJets[0]")
-newcolumns.Add("matchedY","myMatchedJets[1]")
+newcolumns.Add("matchedH","doDRMatching(nFatJet, nGenPart, FatJet_phi, FatJet_eta, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)[0]")
+newcolumns.Add("matchedY","doDRMatching(nFatJet, nGenPart, FatJet_phi, FatJet_eta, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)[1]")
 
+preselection2 = CutGroup('preselection2')
+preselection2.Add("matchedH","matchedH > -1")
+preselection2.Add("matchedY","matchedY > -1")
 
-preselected = a.Apply([preselection1,newcolumns])
-preselected.Snapshot("nFatJet|nGenPart|FatJet*|Gen*",'snapshot_example.root',treename='preselected',lazy=False)
+preselected = a.Apply([preselection1,newcolumns,preselection2])
+preselected.Snapshot("nFatJet|nGenPart|FatJet*|Gen*|matchedH|matchedY",'snapshot_example.root',treename='preselected',lazy=False)
 
 print("Total time: "+str((time.time()-start_time)/60.) + ' min')

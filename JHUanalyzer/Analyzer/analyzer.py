@@ -69,7 +69,7 @@ class analyzer(object):
         return newnode 
 
     def Define(self,variables,name='',node=None):
-        if node == None: node = BaseNode
+        if node == None: node = self.BaseNode
         newnode = node.Clone()
 
         if isinstance(variables,VarGroup):
