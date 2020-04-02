@@ -28,7 +28,7 @@ parser.add_option('-c', '--config', metavar='FILE', type='string', action='store
 
 
 (options, args) = parser.parse_args()
-customc.Import('/home/matej/X_YH_4b/JHUanalyzer/Framework/AnalysisModules/deltaRMatching.cc')
+customc.Import('./JHUanalyzer/Framework/AnalysisModules/deltaRMatching.cc')
 start_time = time.time()
 # Initialize
 a = analyzer(options.input)
