@@ -32,7 +32,7 @@ customc.Import('./JHUanalyzer/Framework/AnalysisModules/deltaRMatching.cc')
 start_time = time.time()
 # Initialize
 a = analyzer(options.input)
-a.Define("doDRMatching(nFatJet, nGenPart, FatJet_phi, FatJet_eta, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)","myMatchedJets")
+a.Define("myMatchedJets","doDRMatching(nFatJet, nGenPart, FatJet_phi, FatJet_eta, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
 
 
 preselection1 = CutGroup('preselection1')
