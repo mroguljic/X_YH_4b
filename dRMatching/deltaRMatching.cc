@@ -5,13 +5,18 @@
 #include "FastNanoAOD.h"
 #include "FastNanoAOD.C"
 #include <iostream>
+#include "ROOT/RVec.hxx"
 
-UInt_t getHIdx(Int_t* GenPart_pdgId, UInt_t nGenPart);
-UInt_t getYIdx(Int_t* GenPart_pdgId, UInt_t nGenPart);
-std::vector<Int_t> getBFromHIdxs(Int_t* GenPart_pdgId,Int_t* GenPart_genPartIdxMother, UInt_t nGenPart);
-std::vector<Int_t> getBFromYIdxs(Int_t* GenPart_pdgId,Int_t* GenPart_genPartIdxMother, UInt_t nGenPart);
+using namespace ROOT::VecOps;
+using rvec_i = const RVec<int> &;
+using rvec_f = const RVec<float> &;
+
+UInt_t getHIdx(rvec_i GenPart_pdgId, Int_t nGenPart);
+UInt_t getYIdx(rvec_i GenPart_pdgId, Int_t nGenPart);
+std::vector<Int_t> getBFromHIdxs(rvec_i GenPart_pdgId,rvec_i GenPart_genPartIdxMother, Int_t nGenPart);
+std::vector<Int_t> getBFromYIdxs(rvec_i GenPart_pdgId,rvec_i GenPart_genPartIdxMother, Int_t nGenPart);
 Float_t deltaR(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2);
-std::vector<Int_t> doDRMatching(FastNanoAOD &reader, Int_t i);
+RVec<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_f FatJet_eta, rvec_f GenPart_phi, rvec_f GenPart_eta, rvec_i GenPart_pdgId, rvec_i GenPart_genPartIdxMother);
 
 
 
@@ -26,64 +31,59 @@ void deltaRMatching(){
     Long64_t nEntries = reader.fChain->GetEntriesFast();
 
 
-
-
     //replace i<10 with nEntries
-    for(UInt_t i=0;i<nEntries;i++){
+    for(UInt_t i=0;i<100;i++){
         if(i%100000==0){
             std::cout<<i<<"\n";
         }
-        std::vector<Int_t> matchedFatJets = doDRMatching(reader,i);
-        //std::cout<<matchedFatJets[0]<<" "<<matchedFatJets[1]<<"\n";
+        reader.GetEntry(i);
+        Int_t nFatJet   = reader.nFatJet;
+        Int_t nGenPart  = reader.nGenPart;
+        RVec<Float_t>   FatJet_phi(reader.FatJet_phi,reader.FatJet_phi+nFatJet);
+        RVec<Float_t>   FatJet_eta(reader.FatJet_eta,reader.FatJet_eta+nFatJet);
+        RVec<Float_t>   GenPart_phi(reader.GenPart_phi,reader.GenPart_phi+nGenPart);
+        RVec<Float_t>   GenPart_eta(reader.GenPart_eta,reader.GenPart_eta+nGenPart);
+        RVec<Int_t>     GenPart_pdgId(reader.GenPart_pdgId,reader.GenPart_pdgId+nGenPart);
+        RVec<Int_t>     GenPart_genPartIdxMother(reader.GenPart_genPartIdxMother,reader.GenPart_genPartIdxMother+nGenPart);
+
+        RVec<Int_t> matchedJets = doDRMatching(nFatJet,nGenPart,FatJet_phi,FatJet_eta,GenPart_phi,GenPart_eta,GenPart_pdgId,GenPart_genPartIdxMother);
+        //std::cout<<matchedJets[0]<<" "<<matchedJets[1]<<"\n";
     }
 
 }
 
 
-std::vector<Int_t> doDRMatching(FastNanoAOD &reader, Int_t i){
+RVec<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_f FatJet_eta, rvec_f GenPart_phi, rvec_f GenPart_eta, rvec_i GenPart_pdgId, rvec_i GenPart_genPartIdxMother){
 //Returns FatJet indices in event i matched to H and Y, respectively
 //Example: <1,3> would mean FatJet[1] is matched to H, FatJet[3] to Y
 //Returns -1 if no match for a particular boson
 //Example: <4,-1> would mean FatJet[4] is matched to H, but no FatJets are matched to Y
-    UInt_t   nFatJet, nGenPart;
-    Float_t  *FatJet_phi,*FatJet_eta,*GenPart_phi,*GenPart_eta;  
-    Int_t    *GenPart_pdgId,*GenPart_genPartIdxMother;
 
-    reader.GetEntry(i);
-
-
-    nFatJet = reader.nFatJet;
-    nGenPart = reader.nGenPart;
-    
-    GenPart_pdgId               = reader.GenPart_pdgId;
-    GenPart_genPartIdxMother    = reader.GenPart_genPartIdxMother;
-    FatJet_phi                  = reader.FatJet_phi;
-    FatJet_eta                  = reader.FatJet_eta;
 
     UInt_t HIdx                 = getHIdx(GenPart_pdgId,nGenPart);
-    Float_t HEta                = reader.GenPart_eta[HIdx];
-    Float_t HPhi                = reader.GenPart_phi[HIdx];
+    Float_t HEta                = GenPart_eta[HIdx];
+    Float_t HPhi                = GenPart_phi[HIdx];
 
     UInt_t YIdx                 = getYIdx(GenPart_pdgId,nGenPart);
-    Float_t YEta                = reader.GenPart_eta[YIdx];
-    Float_t YPhi                = reader.GenPart_phi[YIdx];
+    Float_t YEta                = GenPart_eta[YIdx];
+    Float_t YPhi                = GenPart_phi[YIdx];
 
-    vector<Int_t> BfromHIdxs      = getBFromHIdxs(GenPart_pdgId,GenPart_genPartIdxMother,nGenPart);
-    Float_t b1_H_eta            = reader.GenPart_eta[BfromHIdxs[0]];
-    Float_t b2_H_eta            = reader.GenPart_eta[BfromHIdxs[1]];
-    Float_t b1_H_phi            = reader.GenPart_phi[BfromHIdxs[0]];
-    Float_t b2_H_phi            = reader.GenPart_phi[BfromHIdxs[1]];
+    vector<Int_t> BfromHIdxs    = getBFromHIdxs(GenPart_pdgId,GenPart_genPartIdxMother,nGenPart);
+    Float_t b1_H_eta            = GenPart_eta[BfromHIdxs[0]];
+    Float_t b2_H_eta            = GenPart_eta[BfromHIdxs[1]];
+    Float_t b1_H_phi            = GenPart_phi[BfromHIdxs[0]];
+    Float_t b2_H_phi            = GenPart_phi[BfromHIdxs[1]];
  
-    vector<Int_t> BfromYIdxs      = getBFromYIdxs(GenPart_pdgId,GenPart_genPartIdxMother,nGenPart);
-    Float_t b1_Y_eta            = reader.GenPart_eta[BfromYIdxs[0]];
-    Float_t b2_Y_eta            = reader.GenPart_eta[BfromYIdxs[1]];
-    Float_t b1_Y_phi            = reader.GenPart_phi[BfromYIdxs[0]];
-    Float_t b2_Y_phi            = reader.GenPart_phi[BfromYIdxs[1]];
+    vector<Int_t> BfromYIdxs    = getBFromYIdxs(GenPart_pdgId,GenPart_genPartIdxMother,nGenPart);
+    Float_t b1_Y_eta            = GenPart_eta[BfromYIdxs[0]];
+    Float_t b2_Y_eta            = GenPart_eta[BfromYIdxs[1]];
+    Float_t b1_Y_phi            = GenPart_phi[BfromYIdxs[0]];
+    Float_t b2_Y_phi            = GenPart_phi[BfromYIdxs[1]];
 
     Int_t YFatJetMatchIdx       = -1;
     Int_t HFatJetMatchIdx       = -1;
 
-    for(UInt_t fatJetIdx=0; fatJetIdx<nFatJet;fatJetIdx++){
+    for(Int_t fatJetIdx=0; fatJetIdx<nFatJet;fatJetIdx++){
     
         Float_t fatJetEta = FatJet_eta[fatJetIdx];
         Float_t fatJetPhi = FatJet_phi[fatJetIdx];
@@ -105,9 +105,7 @@ std::vector<Int_t> doDRMatching(FastNanoAOD &reader, Int_t i){
 
     }
 
-    std::vector<Int_t> matchedFatJets;
-    matchedFatJets.push_back(HFatJetMatchIdx);
-    matchedFatJets.push_back(YFatJetMatchIdx);
+    RVec<Int_t>matchedFatJets = {HFatJetMatchIdx,YFatJetMatchIdx};
     return matchedFatJets;
 }
 
@@ -118,9 +116,9 @@ Float_t deltaR(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2){
 }
 
 
-UInt_t getHIdx(Int_t* GenPart_pdgId, UInt_t nGenPart){
+UInt_t getHIdx(rvec_i GenPart_pdgId, Int_t nGenPart){
 //Returns the idx at which pdgId=25 (H)
-    for(UInt_t i=0; i<nGenPart; ++i)
+    for(Int_t i=0; i<nGenPart; ++i)
         if(GenPart_pdgId[i]==25)
             return i;
 
@@ -128,9 +126,9 @@ UInt_t getHIdx(Int_t* GenPart_pdgId, UInt_t nGenPart){
     return -1;
 }
 
-UInt_t getYIdx(Int_t* GenPart_pdgId, UInt_t nGenPart){
+UInt_t getYIdx(rvec_i GenPart_pdgId, Int_t nGenPart){
 //Returns the idx at which pdgId=25 (H)
-    for(UInt_t i=0; i<nGenPart; ++i)
+    for(Int_t i=0; i<nGenPart; ++i)
         if(GenPart_pdgId[i]==35)
             return i;
 
@@ -141,11 +139,11 @@ UInt_t getYIdx(Int_t* GenPart_pdgId, UInt_t nGenPart){
 
 
 
-std::vector<Int_t> getBFromHIdxs(Int_t* GenPart_pdgId,Int_t* GenPart_genPartIdxMother, UInt_t nGenPart){
+std::vector<Int_t> getBFromHIdxs(rvec_i GenPart_pdgId,rvec_i GenPart_genPartIdxMother, Int_t nGenPart){
 //Returns the indices of 2 b quarks from H decay
     std::vector<Int_t> bIdxs;
 
-    for(UInt_t i=0; i<nGenPart; ++i){
+    for(Int_t i=0; i<nGenPart; ++i){
         if(GenPart_pdgId[i]==5 || GenPart_pdgId[i]==-5){
             Int_t motherIdx = GenPart_genPartIdxMother[i];
             //std::cout<<motherIdx<<" "<<GenPart_pdgId[motherIdx]<<"\n";
@@ -163,11 +161,11 @@ std::vector<Int_t> getBFromHIdxs(Int_t* GenPart_pdgId,Int_t* GenPart_genPartIdxM
     return bIdxs;
 }
 
-std::vector<Int_t> getBFromYIdxs(Int_t* GenPart_pdgId,Int_t* GenPart_genPartIdxMother, UInt_t nGenPart){
+std::vector<Int_t> getBFromYIdxs(rvec_i GenPart_pdgId,rvec_i GenPart_genPartIdxMother, Int_t nGenPart){
 //Returns the indices of 2 b quarks from H decay
     std::vector<Int_t> bIdxs;
 
-    for(UInt_t i=0; i<nGenPart; ++i){
+    for(Int_t i=0; i<nGenPart; ++i){
         if(GenPart_pdgId[i]==5 || GenPart_pdgId[i]==-5){
             Int_t motherIdx = GenPart_genPartIdxMother[i];
             //std::cout<<motherIdx<<" "<<GenPart_pdgId[motherIdx]<<"\n";

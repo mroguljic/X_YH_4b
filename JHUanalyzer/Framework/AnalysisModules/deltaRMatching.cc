@@ -14,10 +14,14 @@ UInt_t getYIdx(rvec_i GenPart_pdgId, Int_t nGenPart);
 std::vector<Int_t> getBFromHIdxs(rvec_i GenPart_pdgId,rvec_i GenPart_genPartIdxMother, Int_t nGenPart);
 std::vector<Int_t> getBFromYIdxs(rvec_i GenPart_pdgId,rvec_i GenPart_genPartIdxMother, Int_t nGenPart);
 Float_t deltaR(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2);
-std::vector<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_f FatJet_eta, rvec_f GenPart_phi, rvec_f GenPart_eta, rvec_i GenPart_pdgId, rvec_i GenPart_genPartIdxMother);
+RVec<Int_T> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_f FatJet_eta, rvec_f GenPart_phi, rvec_f GenPart_eta, rvec_i GenPart_pdgId, rvec_i GenPart_genPartIdxMother);
+
+void deltaRMatching(){
+    return;
+}
 
 
-std::vector<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_f FatJet_eta, rvec_f GenPart_phi, rvec_f GenPart_eta, rvec_i GenPart_pdgId, rvec_i GenPart_genPartIdxMother){
+RVec<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_f FatJet_eta, rvec_f GenPart_phi, rvec_f GenPart_eta, rvec_i GenPart_pdgId, rvec_i GenPart_genPartIdxMother){
 //Returns FatJet indices in event i matched to H and Y, respectively
 //Example: <1,3> would mean FatJet[1] is matched to H, FatJet[3] to Y
 //Returns -1 if no match for a particular boson
@@ -69,9 +73,7 @@ std::vector<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi
 
     }
 
-    std::vector<Int_t> matchedFatJets;
-    matchedFatJets.push_back(HFatJetMatchIdx);
-    matchedFatJets.push_back(YFatJetMatchIdx);
+    RVec<Int_t>matchedFatJets = {HFatJetMatchIdx,YFatJetMatchIdx};
     return matchedFatJets;
 }
 
