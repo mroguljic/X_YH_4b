@@ -151,5 +151,5 @@ def updateFile(inFile,massPoints = ["90","100","125","150","200","250","300","40
 #updateFile("outputWP_0.7.root")
 #updateFile("outputWP_0.9.root")
 
-YmassPoints = ["100","150","200","300","500","700"]
+YmassPoints = ["100","125","150","200","300","500","700"]
 bTagEffPlot("test.png",YmassPoints)

@@ -103,8 +103,11 @@ for wp in wps:
         hists=[]
         hPass = YpassedTagger.DataFrame.Histo1D(("YpassedTagger_pt","YpassedTagger_pt",100,0,2000),"matchedYFatJet_pt")
         hFail = YfailedTagger.DataFrame.Histo1D(("YfailedTagger_pt","YfailedTagger_pt",100,0,2000),"matchedYFatJet_pt")
+        hEff  = ROOT.TEfficiency(hPass.GetValue(),hPass.GetValue()+hFail.GetValue())
+        hEff.SetName("eff_YMasss_{0}".format(YmassPoints[i]))
         hists.append(hPass)
         hists.append(hFail)
+        hists.append(hEff) #not a hist though, tefficiency
 
 #    hists.append(HpassedTagger.DataFrame.Histo1D(("HpassedTagger_pt","HpassedTagger_pt",100,0,2000),"matchedHFatJet_pt"))
 #    hists.append(HfailedTagger.DataFrame.Histo1D(("HfailedTagger_pt","HfailedTagger_pt",100,0,2000),"matchedHFatJet_pt"))    
@@ -117,9 +120,11 @@ for wp in wps:
     
     hPass = HpassedTagger.DataFrame.Histo1D(("HpassedTagger_pt","HpassedTagger_pt",100,0,2000),"matchedHFatJet_pt")
     hFail = HfailedTagger.DataFrame.Histo1D(("HfailedTagger_pt","HfailedTagger_pt",100,0,2000),"matchedHFatJet_pt")
-
+    hEff  = ROOT.TEfficiency(hPass.GetValue(),hPass.GetValue()+hFail.GetValue())
+    hEff.SetName("eff_H")
     hPass.Write()
     hFail.Write()
+    hEff.Write()
     # hists = [boostedMatchedH.DataFrame.Histo1D(("matchedHFatJet_pt","matchedHFatJet_pt",100,0,2000),"matchedHFatJet_pt")]
     # for i,massPoint in enumerate(YmassPoints):
     #     histName  = "matchedHFatJet_pt_Y{0}".format(massPoint)
