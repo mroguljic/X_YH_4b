@@ -32,17 +32,18 @@ customc.Import('./JHUanalyzer/Framework/AnalysisModules/deltaRMatching.cc')
 start_time = time.time()
 # Initialize
 a = analyzer(options.input)
-#a.Define("myMatchedJets","doDRMatching(nFatJet, nGenPart, FatJet_phi, FatJet_eta, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
+YmassPoints = ["90","100","125","150","200","250","300","400","500","600","700"]#"800","900","1000","1200","1400","1600","1800"] pt cut kills higher mass points
 
-
-preselection1   = CutGroup('preselection1')
+#----------Adding interesting variables----------
 newcolumns      = VarGroup("newcolumns")
-preselection1.Add("nFatJets","nFatJet > 1")
 newcolumns.Add("matchedH","doDRMatching(nFatJet, nGenPart, FatJet_phi, FatJet_eta, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)[0]")
 newcolumns.Add("matchedY","doDRMatching(nFatJet, nGenPart, FatJet_phi, FatJet_eta, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)[1]")
-preselection    = a.Apply([preselection1,newcolumns])
+newcolumns.Add("GenY_pt" ,"getGen_Y_pt(nGenPart,GenPart_pdgId,GenPart_pt)")
+newcolumns.Add("GenH_pt" ,"getGen_H_pt(nGenPart,GenPart_pdgId,GenPart_pt)")
+preselection    = a.Apply([newcolumns])
+#------------------------------------------------
 
-
+#---------Applying DR matching------------------
 cutH        = CutGroup("cutH")
 cutY        = CutGroup("cutY")
 cutH.Add("matchedH","matchedH > -1")
@@ -50,21 +51,61 @@ cutY.Add("matchedY","matchedY > -1")
 matchedH    = preselection.Apply([cutH])
 matchedY    = preselection.Apply([cutY])
 #matchedH.Snapshot("nFatJet|nGenPart|FatJet*|Gen*|matchedH|matchedY",'matchedH.root',treename='preselection',lazy=False)
-
 #matchedY.Snapshot("nFatJet|nGenPart|FatJet*|Gen*|matchedH|matchedY",'matchedY.root',treename='preselection',lazy=False)
+#------------------------------------------------
 
+#-----Cross check if DR matched as expected------
+
+matchedY_YMassPoints = []
+tot_YMassPoints      = []
+drMatchinghistos     = []
+for massPoint in YmassPoints:
+    tempYCuts = CutGroup("tempCut_{0}".format(massPoint))
+    tempYCuts.Add("GenModel_YMass_{0}".format(massPoint),"GenModel_YMass_{0}==1".format(massPoint))
+    matchedY_YMassPoints.append(matchedY.Apply([tempYCuts]))
+    tot_YMassPoints.append(preselection.Apply([tempYCuts]))
+
+
+for i in range(len(YmassPoints)):
+    hMatched = matchedY_YMassPoints[i].DataFrame.Histo1D(("Y_DRmatched_{0}".format(YmassPoints[i]),"Y_DRmatched".format(YmassPoints[i]),100,0,2000),"GenY_pt")    
+    hTot     = tot_YMassPoints[i].DataFrame.Histo1D(("Y_tot_{0}".format(YmassPoints[i]),"Y_tot_{0}".format(YmassPoints[i]),100,0,2000),"GenY_pt")
+    hEff     = ROOT.TEfficiency(hMatched.GetValue(),hTot.GetValue()) 
+    hEff.SetName("YmatchingEfff_{0}".format(YmassPoints[i]))
+    drMatchinghistos.append(hMatched)
+    drMatchinghistos.append(hTot)
+    drMatchinghistos.append(hEff)
+
+hMatched = matchedH.DataFrame.Histo1D(("H_DRmatched","H_DRmatched",100,0,2000),"GenH_pt")
+hTot = preselection.DataFrame.Histo1D(("H_tot","H_tot",100,0,2000),"GenH_pt")
+hEff = ROOT.TEfficiency(hMatched.GetValue(),hTot.GetValue()) 
+hEff.SetName("HmatchingEfff")
+out_f = ROOT.TFile("drMatching_control.root","RECREATE") 
+
+hMatched.Write()
+hTot.Write()
+hEff.Write()
+
+for histo in drMatchinghistos:
+    histo.Write()
+
+out_f.Close()
+#------------------------------------------------
+
+
+#-------------Boosted cuts for H-----------------
 boostedHCuts = CutGroup('boostedHCuts')
 boostedHCuts.Add("FatJet_pt","FatJet_pt[matchedH]>300")
 boostedHCuts.Add("FatJet_eta","FatJet_eta[matchedH]>-2.5 && FatJet_eta[matchedH]<2.5")
 
 boostedHColumns = VarGroup("boostedHColumns")
 boostedHColumns.Add("matchedHFatJet_pt","FatJet_pt[matchedH]")
-#boostedHColumns.Add("matchedHFatJet_pt","matchedH > -1 ? FatJet_pt[matchedY] : 0") don't need this since we already cut matchedH=-1
 
 boostedMatchedH = matchedH.Apply([boostedHCuts,boostedHColumns])
 boostedMatchedH.Snapshot("nFatJet|nGenPart|FatJet*|Gen*|matchedH|matchedY|matchedHFatJet_pt,matchedYFatJet_pt",'boostedMatchedH.root',treename='preselection',lazy=True)
+#------------------------------------------------
 
-YmassPoints = ["90","100","125","150","200","250","300","400","500","600","700"]#"800","900","1000","1200","1400","1600","1800"] pt cut kills higher mass points
+#-------------Boosted cuts for Y-----------------
+
 boostedMatchedYs=[]
 for massPoint in YmassPoints:
     ptCutOff = 2*float(massPoint)/0.8
@@ -77,8 +118,9 @@ for massPoint in YmassPoints:
     tempYColumns = VarGroup("boostedYColumn_{0}".format(massPoint))
     tempYColumns.Add("matchedYFatJet_pt","FatJet_pt[matchedY]")
     boostedMatchedYs.append(matchedY.Apply([tempYCuts,tempYColumns]))
+#------------------------------------------------
 
-
+#-----------Histograms for each wp---------------
 tagger = "FatJet_btagHbb[matchedH]"
 wps = [0.5,0.7,0.9]
 for wp in wps:
@@ -101,16 +143,15 @@ for wp in wps:
         YpassedTagger = boostedMatchedY.Apply([taggerPass])
         YfailedTagger = boostedMatchedY.Apply([taggerFail])
         hists=[]
-        hPass = YpassedTagger.DataFrame.Histo1D(("YpassedTagger_pt","YpassedTagger_pt",100,0,2000),"matchedYFatJet_pt")
-        hFail = YfailedTagger.DataFrame.Histo1D(("YfailedTagger_pt","YfailedTagger_pt",100,0,2000),"matchedYFatJet_pt")
+        #hPass = YpassedTagger.DataFrame.Histo1D(("YpassedTagger_pt","YpassedTagger_pt",100,0,2000),"matchedYFatJet_pt") if we want jet pt instead of gen pt
+        hPass = YpassedTagger.DataFrame.Histo1D(("YpassedTagger_pt","YpassedTagger_pt",100,0,2000),"GenY_pt")
+        hFail = YfailedTagger.DataFrame.Histo1D(("YfailedTagger_pt","YfailedTagger_pt",100,0,2000),"GenY_pt")
         hEff  = ROOT.TEfficiency(hPass.GetValue(),hPass.GetValue()+hFail.GetValue())
         hEff.SetName("eff_YMasss_{0}".format(YmassPoints[i]))
         hists.append(hPass)
         hists.append(hFail)
         hists.append(hEff) #not a hist though, tefficiency
-
-#    hists.append(HpassedTagger.DataFrame.Histo1D(("HpassedTagger_pt","HpassedTagger_pt",100,0,2000),"matchedHFatJet_pt"))
-#    hists.append(HfailedTagger.DataFrame.Histo1D(("HfailedTagger_pt","HfailedTagger_pt",100,0,2000),"matchedHFatJet_pt"))    
+  
         for h in hists:
             h.Write()
 
@@ -118,20 +159,16 @@ for wp in wps:
     tDir = out_f.GetDirectory("H")
     tDir.cd()
     
-    hPass = HpassedTagger.DataFrame.Histo1D(("HpassedTagger_pt","HpassedTagger_pt",100,0,2000),"matchedHFatJet_pt")
-    hFail = HfailedTagger.DataFrame.Histo1D(("HfailedTagger_pt","HfailedTagger_pt",100,0,2000),"matchedHFatJet_pt")
+    hPass = HpassedTagger.DataFrame.Histo1D(("HpassedTagger_pt","HpassedTagger_pt",100,0,2000),"GenH_pt")
+    hFail = HfailedTagger.DataFrame.Histo1D(("HfailedTagger_pt","HfailedTagger_pt",100,0,2000),"GenH_pt")
     hEff  = ROOT.TEfficiency(hPass.GetValue(),hPass.GetValue()+hFail.GetValue())
     hEff.SetName("eff_H")
     hPass.Write()
     hFail.Write()
     hEff.Write()
-    # hists = [boostedMatchedH.DataFrame.Histo1D(("matchedHFatJet_pt","matchedHFatJet_pt",100,0,2000),"matchedHFatJet_pt")]
-    # for i,massPoint in enumerate(YmassPoints):
-    #     histName  = "matchedHFatJet_pt_Y{0}".format(massPoint)
-    #     histTitle = "matchedHFatJet_pt_Y{0}".format(massPoint)
-    #     hists.append(boostedMatchedYs[i].DataFrame.Histo1D((histName,histTitle,100,0,2000),"matchedYFatJet_pt"))
 
 
     out_f.Close()
+#------------------------------------------------
 
 print("Total time: "+str((time.time()-start_time)/60.) + ' min')

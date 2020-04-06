@@ -15,6 +15,8 @@ std::vector<Int_t> getBFromHIdxs(rvec_i GenPart_pdgId,rvec_i GenPart_genPartIdxM
 std::vector<Int_t> getBFromYIdxs(rvec_i GenPart_pdgId,rvec_i GenPart_genPartIdxMother, Int_t nGenPart);
 Float_t deltaR(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2);
 RVec<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_f FatJet_eta, rvec_f GenPart_phi, rvec_f GenPart_eta, rvec_i GenPart_pdgId, rvec_i GenPart_genPartIdxMother);
+Float_t getGen_Y_pt(Int_t nGenPart,rvec_i GenPart_pdgId,rvec_f GenPart_pt);
+Float_t getGen_H_pt(Int_t nGenPart,rvec_i GenPart_pdgId,rvec_f GenPart_pt);
 
 void deltaRMatching(){
     return;
@@ -75,6 +77,18 @@ RVec<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_
 
     RVec<Int_t>matchedFatJets = {HFatJetMatchIdx,YFatJetMatchIdx};
     return matchedFatJets;
+}
+
+Float_t getGen_Y_pt(Int_t nGenPart,rvec_i GenPart_pdgId,rvec_f GenPart_pt){
+    UInt_t  YIdx = getYIdx(GenPart_pdgId,nGenPart);
+    Float_t Ypt  = GenPart_pt[YIdx];
+    return Ypt;
+}
+
+Float_t getGen_H_pt(Int_t nGenPart,rvec_i GenPart_pdgId,rvec_f GenPart_pt){
+    UInt_t  HIdx = getHIdx(GenPart_pdgId,nGenPart);
+    Float_t Hpt  = GenPart_pt[HIdx];
+    return Hpt;
 }
 
 Float_t deltaR(Float_t eta1, Float_t phi1, Float_t eta2, Float_t phi2){
