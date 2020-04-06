@@ -101,8 +101,11 @@ for wp in wps:
         YpassedTagger = boostedMatchedY.Apply([taggerPass])
         YfailedTagger = boostedMatchedY.Apply([taggerFail])
         hists=[]
-        hists.append(YpassedTagger.DataFrame.Histo1D(("YpassedTagger_pt","YpassedTagger_pt",100,0,2000),"matchedYFatJet_pt"))
-        hists.append(YfailedTagger.DataFrame.Histo1D(("YfailedTagger_pt","YfailedTagger_pt",100,0,2000),"matchedYFatJet_pt"))
+        hPass = YpassedTagger.DataFrame.Histo1D(("YpassedTagger_pt","YpassedTagger_pt",100,0,2000),"matchedYFatJet_pt")
+        hFail = YfailedTagger.DataFrame.Histo1D(("YfailedTagger_pt","YfailedTagger_pt",100,0,2000),"matchedYFatJet_pt")
+        hists.append(hPass)
+        hists.append(hFail)
+
 #    hists.append(HpassedTagger.DataFrame.Histo1D(("HpassedTagger_pt","HpassedTagger_pt",100,0,2000),"matchedHFatJet_pt"))
 #    hists.append(HfailedTagger.DataFrame.Histo1D(("HfailedTagger_pt","HfailedTagger_pt",100,0,2000),"matchedHFatJet_pt"))    
         for h in hists:
