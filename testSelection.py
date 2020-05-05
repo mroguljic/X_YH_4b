@@ -97,12 +97,13 @@ matchedY    = preselection.Apply([cutY])
 boostedHCuts = CutGroup('boostedHCuts')
 boostedHCuts.Add("FatJet_pt","FatJet_pt[matchedH]>300")
 boostedHCuts.Add("FatJet_eta","FatJet_eta[matchedH]>-2.5 && FatJet_eta[matchedH]<2.5")
+#boostedHCuts.Add("FatJet_eta","FatJet_eta[matchedH]>-1.5 && FatJet_eta[matchedH]<1.5")
 
 boostedHColumns = VarGroup("boostedHColumns")
 boostedHColumns.Add("matchedHFatJet_pt","FatJet_pt[matchedH]")
 
 boostedMatchedH = matchedH.Apply([boostedHCuts,boostedHColumns])
-#boostedMatchedH.Snapshot("nFatJet|nGenPart|FatJet*|Gen*|matchedH|matchedY|matchedHFatJet_pt|matchedYFatJet_pt",'boostedMatchedH.root',treename='boostedMatchedH',lazy=False)
+boostedMatchedH.Snapshot("nFatJet|nGenPart|FatJet*|Gen*|matchedH|matchedY|matchedHFatJet_pt|matchedYFatJet_pt",'boostedMatchedH.root',treename='boostedMatchedH',lazy=False)
 #------------------------------------------------
 
 #-------------Boosted cuts for Y-----------------
@@ -116,6 +117,7 @@ for massPoint in YmassPoints:
     tempYCuts.Add("GenModel_YMass_{0}".format(massPoint),"GenModel_YMass_{0}==1".format(massPoint))
     tempYCuts.Add("FatJet_pt","FatJet_pt[matchedY]>{0}".format(ptCutOff))
     tempYCuts.Add("FatJet_eta","FatJet_eta[matchedY]>-2.5 && FatJet_eta[matchedY]<2.5")
+#    tempYCuts.Add("FatJet_eta","FatJet_eta[matchedY]>-1.5 && FatJet_eta[matchedY]<1.5")
     tempYColumns = VarGroup("boostedYColumn_{0}".format(massPoint))
     tempYColumns.Add("matchedYFatJet_pt","FatJet_pt[matchedY]")
     boostedMatchedYs.append(matchedY.Apply([tempYCuts,tempYColumns]))
@@ -132,11 +134,11 @@ for wp in wps:
     #out_f = ROOT.TFile(options.output,"RECREATE") 
     out_f         = ROOT.TFile(outputName,"RECREATE") 
     taggerHPass    = CutGroup("taggerHPass")
-    taggerHFail    = CutGroup("taggerHPass")
+    taggerHFail    = CutGroup("taggerHFail")
     taggerHPass.Add(taggerH,"{0}>{1}".format(taggerH,wp))
     taggerHFail.Add(taggerH,"{0}<{1}".format(taggerH,wp))
     taggerYPass    = CutGroup("taggerYPass")
-    taggerYFail    = CutGroup("taggerYPass")
+    taggerYFail    = CutGroup("taggerYFail")
     taggerYPass.Add(taggerY,"{0}>{1}".format(taggerY,wp))
     taggerYFail.Add(taggerY,"{0}<{1}".format(taggerY,wp))
     HpassedTagger = boostedMatchedH.Apply([taggerHPass])
