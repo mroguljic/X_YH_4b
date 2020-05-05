@@ -53,6 +53,8 @@ RVec<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_
     Int_t YFatJetMatchIdx       = -1;
     Int_t HFatJetMatchIdx       = -1;
 
+    Float_t distance = 0.4;
+
     for(Int_t fatJetIdx=0; fatJetIdx<nFatJet;fatJetIdx++){
     
         Float_t fatJetEta = FatJet_eta[fatJetIdx];
@@ -66,10 +68,11 @@ RVec<Int_t> doDRMatching(Int_t nFatJet, Int_t nGenPart, rvec_f FatJet_phi, rvec_
         Float_t deltaJetYb1 = deltaR(fatJetEta,fatJetPhi,b1_Y_eta,b1_Y_phi);
         Float_t deltaJetYb2 = deltaR(fatJetEta,fatJetPhi,b2_Y_eta,b2_Y_phi);
 
-        if(deltaJetH<0.8 && deltaJetHb1<0.8 && deltaJetHb2<0.8){
+
+        if(deltaJetH<distance && deltaJetHb1<distance && deltaJetHb2<distance){
             HFatJetMatchIdx = fatJetIdx;
         }
-        if(deltaJetY<0.8 && deltaJetYb1<0.8 && deltaJetYb2<0.8){
+        if(deltaJetY<distance && deltaJetYb1<distance && deltaJetYb2<distance){
             YFatJetMatchIdx = fatJetIdx;
         }
 
