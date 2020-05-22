@@ -5,6 +5,7 @@ from optparse import OptionParser
 
 
 def getCutEfficienciesSig(filename,YmassPoint = "90"):
+    #don't use this
     f       = r.TFile.Open(filename)
     nTotal  = f.Get("total_Y{0}".format(YmassPoint)).GetEntriesFast()
     nPresel = f.Get("preselection_Y{0}".format(YmassPoint)).GetEntriesFast()
@@ -52,45 +53,43 @@ if __name__ == '__main__':
 
 
 
-    x = ["Total","Preselection","One jet all H","2nd jet loose"]
+    x = ["Total","Preselection","One jet all H","2nd jet loose"] #only works with python3
     #markers = ["o","v","^","*","H","X","D","<",">","d","x","s"] 
     #colors   = ["black","gray","r","sandybrown","olivedrab","dodgerblue","darkblue","gold","purple"] 
-    if(options.isSignal):
-        YmassPoints = ["90","100","125","150","200","250","300","400","500","600","700"]
-        for i,point in enumerate(YmassPoints):
-            outFile = options.output+"_Y_"+point+".png"
-            #marker = markers[i%len(markers)]
-            #color = colors[i%len(colors)]
-            nTotal,nPresel,nSel1,nSel2 = getCutEfficienciesSig(options.input,YmassPoint=point)
-            y = [nTotal/nTotal,nPresel/nTotal,nSel1/nPresel,nSel2/nSel1] #n-1 plot
-            plt.scatter(x,y,label="Y_M = "+ point,s=90,alpha=1)
+    # if(options.isSignal):
+    #     YmassPoints = ["90","100","125","150","200","250","300","400","500","600","700"]
+    #     for i,point in enumerate(YmassPoints):
+    #         #marker = markers[i%len(markers)]
+    #         #color = colors[i%len(colors)]
+    #         nTotal,nPresel,nSel1,nSel2 = getCutEfficienciesSig(options.input,YmassPoint=point)
+    #         y = [nTotal/nTotal,nPresel/nTotal,nSel1/nPresel,nSel2/nSel1] #n-1 plot
+    #         plt.scatter(x,y,label="Y_M = "+ point,s=90,alpha=1)
 
-            plt.ylabel("Yield")
-            plt.title("n-1 cuts efficiencies plot")
-            plt.legend()
-            plt.gca().yaxis.grid(True)
-            plt.savefig(outFile)
-            print("Saved output in "+outFile)
-            plt.cla()
-            plt.clf()
+    #         plt.ylabel("Yield")
+    #         plt.title("n-1 cuts efficiencies plot")
+    #         plt.legend()
+    #         plt.gca().yaxis.grid(True)
+    #         plt.savefig(options.output)
+    #         print("Saved output in "+options.output)
+    #         plt.cla()
+    #         plt.clf()
 
 
-    else:
-        outFile = options.output+".png"
-        nTotal,nPresel,nSel1,nSel2 = getCutEfficienciesBkg(options.input)
-        y = [nTotal/nTotal,nPresel/nTotal,nSel1/nPresel,nSel2/nSel1] #n-1 plot
-        plt.scatter(x,y,label=options.input,s=90,alpha=1)
+    outFile = options.output
+    nTotal,nPresel,nSel1,nSel2 = getCutEfficienciesBkg(options.input)
+    y = [nTotal/nTotal,nPresel/nTotal,nSel1/nPresel,nSel2/nSel1] #n-1 plot
+    plt.scatter(x,y,label=options.input,s=90,alpha=1)
 
-        plt.ylabel("Yield")
-        plt.title("n-1 cuts efficiencies plot")
-        plt.legend()
-        plt.yscale('log')
-        plt.gca().yaxis.grid(b=True, which='major', color='black', linestyle='-')
-        plt.gca().yaxis.grid(b=True, which='minor', color='gray', linestyle='--',alpha=0.5)
-        plt.savefig(outFile)
-        print("Saved output in "+outFile)
-        plt.cla()
-        plt.clf()
+    plt.ylabel("Yield")
+    plt.title("n-1 cuts efficiencies plot")
+    plt.legend()
+    plt.yscale('log')
+    plt.gca().yaxis.grid(b=True, which='major', color='black', linestyle='-')
+    plt.gca().yaxis.grid(b=True, which='minor', color='gray', linestyle='--',alpha=0.5)
+    plt.savefig(options.output)
+    print("Saved output in "+options.output)
+    plt.cla()
+    plt.clf()
 
 
 

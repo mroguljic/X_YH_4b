@@ -1,0 +1,6 @@
+root://cms-xrd-global.cern.ch//store/user/dbrehm/data18andTTbarSignalMC/rootfilesv6/QCDHT1000_hh16.root
+root://cms-xrd-global.cern.ch//store/user/dbrehm/data18andTTbarSignalMC/rootfilesv6/QCDHT1500_hh16.root
+root://cms-xrd-global.cern.ch//store/user/dbrehm/data18andTTbarSignalMC/rootfilesv6/QCDHT2000_hh16.root
+root://cms-xrd-global.cern.ch//store/user/dbrehm/data18andTTbarSignalMC/rootfilesv6/QCDHT700_hh16.root
+root://cms-xrd-global.cern.ch//store/user/dbrehm/data18andTTbarSignalMC/rootfilesv6/ttbar-semilep_hh16.root
+root://cms-xrd-global.cern.ch//store/user/dbrehm/data18andTTbarSignalMC/rootfilesv6/ttbar_hh16.root
