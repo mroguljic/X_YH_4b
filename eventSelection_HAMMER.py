@@ -81,7 +81,7 @@ a.Apply([preselectionCuts,newcolumns])
 out_vars = ['nFatJet','Jet0_HPass','Jet1_HPass','FatJet_pt','FatJet_eta','deltaEta']
 
 if(options.isSignal):
-    out_vars = ['nFatJet','GenModel_YMass_*','Jet0_HPass','Jet1_HPass','FatJet_pt']
+    out_vars = ['nFatJet','Jet0_HPass','Jet1_HPass','FatJet_pt']
 else:
     out_vars = ['nFatJet','Jet0_HPass','Jet1_HPass','FatJet_pt']
 a.GetActiveNode().Snapshot(out_vars,preselectionOutFile,'preselection',lazy=False)
