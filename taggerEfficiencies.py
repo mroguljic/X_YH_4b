@@ -12,21 +12,25 @@ from HAMMER.Analyzer import *
 
 parser = OptionParser()
 
-parser.add_option('-i', '--input', metavar='F', type='string', action='store',
+parser.add_option('-i', '--input', metavar='IFILE', type='string', action='store',
                 default   =   '',
                 dest      =   'input',
                 help      =   'A root file or text file with multiple root file locations to analyze')
-parser.add_option('-o', '--output', metavar='FILE', type='string', action='store',
+parser.add_option('-o', '--output', metavar='OFILE', type='string', action='store',
                 default   =   'output.root',
                 dest      =   'output',
                 help      =   'Output file name.')
+parser.add_option('-p', '--process', metavar='PROCESS', type='string', action='store',
+                default   =   'YH4b',
+                dest      =   'process',
+                help      =   'Process in the given MC file')
 parser.add_option('-s', '--sig', action="store_true",dest="isSignal",default=True)
 parser.add_option('-b', '--bkg', action="store_false",dest="isSignal")
-parser.add_option('-m', '--massY', metavar='FILE', type=int, action='store',
+parser.add_option('-m', '--massY', metavar='GenY mass (if MC signal)', type=int, action='store',
                 default   =   200,
                 dest      =   'massY',
-                help      =   'Mass of the Y.')
-parser.add_option('-d', '--outdir', metavar='FILE', type='string', action='store',
+                help      =   'Mass of the Y')
+parser.add_option('-d', '--outdir', metavar='ODIR', type='string', action='store',
                 default   =   '.',
                 dest      =   'outdir',
                 help      =   'Output directory.')
@@ -39,10 +43,17 @@ CompileCpp(cc.invariantMass)
 CompileCpp('HAMMER/Framework/deltaRMatching.cc') # Compile a full file 
 
 (options, args) = parser.parse_args()
-start_time = time.time()
-massY = options.massY
-wp = 0.7
+start_time 		= time.time()
+massY 			= options.massY
+process 		= options.process
 
+
+#FatJet_deepTagMD_ZHbbvsQCD
+#FatJet_ParticleNetMD_probXbb
+tagger = 'FatJet_ParticleNetMD_probXbb'
+#pnet
+#dak8
+taggerShort = 'pnet'
 print(options.input)
 if(options.isSignal):
 	a = analyzer(options.input)
@@ -52,13 +63,11 @@ if(options.isSignal):
 	newcolumns.Add("GenY_pt" ,"getGen_Y_pt(nGenPart,GenPart_pdgId,GenPart_pt)")
 	newcolumns.Add("GenH_pt" ,"getGen_H_pt(nGenPart,GenPart_pdgId,GenPart_pt)")
 
-	# out_vars   = ["nFatJet","nGenPart","FatJet_ParticleNetMD_.*","FatJet_pt","FatJet_eta","matched.*"]
 	a.Cut("YMass_{0}".format(massY),"GenModel_YMass_{0}==1".format(massY))
 
-	#YptCut 		= 50*round((2*massY/0.8)/50)
 	kinematicCuts = CutGroup("kinematicCuts")
 	kinematicCuts.Add("nFatJet","nFatJet>1")
-	kinematicCuts.Add("boostedJets","FatJet_pt[0]>200 && FatJet_pt[1]>200")# || (FatJet_pt[0]>{0} && FatJet_pt[1]>300)".format(YptCut))#one jet is boosted H, other boosted Y
+	kinematicCuts.Add("boostedJets","FatJet_pt[0]>200 && FatJet_pt[1]>200")
 	kinematicCuts.Add("etaJet0","FatJet_eta[0]>-2.5 && FatJet_eta[0]<2.5")
 	kinematicCuts.Add("etaJet1","FatJet_eta[1]>-2.5 && FatJet_eta[1]<2.5")
 	a.Apply([newcolumns,kinematicCuts])
@@ -69,50 +78,33 @@ if(options.isSignal):
 	a.Cut("matchedH","matchedH>-1 && matchedH<2")#We're looking only at two leading jets
 
 	variablesH = VarGroup("colsH")
-	variablesH.Add("H_FatJet_ParticleNetMD_probXbb","FatJet_ParticleNetMD_probXbb[matchedH]")
+	variablesH.Add("H_{0}".format(tagger),"{0}[matchedH]".format(tagger))
 	variablesH.Add("H_FatJet_pt","FatJet_pt[matchedH]")
 
 	a.Apply([variablesH])
-	#out_vars   	= ["nFatJet","nGenPart","FatJet_ParticleNetMD_.*","FatJet_pt","FatJet_eta","matched.*","H_FatJet_pt","H_FatJet_ParticleNetMD_probXbb"]
+	#out_vars   	= ["nFatJet","nGenPart","FatJet_ParticleNetMD_.*","FatJet_pt","FatJet_eta","matched.*","H_FatJet_pt","H_FatJet_deepTagMD_ZHbbvsQCD"]
 	#a.GetActiveNode().Snapshot(out_vars,options.outdir+'/'+options.output,'Events',lazy=False,openOption='RECREATE')
 
-	totalH 		= a.GetActiveNode().DataFrame.Histo1D(('H_FatJet_pt total Y{0}'.format(massY),'H-matched FatJet pt',20,0,2000),'H_FatJet_pt')
-
-	a.Cut("H_Xbb","H_FatJet_ParticleNetMD_probXbb>{0}".format(wp))
-	passingH 	= a.GetActiveNode().DataFrame.Histo1D(('H_FatJet_pt pass Y{0}'.format(massY),'H-matched FatJet pt',20,0,2000),'H_FatJet_pt')
-
-	effH = ROOT.TEfficiency (passingH.GetValue(), totalH.GetValue())
-	effH.SetName("HtaggingEff_Y{0}".format(massY))
-
+	hMatchedH	= a.GetActiveNode().DataFrame.Histo2D(('matchedH_pt_vs_tag_Y{0}_{1}'.format(massY,taggerShort),'H-matched FatJet pt vs Tag',30,0,2000,50,0,1),'H_FatJet_pt','H_{0}'.format(tagger))
 	end_node_H = a.GetActiveNode()
 	# #-------------------____Y____-------------------#
 	a.SetActiveNode(checkpoint)
 	a.Cut("matchedY","matchedY>-1 && matchedY<2")
 
 	variablesY = VarGroup("colsY")
-	variablesY.Add("Y_FatJet_ParticleNetMD_probXbb","FatJet_ParticleNetMD_probXbb[matchedY]")
+	variablesY.Add("Y_{0}".format(tagger),"{0}[matchedY]".format(tagger))
 	variablesY.Add("Y_FatJet_pt","FatJet_pt[matchedY]")
 
 	a.Apply([variablesY])
-	totalY 		= a.GetActiveNode().DataFrame.Histo1D(('Y{0}_FatJet_pt total'.format(massY),'Y-matched FatJet pt'.format(massY),20,0,2000),'Y_FatJet_pt')
+	hMatchedY	= a.GetActiveNode().DataFrame.Histo2D(('matchedY_pt_vs_tag_Y{0}_{1}'.format(massY,taggerShort),'Y-matched FatJet pt vs Tag',30,0,2000,50,0,1),'Y_FatJet_pt','Y_{0}'.format(tagger))
 
-	taggerCut   = CutGroup("YtaggerCut")
-	a.Cut("Y_Xbb","Y_FatJet_ParticleNetMD_probXbb>{0}".format(wp))
-	passingY 	= a.GetActiveNode().DataFrame.Histo1D(('Y{0}_FatJet_pt pass'.format(massY),'Y{0}-matched FatJet pt'.format(massY),20,0,2000),'Y_FatJet_pt')
 
-	effY = ROOT.TEfficiency (passingY.GetValue(), totalY.GetValue())
-	effY.SetName("YtaggingEff_Y{0}".format(massY))
-
-	out = ROOT.TFile.Open(options.output,'UPDATE')
-	totalH.Write() 
-	passingH.Write()
-	effH.Write()
-	totalY.Write() 
-	passingY.Write()
-	effY.Write()
+	out = ROOT.TFile.Open(options.outdir+'/'+options.output,'UPDATE')
+	hMatchedH.Write()
+	hMatchedY.Write()
 	end_node_Y = a.GetActiveNode()
 
-	a.PrintNodeTree('sigNodeTree',verbose=True)
+	#a.PrintNodeTree('sigNodeTree',verbose=False)
 
 	out.Close()
 
@@ -124,40 +116,24 @@ else:
 	kinematicCuts.Add("etaJet0","FatJet_eta[0]>-2.5 && FatJet_eta[0]<2.5")
 	kinematicCuts.Add("etaJet1","FatJet_eta[1]>-2.5 && FatJet_eta[1]<2.5")
 	a.Apply([kinematicCuts])
+	a.Define("FatJet0_pt","FatJet_pt[0]")
+	a.Define("FatJet0_ParticleNetMD_probXbb","{0}[0]".format(tagger))
+	a.Define("FatJet1_pt","FatJet_pt[1]")
+	a.Define("FatJet1_ParticleNetMD_probXbb","{0}[1]".format(tagger))
 	checkpoint 	= a.GetActiveNode()
 
 	#-------------------____FatJet[0]____-------------------#
-	a.Define("FatJet0_pt","FatJet_pt[0]")
-	totalJet0	= a.GetActiveNode().DataFrame.Histo1D(('FatJet0_pt total','FatJet0 pt',20,0,2000),'FatJet0_pt')
-	a.Cut("Jet0_Xbb","FatJet_ParticleNetMD_probXbb[0]>{0}".format(wp))
-	passingJet0 = a.GetActiveNode().DataFrame.Histo1D(('FatJet0_pt pass','FatJet0 pt',20,0,2000),'FatJet0_pt')
-
-	effJet0 = ROOT.TEfficiency (passingJet0.GetValue(), totalJet0.GetValue())
-	effJet0.SetName("Jet0_taggingEff")
-
-	end_node_H = a.GetActiveNode()
+	hFatJet0	= a.GetActiveNode().DataFrame.Histo2D(('FatJet[0]_pt_vs_tag_{0}_{1}'.format(massY,taggerShort),'FatJet0 pt vs Tag',30,0,2000,50,0,1),'FatJet0_pt','FatJet0_ParticleNetMD_probXbb')
+	end_node_0  = a.GetActiveNode()
 	#-------------------____FatJet[1]____-------------------#
 	a.SetActiveNode(checkpoint)
-	a.Define("FatJet1_pt","FatJet_pt[1]")
-	totalJet1	= a.GetActiveNode().DataFrame.Histo1D(('FatJet1_pt total','FatJet1 pt',20,0,2000),'FatJet1_pt')
-	a.Cut("Jet1_Xbb","FatJet_ParticleNetMD_probXbb[1]>{0}".format(wp))
-	passingJet1 = a.GetActiveNode().DataFrame.Histo1D(('FatJet1_pt pass','FatJet1 pt',20,0,2000),'FatJet1_pt')
+	hFatJet1	= a.GetActiveNode().DataFrame.Histo2D(('FatJet[1]_pt_vs_tag_{0}_{1}'.format(massY,taggerShort),'FatJet1 pt vs Tag',30,0,2000,50,0,1),'FatJet1_pt','FatJet1_ParticleNetMD_probXbb')
+	end_node_1  = a.GetActiveNode()
 
-	effJet1 = ROOT.TEfficiency (passingJet1.GetValue(), totalJet1.GetValue())
-	effJet1.SetName("Jet1_taggingEff")
-
-	end_node_H = a.GetActiveNode()
-
-	out = ROOT.TFile.Open(options.output,'UPDATE')
-	totalJet0.Write() 
-	passingJet0.Write()
-	effJet0.Write()
-	totalJet1.Write() 
-	passingJet1.Write()
-	effJet1.Write()
-	end_node_Y = a.GetActiveNode()
-
-	a.PrintNodeTree('bkgNodeTree',verbose=True)
+	out = ROOT.TFile.Open(options.outdir+'/'+options.output,'UPDATE')
+	hFatJet0.Write()
+	hFatJet1.Write()
+	#a.PrintNodeTree('bkgNodeTree',verbose=True)
 
 	out.Close()	
 print("Total time: "+str((time.time()-start_time)/60.) + ' min')
