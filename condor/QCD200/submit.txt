@@ -1,0 +1,7 @@
+executable = submit.sh
+output     = submit.out
+error      = submit.err
+log        = submit.log
++JobFlavour = "longlunch"
+use_x509userproxy = true
+queue
