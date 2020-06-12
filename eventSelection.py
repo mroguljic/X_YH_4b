@@ -61,13 +61,13 @@ if(options.isSignal):
     a.Cut("YMass","GenModel_YMass_125==1")
 
 h_allEvents = a.GetActiveNode().DataFrame.Histo1D(('{0}_nFatJet'.format(options.process),'nFatJet',20,0,20),'nFatJet')
+totalEvents = a.GetActiveNode().DataFrame.Count().GetValue()
 
 selectionCuts    = CutGroup("selection")
 selectionCuts.Add("nFatJet","nFatJet>1")
 selectionCuts.Add("Jets eta","abs(FatJet_eta[0]) < 2.5 && abs(FatJet_eta[1]) < 2.5")
 selectionCuts.Add("Jets delta eta","abs(FatJet_eta[0] - FatJet_eta[1]) < 1.3")
 selectionCuts.Add("Jets Pt","FatJet_pt[0] > 300 && FatJet_pt[1] > 200")
-
 
 
 newcolumns  = VarGroup("newcolumns")
@@ -79,10 +79,15 @@ newcolumns.Add('invariantMass',     'analyzer::invariantMass(lead_vector,sublead
 newcolumns.Add("TT","FatJet_ParticleNetMD_probXbb[0] > 0.93 && FatJet_ParticleNetMD_probXbb[1] > 0.93")
 newcolumns.Add("LL","FatJet_ParticleNetMD_probXbb[0] > 0.85 && FatJet_ParticleNetMD_probXbb[1] > 0.85 && (!TT)")
 
+
 a.Apply([selectionCuts,newcolumns])
 checkpoint  = a.GetActiveNode()
+nAfterSelection = a.GetActiveNode().DataFrame.Count().GetValue()
+
 
 a.Cut("TT","TT==1")
+nAfterTT = a.GetActiveNode().DataFrame.Count().GetValue()
+
 
 h_invMass_tt = a.GetActiveNode().DataFrame.Histo1D(('{0}_invMass_TT'.format(options.process),'Invariant Mass',100,0,3000),'invariantMass')
 h_mj0_tt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj0_TT'.format(options.process),'FatJet0 softdrop mass',100,0,1000),'mj0')
@@ -92,10 +97,17 @@ h_mj1_tt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj1_TT'.format(options.proc
 #Go back to before TT cut was made
 a.SetActiveNode(checkpoint)
 a.Cut("LL","LL==1")
+nAfterLL = a.GetActiveNode().DataFrame.Count().GetValue()
 
 h_invMass_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_invMass_LL'.format(options.process),'Invariant Mass',100,0,3000),'invariantMass')
 h_mj0_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj0_LL'.format(options.process),'FatJet0 softdrop mass',100,0,1000),'mj0')
 h_mj1_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj1_LL'.format(options.process),'FatJet1 softdrop mass',100,0,1000),'mj1')
+
+hCutFlow = ROOT.TH1F("hCutFlow","Number of events after each cut",4,0.,4.)
+hCutFlow.AddBinContent(1,totalEvents)
+hCutFlow.AddBinContent(2,nAfterSelection)
+hCutFlow.AddBinContent(3,nAfterTT)
+hCutFlow.AddBinContent(4,nAfterLL)
 
 out_f = ROOT.TFile(options.output,"RECREATE")
 out_f.cd()
@@ -106,6 +118,7 @@ h_mj1_tt.Write()
 h_invMass_ll.Write()
 h_mj0_ll.Write()
 h_mj1_ll.Write()
+hCutFlow.Write()
 out_f.Close()
 
 a.PrintNodeTree('node_tree')
