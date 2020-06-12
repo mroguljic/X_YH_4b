@@ -71,6 +71,8 @@ selectionCuts.Add("Jets Pt","FatJet_pt[0] > 300 && FatJet_pt[1] > 200")
 
 
 newcolumns  = VarGroup("newcolumns")
+newcolumns.Add('mj0','FatJet_msoftdrop[0]')
+newcolumns.Add('mj1','FatJet_msoftdrop[1]')
 newcolumns.Add('lead_vector',       'analyzer::TLvector(FatJet_pt[0],FatJet_eta[0],FatJet_phi[0],FatJet_msoftdrop[0])')
 newcolumns.Add('sublead_vector',    'analyzer::TLvector(FatJet_pt[1],FatJet_eta[1],FatJet_phi[1],FatJet_msoftdrop[1])')
 newcolumns.Add('invariantMass',     'analyzer::invariantMass(lead_vector,sublead_vector)') 
@@ -83,7 +85,8 @@ checkpoint  = a.GetActiveNode()
 a.Cut("TT","TT==1")
 
 h_invMass_tt = a.GetActiveNode().DataFrame.Histo1D(('{0}_invMass_TT'.format(options.process),'Invariant Mass',100,0,3000),'invariantMass')
-h_postSelection_tt = a.GetActiveNode().DataFrame.Histo1D(('nFatJet_TT'.format(options.process),'FatJet0 pt vs Tag',20,0,20),'nFatJet')
+h_mj0_tt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj0_TT'.format(options.process),'FatJet0 softdrop mass',100,0,1000),'mj0')
+h_mj1_tt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj1_TT'.format(options.process),'FatJet1 softdrop mass',100,0,1000),'mj1')
 
 
 #Go back to before TT cut was made
@@ -91,15 +94,18 @@ a.SetActiveNode(checkpoint)
 a.Cut("LL","LL==1")
 
 h_invMass_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_invMass_LL'.format(options.process),'Invariant Mass',100,0,3000),'invariantMass')
-h_postSelection_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_nFatJet_LL'.format(options.process),'FatJet0 pt vs Tag',20,0,20),'nFatJet')
+h_mj0_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj0_LL'.format(options.process),'FatJet0 softdrop mass',100,0,1000),'mj0')
+h_mj1_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj1_LL'.format(options.process),'FatJet1 softdrop mass',100,0,1000),'mj1')
 
 out_f = ROOT.TFile(options.output,"RECREATE")
 out_f.cd()
 h_allEvents.Write()
 h_invMass_tt.Write()
-h_postSelection_tt.Write()
+h_mj0_tt.Write()
+h_mj1_tt.Write()
 h_invMass_ll.Write()
-h_postSelection_ll.Write()
+h_mj0_ll.Write()
+h_mj1_ll.Write()
 out_f.Close()
 
 a.PrintNodeTree('node_tree')
