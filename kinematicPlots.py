@@ -1,92 +1,75 @@
 import ROOT as r
 from optparse import OptionParser
 from time import sleep
+import json
 
-def kinematicPlot(histos,labels,fillColors,title,outfile):
-    hStack = r.THStack("hs",title)
+
+def makeHistos(data):
+    luminosity = 137000 #inverse pb
+    hStack_TT = r.THStack("hstt","Stack histo TT")
+    hStack_LL = r.THStack("hsll","Stack histo LL")
     legend = r.TLegend(0.6,0.7,0.9,0.9)
-    for i,h in enumerate(histos):
-        h.SetFillColor(fillColors[i])
-        h.SetLineWidth(0)
-        hStack.Add(h)
-        legend.AddEntry(h,labels[i])
+    histos_TT = []
+    histos_LL = []
+    for sample, sample_cfg in data.items():
+        tempFile = r.TFile.Open(sample_cfg['file'])
+        hCutFlow = tempFile.Get("hCutFlow")
+        totalN   = hCutFlow.GetBinContent(1)
+        TT_count = hCutFlow.GetBinContent(3)
+        LL_count = hCutFlow.GetBinContent(4)
+        eff_TT   = TT_count/totalN
+        eff_LL   = LL_count/totalN
+        xsec     = sample_cfg['xsec']
+        TT_norm  = eff_TT*luminosity*xsec
+        LL_norm  = eff_LL*luminosity*xsec
+        h_TT     = tempFile.Get((str(sample)+"_invMass_TT"))
+        h_LL     = tempFile.Get((str(sample)+"_invMass_LL"))
+        h_TT.SetDirectory(0)
+        h_LL.SetDirectory(0)
+        h_TT.Scale(TT_norm/h_TT.Integral())
+        h_LL.Scale(LL_norm/h_LL.Integral())
+        h_TT.SetTitle(str(sample))
+        h_TT.SetName(str(sample)+"_name")
+        color   = sample_cfg["color"]
+        h_TT.SetFillColorAlpha(color,0.50)
+        h_LL.SetFillColorAlpha(color,0.50)
+        h_TT.SetLineColor(color)
+        h_LL.SetLineColor(color)
+        histos_TT.append(h_TT)
+        histos_LL.append(h_LL)
+        tempFile.Close()
 
+    for h in histos_TT:
+        print(h)
+        hStack_TT.Add(h)
+        legend.AddEntry(h)
+    for h in histos_LL:
+        print(h)
+        hStack_LL.Add(h)
     c = r.TCanvas("c","c",1000,1000)
-    c.SetLogy()
-    hStack.Draw("h")
-    hStack.SetMinimum(0.01)
+    #c.SetLogy()
+
+    hStack_TT.Draw("hist")
+    hStack_TT.GetXaxis().SetLimits(1300., 1800.);
+    hStack_TT.SetMinimum(1)
+    hStack_TT.SetMaximum(200)
 
     legend.Draw()
     c.Update()
-    c.SaveAs(outfile)
+    c.SaveAs("invM_TT.pdf")
 
+    c.Clear()
 
-
-def getHistProcess(ProcessFiles,xsections,scale,variable,nbins,xlow,xup,outputFile=False):
-    hMaster = r.TH1F("hMaster","hMaster",nbins,xlow,xup)
-
-    for Processfile, xs in zip(ProcessFiles, xsections):
-        f = r.TFile.Open(Processfile,"r")
-        N = f.Get("total").GetEntriesFast()
-        w = scale*xs/N
-        selectionTree = f.Get("selection2")
-        hTemp = r.TH1F("hTemp","hTemp",nbins,xlow,xup)
-        selectionTree.Draw(variable+">>hTemp")
-        hMaster.Add(hTemp,w)        
-        print("File {0} with xs {1} pb".format(Processfile,xs))
-        print("Nevents = {0}    Nselection = {1}    w={2}".format(N,selectionTree.GetEntriesFast(),w))
-
-
-    if(outputFile):
-        c = r.TCanvas("c","c",1000,1000)
-        hMaster.Draw()
-        c.SaveAs(outputFile)
-    return hMaster
-
-
-
-def getScaling(file,xsection):
-    f = r.TFile.Open(file,"r")
-    N = f.Get("total").GetEntriesFast()
-    scaling = N/xsection
-    return scaling
-
+    hStack_LL.Draw("hist")
+    hStack_LL.GetXaxis().SetLimits(1300., 1800.);
+    hStack_LL.SetMinimum(1)
+    hStack_LL.SetMaximum(200)
+    legend.Draw()
+    c.Update()
+    c.SaveAs("invM_LL.pdf")
 
 if __name__ == '__main__':
     r.gROOT.SetBatch()
-    #parser = OptionParser()
-    #parser.add_option('-i',"--inputFile", dest='inputFile', default='/home/matej/Zbb_SF/ZbbJet/dak8/dak8_M2_2016_May10_tightMatch_ttvetoM_withDDT/data/hbb_dak8MDZHbb_Feb20_tightMatch_ttvetoM_newMassCorr_withDDT_M.root', help='.root with data',metavar='inputFile')
-    #(options, args) = parser.parse_args()
-    #kinematicPlot("QCD.root","ttbar.root","signal.root","FatJet_pt[0]",0,5000,50)
-    #xsections = {}
-    QCDfiles    = [
-    '/afs/cern.ch/user/m/mrogulji/store/QCD/QCDHT700.root',
-    '/afs/cern.ch/user/m/mrogulji/store/QCD/QCDHT1000.root',
-    '/afs/cern.ch/user/m/mrogulji/store/QCD/QCDHT1500.root',
-    '/afs/cern.ch/user/m/mrogulji/store/QCD/QCDHT2000.root']
-    ttbarFiles  = ['/afs/cern.ch/user/m/mrogulji/store/ttbar/ttbar.root']
-    signalFiles = ['/afs/cern.ch/user/m/mrogulji/store/mx1600.root']
-
-    QCD_xsections    = [6800,1200.,120.,25.24]#pb
-    ttbar_xsections  = [831.8]
-    signal_xsections = [0.01]
-
-    variables = [["invariantMass",1000,2000],["deltaEta",-2.,2.],["FatJet_pt[0]",250.,1250.],["FatJet_pt[1]",250.,1250.],
-    ["FatJet_msoftdrop[0]",0.,500.],["FatJet_msoftdrop[1]",0.,500.],["FatJet_deepTagMD_ZHbbvsQCD",0.,1.]]
-
-
-    #variable = "invariantMass"
-    scale = getScaling('/afs/cern.ch/user/m/mrogulji/store/QCD/QCDHT1000.root',1200.)
-    scale = 5000.#How many events per 1pb
-    print("Scaling is {0} events per 1pb".format(scale))
-    nbins = 20
-    xlow = 1000
-    xup = 2000
-    for variable in variables:
-        histos = []
-        histos.append(getHistProcess(signalFiles,signal_xsections,scale,variable[0],nbins,variable[1],variable[2]))#,outputFile='signal.png')
-        histos.append(getHistProcess(QCDfiles,QCD_xsections,scale,variable[0],nbins,variable[1],variable[2]))#,outputFile='qcd.png')
-        histos.append(getHistProcess(ttbarFiles,ttbar_xsections,scale,variable[0],nbins,variable[1],variable[2]))#,outputFile='ttbar.png')
-        labels = ["X->YH","QCD","ttbar"]
-        colors = [r.kBlue,r.kViolet,r.kGray]
-        kinematicPlot(histos,labels,colors,variable[0],variable[0]+".png")
+    with open("results.json") as json_file:
+        data = json.load(json_file)
+        makeHistos(data)
