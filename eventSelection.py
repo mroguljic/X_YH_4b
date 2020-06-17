@@ -23,8 +23,9 @@ parser.add_option('-p', '--process', metavar='PROCESS', type='string', action='s
                 default   =   'Xbb',
                 dest      =   'process',
                 help      =   'Process in the given MC file')
-parser.add_option('-s', '--sig', action="store_true",dest="isSignal",default=True)
-parser.add_option('-b', '--bkg', action="store_false",dest="isSignal")
+parser.add_option('-s', '--sig', action="store_true",dest="isSignal",default=False)
+parser.add_option('-b', '--bkg', action="store_false",dest="isSignal",default=False)
+parser.add_option('--data',action="store_true",dest="isData",default=False)
 parser.add_option('-m', '--massY', metavar='GenY mass (if MC signal)', type=int, action='store',
                 default   =   200,
                 dest      =   'massY',
