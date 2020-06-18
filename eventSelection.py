@@ -50,10 +50,11 @@ start_time = time.time()
 commonc = CommonCscripts()
 CompileCpp(commonc.vector)
 CompileCpp(commonc.invariantMass)
+CompileCpp('HAMMER/Framework/rand01.cc') 
 
 
 a = analyzer(options.input)
-
+histos      = []
 #small_rdf = a.GetActiveNode().DataFrame.Range(1000) # makes an RDF with only the first nentries considered
 # small_node = Node('small',small_rdf) # makes a node out of the dataframe
 # a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
@@ -61,7 +62,6 @@ a = analyzer(options.input)
 if(options.isSignal):
     a.Cut("YMass","GenModel_YMass_125==1")
 
-h_allEvents = a.GetActiveNode().DataFrame.Histo1D(('{0}_nFatJet'.format(options.process),'nFatJet',20,0,20),'nFatJet')
 totalEvents = a.GetActiveNode().DataFrame.Count().GetValue()
 
 selectionCuts    = CutGroup("selection")
@@ -70,56 +70,116 @@ selectionCuts.Add("Jets eta","abs(FatJet_eta[0]) < 2.5 && abs(FatJet_eta[1]) < 2
 selectionCuts.Add("Jets delta eta","abs(FatJet_eta[0] - FatJet_eta[1]) < 1.3")
 selectionCuts.Add("Jets Pt","FatJet_pt[0] > 300 && FatJet_pt[1] > 200")
 
+a.Define("idxY","getRand01()")
+a.Define("idxH","1-idxY")
+
 
 newcolumns  = VarGroup("newcolumns")
-newcolumns.Add('mj0','FatJet_msoftdrop[0]')
-newcolumns.Add('mj1','FatJet_msoftdrop[1]')
-newcolumns.Add('lead_vector',       'analyzer::TLvector(FatJet_pt[0],FatJet_eta[0],FatJet_phi[0],FatJet_msoftdrop[0])')
-newcolumns.Add('sublead_vector',    'analyzer::TLvector(FatJet_pt[1],FatJet_eta[1],FatJet_phi[1],FatJet_msoftdrop[1])')
-newcolumns.Add('invariantMass',     'analyzer::invariantMass(lead_vector,sublead_vector)') 
-newcolumns.Add("TT","FatJet_ParticleNetMD_probXbb[0] > 0.93 && FatJet_ParticleNetMD_probXbb[1] > 0.93")
-newcolumns.Add("LL","FatJet_ParticleNetMD_probXbb[0] > 0.85 && FatJet_ParticleNetMD_probXbb[1] > 0.85 && (!TT)")
+
+newcolumns.Add('mjY','FatJet_msoftdrop[idxY]')
+newcolumns.Add('mjH','FatJet_msoftdrop[idxH]')
+newcolumns.Add('H_vector',       'analyzer::TLvector(FatJet_pt[idxH],FatJet_eta[idxH],FatJet_phi[idxH],FatJet_msoftdrop[idxH])')
+newcolumns.Add('Y_vector',    'analyzer::TLvector(FatJet_pt[idxY],FatJet_eta[idxY],FatJet_phi[idxY],FatJet_msoftdrop[idxY])')
+newcolumns.Add('mjHjY',     'analyzer::invariantMass(H_vector,Y_vector)') 
+
+newcolumns.Add("pnet_TT","FatJet_ParticleNetMD_probXbb[idxY] > 0.93 && FatJet_ParticleNetMD_probXbb[idxH] > 0.93")
+newcolumns.Add("pnet_LL","FatJet_ParticleNetMD_probXbb[idxY] > 0.85 && FatJet_ParticleNetMD_probXbb[idxH] > 0.85 && (!pnet_TT)")
+newcolumns.Add("pnet_ATT","FatJet_ParticleNetMD_probXbb[idxY] > 0.93 && FatJet_ParticleNetMD_probXbb[idxH]<0.85")#Anti-tag (H) Tight (Y)
+newcolumns.Add("pnet_ATL","FatJet_ParticleNetMD_probXbb[idxY] > 0.85 && FatJet_ParticleNetMD_probXbb[idxH]<0.85 && (!pnet_ATT)")#Anti-tag (H) Loose (Y)
+
+newcolumns.Add("dak8_TT","FatJet_deepTagMD_ZHbbvsQCD[idxY] > 0.97 && FatJet_deepTagMD_ZHbbvsQCD[idxH] > 0.97")
+newcolumns.Add("dak8_LL","FatJet_deepTagMD_ZHbbvsQCD[idxY] > 0.80 && FatJet_deepTagMD_ZHbbvsQCD[idxH] > 0.80 && (!dak8_TT)")
+newcolumns.Add("dak8_ATT","FatJet_deepTagMD_ZHbbvsQCD[idxY] > 0.97 && FatJet_deepTagMD_ZHbbvsQCD[idxH]<0.80")
+newcolumns.Add("dak8_ATL","FatJet_deepTagMD_ZHbbvsQCD[idxY] > 0.80 && FatJet_deepTagMD_ZHbbvsQCD[idxH]<0.80 && (!dak8_ATT)")
 
 
 a.Apply([selectionCuts,newcolumns])
 checkpoint  = a.GetActiveNode()
 nAfterSelection = a.GetActiveNode().DataFrame.Count().GetValue()
 
+#-----------------pnet------------------#
+a.Cut("pnet_TT","pnet_TT==1")
+n_pnet_TT = a.GetActiveNode().DataFrame.Count().GetValue()
+h_mjY_pnet_TT = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_pnet_TT'.format(options.process),'FatJetY softdrop mass',100,0,1000),'mjY')
+h_mjHY_mjH_pnet_TT = a.GetActiveNode().DataFrame.Histo2D(('{0}_mjHY_mjH_pnet_TT'.format(options.process),'mjHjY vs mjH',300,0,3000,100,0,1000),'mjHjY','mjH')
+histos.append(h_mjY_pnet_TT)
+histos.append(h_mjHY_mjH_pnet_TT)
 
-a.Cut("TT","TT==1")
-nAfterTT = a.GetActiveNode().DataFrame.Count().GetValue()
-
-
-h_invMass_tt = a.GetActiveNode().DataFrame.Histo1D(('{0}_invMass_TT'.format(options.process),'Invariant Mass',100,0,3000),'invariantMass')
-h_mj0_tt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj0_TT'.format(options.process),'FatJet0 softdrop mass',100,0,1000),'mj0')
-h_mj1_tt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj1_TT'.format(options.process),'FatJet1 softdrop mass',100,0,1000),'mj1')
-
-
-#Go back to before TT cut was made
+#Go back to before tagger cuts were made
 a.SetActiveNode(checkpoint)
-a.Cut("LL","LL==1")
-nAfterLL = a.GetActiveNode().DataFrame.Count().GetValue()
+a.Cut("pnet_LL","pnet_LL==1")
+n_pnet_LL = a.GetActiveNode().DataFrame.Count().GetValue()
+h_mjY_pnet_LL = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_pnet_LL'.format(options.process),'FatJetY softdrop mass',100,0,1000),'mjY')
+h_mjHY_mjH_pnet_LL = a.GetActiveNode().DataFrame.Histo2D(('{0}_mjHY_mjH_pnet_LL'.format(options.process),'mjHjY vs mjH',300,0,3000,100,0,1000),'mjHjY','mjH')
+histos.append(h_mjY_pnet_LL)
+histos.append(h_mjHY_mjH_pnet_LL)
 
-h_invMass_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_invMass_LL'.format(options.process),'Invariant Mass',100,0,3000),'invariantMass')
-h_mj0_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj0_LL'.format(options.process),'FatJet0 softdrop mass',100,0,1000),'mj0')
-h_mj1_ll = a.GetActiveNode().DataFrame.Histo1D(('{0}_mj1_LL'.format(options.process),'FatJet1 softdrop mass',100,0,1000),'mj1')
+a.SetActiveNode(checkpoint)
+a.Cut("pnet_ATT","pnet_ATT==1")
+h_mjY_pnet_ATT = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_pnet_ATT'.format(options.process),'FatJetY softdrop mass',100,0,1000),'mjY')
+h_mjHY_mjH_pnet_ATT = a.GetActiveNode().DataFrame.Histo2D(('{0}_mjHY_mjH_pnet_ATT'.format(options.process),'mjHjY vs mjH',300,0,3000,100,0,1000),'mjHjY','mjH')
+histos.append(h_mjY_pnet_ATT)
+histos.append(h_mjHY_mjH_pnet_ATT)
 
-hCutFlow = ROOT.TH1F("hCutFlow","Number of events after each cut",4,0.,4.)
-hCutFlow.AddBinContent(1,totalEvents)
-hCutFlow.AddBinContent(2,nAfterSelection)
-hCutFlow.AddBinContent(3,nAfterTT)
-hCutFlow.AddBinContent(4,nAfterLL)
+a.SetActiveNode(checkpoint)
+a.Cut("pnet_ATL","pnet_ATL==1")
+h_mjY_pnet_ATL = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_pnet_ATL'.format(options.process),'FatJetY softdrop mass',100,0,1000),'mjY')
+h_mjHY_mjH_pnet_ATL = a.GetActiveNode().DataFrame.Histo2D(('{0}_mjHY_mjH_pnet_ATL'.format(options.process),'mjHjY vs mjH',300,0,3000,100,0,1000),'mjHjY','mjH')
+histos.append(h_mjY_pnet_ATL)
+histos.append(h_mjHY_mjH_pnet_ATL)
+
+
+hCutFlow_pnet = ROOT.TH1F("hCutFlow_pnet","Number of events after each cut",4,0.,4.)
+hCutFlow_pnet.AddBinContent(1,totalEvents)
+hCutFlow_pnet.AddBinContent(2,nAfterSelection)
+hCutFlow_pnet.AddBinContent(3,n_pnet_TT)
+hCutFlow_pnet.AddBinContent(4,n_pnet_LL)
+histos.append(hCutFlow_pnet)
+
+#-----------------dak8------------------#
+a.SetActiveNode(checkpoint)
+a.Cut("dak8_TT","dak8_TT==1")
+n_dak8_TT = a.GetActiveNode().DataFrame.Count().GetValue()
+h_mjY_dak8_TT = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_dak8_TT'.format(options.process),'FatJetY softdrop mass',100,0,1000),'mjY')
+h_mjHY_mjH_dak8_TT = a.GetActiveNode().DataFrame.Histo2D(('{0}_mjHY_mjH_dak8_TT'.format(options.process),'mjHjY vs mjH',300,0,3000,100,0,1000),'mjHjY','mjH')
+histos.append(h_mjY_dak8_TT)
+histos.append(h_mjHY_mjH_dak8_TT)
+
+#Go back to before tagger cuts were made
+a.SetActiveNode(checkpoint)
+a.Cut("dak8_LL","dak8_LL==1")
+n_dak8_LL = a.GetActiveNode().DataFrame.Count().GetValue()
+h_mjY_dak8_LL = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_dak8_LL'.format(options.process),'FatJetY softdrop mass',100,0,1000),'mjY')
+h_mjHY_mjH_dak8_LL = a.GetActiveNode().DataFrame.Histo2D(('{0}_mjHY_mjH_dak8_LL'.format(options.process),'mjHjY vs mjH',300,0,3000,100,0,1000),'mjHjY','mjH')
+histos.append(h_mjY_dak8_LL)
+histos.append(h_mjHY_mjH_dak8_LL)
+
+a.SetActiveNode(checkpoint)
+a.Cut("dak8_ATT","dak8_ATT==1")
+h_mjY_dak8_ATT = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_dak8_ATT'.format(options.process),'FatJetY softdrop mass',100,0,1000),'mjY')
+h_mjHY_mjH_dak8_ATT = a.GetActiveNode().DataFrame.Histo2D(('{0}_mjHY_mjH_dak8_ATT'.format(options.process),'mjHjY vs mjH',300,0,3000,100,0,1000),'mjHjY','mjH')
+histos.append(h_mjY_dak8_ATT)
+histos.append(h_mjHY_mjH_dak8_ATT)
+
+a.SetActiveNode(checkpoint)
+a.Cut("dak8_ATL","dak8_ATL==1")
+h_mjY_dak8_ATL = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_dak8_ATL'.format(options.process),'FatJetY softdrop mass',100,0,1000),'mjY')
+h_mjHY_mjH_dak8_ATL = a.GetActiveNode().DataFrame.Histo2D(('{0}_mjHY_mjH_dak8_ATL'.format(options.process),'mjHjY vs mjH',300,0,3000,100,0,1000),'mjHjY','mjH')
+histos.append(h_mjY_dak8_ATL)
+histos.append(h_mjHY_mjH_dak8_ATL)
+
+
+hCutFlow_dak8 = ROOT.TH1F("hCutFlow_dak8","Number of events after each cut",4,0.,4.)
+hCutFlow_dak8.AddBinContent(1,totalEvents)
+hCutFlow_dak8.AddBinContent(2,nAfterSelection)
+hCutFlow_dak8.AddBinContent(3,n_dak8_TT)
+hCutFlow_dak8.AddBinContent(4,n_dak8_LL)
+histos.append(hCutFlow_dak8)
 
 out_f = ROOT.TFile(options.output,"RECREATE")
 out_f.cd()
-h_allEvents.Write()
-h_invMass_tt.Write()
-h_mj0_tt.Write()
-h_mj1_tt.Write()
-h_invMass_ll.Write()
-h_mj0_ll.Write()
-h_mj1_ll.Write()
-hCutFlow.Write()
+for h in histos:
+    h.Write()
 out_f.Close()
 
 a.PrintNodeTree('node_tree')
