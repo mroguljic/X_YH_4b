@@ -11,6 +11,8 @@ def makeHistos(data):
     legend       = r.TLegend(0.6,0.7,0.9,0.9)
     histos_TT    = []
     histos_LL    = []
+    hSig_TT      = 0
+    hSig_LL      = 0
     for sample, sample_cfg in data.items():
         tempFile = r.TFile.Open(sample_cfg['file'])
         hCutFlow = tempFile.Get("hCutFlow")
@@ -31,12 +33,23 @@ def makeHistos(data):
         h_LL.Scale(LL_norm/h_LL.Integral())
         h_TT.SetTitle(str(sample))
         h_TT.SetName(str(sample)+"_name")
-        h_TT.SetFillColorAlpha(color,0.50)
-        h_LL.SetFillColorAlpha(color,0.50)
-        h_TT.SetLineWidth(0)
-        h_LL.SetLineWidth(0)
-        histos_TT.append(h_TT)
-        histos_LL.append(h_LL)
+        h_TT.Rebin(2)
+        h_LL.Rebin(2)
+        if "mx" in str(sample):
+            h_TT.SetLineColor(color)
+            h_LL.SetLineColor(color)
+            h_TT.SetLineWidth(3)
+            h_LL.SetLineWidth(3)
+            hSig_TT = h_TT
+            hSig_LL = h_LL
+        else:
+            h_TT.SetFillColorAlpha(color,0.50)
+            h_LL.SetFillColorAlpha(color,0.50)
+            h_TT.SetLineWidth(0)
+            h_LL.SetLineWidth(0)
+
+            histos_TT.append(h_TT)
+            histos_LL.append(h_LL)
         tempFile.Close()
 
     histos_TT.sort(key=lambda x: x.GetName())
@@ -44,7 +57,7 @@ def makeHistos(data):
     
 
     c = r.TCanvas("c","c",1000,1000)
-    #c.SetLogy()
+    c.SetLogy()
 
     flagQCD = False
     for h in histos_TT:
@@ -55,6 +68,7 @@ def makeHistos(data):
                 flagQCD=True
             continue
         legend.AddEntry(h)
+    legend.AddEntry(hSig_TT,"X->HY->4b")
     for h in histos_LL:
         hStack_LL.Add(h)
 
@@ -62,21 +76,23 @@ def makeHistos(data):
     hStack_TT.Draw("hist")
     hStack_TT.GetXaxis().SetLimits(1000., 3000.);
     hStack_TT.SetMinimum(1)
-    hStack_TT.SetMaximum(600)
+    hStack_TT.SetMaximum(1300)
+    hSig_TT.Draw("l same")
 
     legend.Draw()
     c.Update()
-    c.SaveAs("invM_TT.pdf")
+    c.SaveAs("invM_TT_log.pdf")
 
     c.Clear()
 
     hStack_LL.Draw("hist")
     hStack_LL.GetXaxis().SetLimits(1000., 3000.);
     hStack_LL.SetMinimum(1)
-    hStack_LL.SetMaximum(2000)
+    hStack_LL.SetMaximum(4000)
+    hSig_LL.Draw("l same")
     legend.Draw()
     c.Update()
-    c.SaveAs("invM_LL.pdf")
+    c.SaveAs("invM_LL_log.pdf")
 
 if __name__ == '__main__':
     r.gROOT.SetBatch()
