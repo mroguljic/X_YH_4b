@@ -50,7 +50,7 @@ start_time = time.time()
 commonc = CommonCscripts()
 CompileCpp(commonc.vector)
 CompileCpp(commonc.invariantMass)
-CompileCpp('HAMMER/Framework/rand01.cc') 
+CompileCpp('/afs/cern.ch/work/m/mrogulji/X_YH_4b/HAMMER/Framework/rand01.cc') 
 
 
 a = analyzer(options.input)
@@ -167,6 +167,7 @@ hCutFlow_pnet.AddBinContent(4,n_pnet_LL)
 histos.append(hCutFlow_pnet)
 
 #-----------------dak8------------------#
+a.SetActiveNode(checkpoint)
 a.Cut("dak8_TT","dak8_TT==1")
 n_dak8_TT = a.GetActiveNode().DataFrame.Count().GetValue()
 h_mjY_dak8_TT = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_dak8_TT'.format(options.process),'FatJetY softdrop mass',100,0,1000),'mjY')
