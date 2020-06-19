@@ -4,95 +4,76 @@ from time import sleep
 import json
 
 
-def makeHistos(data):
-    luminosity   = 137000 #inverse pb
-    hStack_TT    = r.THStack("hstt","Stack histo TT")
-    hStack_LL    = r.THStack("hsll","Stack histo LL")
+def stackHistos(data,region,tagger,outFile):
+    hStack       = r.THStack("hs","{0} region, {1} tagger".format(region,tagger))
     legend       = r.TLegend(0.6,0.7,0.9,0.9)
-    histos_TT    = []
-    histos_LL    = []
-    hSig_TT      = 0
-    hSig_LL      = 0
+    histos       = []
     for sample, sample_cfg in data.items():
-        tempFile = r.TFile.Open(sample_cfg['file'])
-        hCutFlow = tempFile.Get("hCutFlow")
-        totalN   = hCutFlow.GetBinContent(1)
-        TT_count = hCutFlow.GetBinContent(3)
-        LL_count = hCutFlow.GetBinContent(4)
-        eff_TT   = TT_count/totalN
-        eff_LL   = LL_count/totalN
-        xsec     = sample_cfg['xsec']
-        TT_norm  = eff_TT*luminosity*xsec
-        LL_norm  = eff_LL*luminosity*xsec
-        h_TT     = tempFile.Get((str(sample)+"_invMass_TT"))
-        h_LL     = tempFile.Get((str(sample)+"_invMass_LL"))
-        color    = sample_cfg["color"]
-        h_TT.SetDirectory(0)
-        h_LL.SetDirectory(0)
-        h_TT.Scale(TT_norm/h_TT.Integral())
-        h_LL.Scale(LL_norm/h_LL.Integral())
-        h_TT.SetTitle(str(sample))
-        h_TT.SetName(str(sample)+"_name")
-        h_TT.Rebin(2)
-        h_LL.Rebin(2)
-        if "mx" in str(sample):
-            h_TT.SetLineColor(color)
-            h_LL.SetLineColor(color)
-            h_TT.SetLineWidth(3)
-            h_LL.SetLineWidth(3)
-            hSig_TT = h_TT
-            hSig_LL = h_LL
-        else:
-            h_TT.SetFillColorAlpha(color,0.50)
-            h_LL.SetFillColorAlpha(color,0.50)
-            h_TT.SetLineWidth(0)
-            h_LL.SetLineWidth(0)
+        h = getInvMass_h(sample,sample_cfg,region,tagger)
+        histos.append(h)
 
-            histos_TT.append(h_TT)
-            histos_LL.append(h_LL)
-        tempFile.Close()
-
-    histos_TT.sort(key=lambda x: x.GetName())
-    histos_LL.sort(key=lambda x: x.GetName())
-    
+    histos.sort(key=lambda x: x.GetName())    
 
     c = r.TCanvas("c","c",1000,1000)
     c.SetLogy()
-
     flagQCD = False
-    for h in histos_TT:
-        hStack_TT.Add(h)
+    hSignal = False
+    for h in histos:
+        print(h)
+        if "X" in h.GetName():
+            hSignal = h
+            continue
+        hStack.Add(h)
         if "QCD" in h.GetName():
             if flagQCD==False:
                 legend.AddEntry(h,"QCD")
                 flagQCD=True
             continue
-        legend.AddEntry(h)
-    legend.AddEntry(hSig_TT,"X->HY->4b")
-    for h in histos_LL:
-        hStack_LL.Add(h)
+        if "tt" in h.GetName():
+            legend.AddEntry(h,"ttbar")
 
 
-    hStack_TT.Draw("hist")
-    hStack_TT.GetXaxis().SetLimits(1000., 3000.);
-    hStack_TT.SetMinimum(1)
-    hStack_TT.SetMaximum(1300)
-    hSig_TT.Draw("l same")
+    hStack.Draw("hist")
+    hStack.GetXaxis().SetLimits(1000., 3000.);
+    hStack.SetMinimum(1)
+    hStack.SetMaximum(1300)
+    if(hSignal):
+        legend.AddEntry(hSignal,"X->HY->4b")
+        hSignal.Draw("hist L same")
 
     legend.Draw()
     c.Update()
-    c.SaveAs("invM_TT_log.pdf")
+    c.SaveAs(outFile)
 
-    c.Clear()
 
-    hStack_LL.Draw("hist")
-    hStack_LL.GetXaxis().SetLimits(1000., 3000.);
-    hStack_LL.SetMinimum(1)
-    hStack_LL.SetMaximum(4000)
-    hSig_LL.Draw("l same")
-    legend.Draw()
-    c.Update()
-    c.SaveAs("invM_LL_log.pdf")
+def getInvMass_h (sample,sample_cfg,region,tagger,luminosity=137000):#inverse fb
+    tempFile = r.TFile.Open(sample_cfg["file"])
+    hCutFlow = tempFile.Get("hCutFlow_{0}".format(tagger))
+    h2d      = tempFile.Get("{0}_mjHY_mjH_{1}_{2}".format(sample,tagger,region))
+    nTotal   = hCutFlow.GetBinContent(1)
+    nRegion  = h2d.Integral()
+    xsec     = sample_cfg['xsec']    
+    eff      = nRegion/nTotal
+    norm     = eff*luminosity*xsec
+    hInvMass = h2d.ProjectionX("{0}_mjHY_{1}_{2}".format(sample,tagger,region))
+    hInvMass.Scale(norm/hInvMass.Integral())
+    hInvMass.SetTitle("{0}_{1}_{2} HY invariant mass".format(sample,tagger,region))   
+    hInvMass.Rebin(5) 
+    color    = sample_cfg["color"]
+
+    if "X" in str(sample):
+        hInvMass.SetLineColor(color)
+        hInvMass.SetLineWidth(3)
+    else:
+        hInvMass.SetFillColorAlpha(color,0.50)
+        hInvMass.SetLineWidth(0)
+
+    hInvMass.SetDirectory(0)#otherwise the histogram is destroyed when file is closed
+    tempFile.Close()
+
+    return hInvMass
+
+
 
 if __name__ == '__main__':
     r.gROOT.SetBatch()
@@ -105,4 +86,7 @@ if __name__ == '__main__':
 
     with open(options.json) as json_file:
         data = json.load(json_file)
-        makeHistos(data)
+        stackHistos(data,"TT","pnet","TT_pnet.pdf")
+        stackHistos(data,"LL","pnet","LL_pnet.pdf")
+        stackHistos(data,"TT","dak8","TT_dak8.pdf")
+        stackHistos(data,"LL","dak8","LL_pnet.pdf")
