@@ -1,12 +1,12 @@
 {
-  "mx1600": {
-    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/mx1600.root",
+  "X1600": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/X1600.root",
     "xsec": 0.01,
     "color":2
   },
   "QCD500": {
     "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/QCD500.root",
-    "xsec": 2900.0,
+    "xsec": 32000.0,
     "color":5
   },
   "QCD700": {
@@ -21,12 +21,12 @@
   },
   "QCD1500": {
     "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/QCD1500.root",
-    "xsec": 119.0,
+    "xsec": 120.0,
     "color":5
   },
   "QCD2000": {
     "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/QCD2000.root",
-    "xsec": 25.0,
+    "xsec": 25.2,
     "color":5
   },
   "ttbar": {
