@@ -82,9 +82,11 @@ histos.append(h_test1)
 histos.append(h_test2)
 
 selectionCuts    = CutGroup("selection")
-selectionCuts.Add("Jets eta","abs(FatJet_eta[0]) < 2.5 && abs(FatJet_eta[1]) < 2.5")
+selectionCuts.Add("Jets eta","abs(FatJet_eta[0]) < 2.4 && abs(FatJet_eta[1]) < 2.4")
 selectionCuts.Add("Jets delta eta","abs(FatJet_eta[0] - FatJet_eta[1]) < 1.3")
-selectionCuts.Add("Jets Pt","FatJet_pt[0] > 300 && FatJet_pt[1] > 200")
+selectionCuts.Add("Jets Pt","FatJet_pt[0] > 300 && FatJet_pt[1] > 300")
+#selectionCuts.Add("mjH","mjH>110 && mjH<140")
+selectionCuts.Add("mjY","mjY>110 && mjY<140")
 
 newcolumns  = VarGroup("newcolumns")
 newcolumns.Add('H_vector',       'analyzer::TLvector(FatJet_pt[idxH],FatJet_eta[idxH],FatJet_phi[idxH],FatJet_msoftdrop[idxH])')
@@ -229,5 +231,5 @@ for h in histos:
     h.Write()
 out_f.Close()
 
-a.PrintNodeTree('node_tree')
+a.PrintNodeTree('node_tree',verbose=True)
 print("Total time: "+str((time.time()-start_time)/60.) + ' min')
