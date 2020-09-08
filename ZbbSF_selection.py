@@ -50,9 +50,9 @@ xsecs={}
 xsecs['tqq'] = 831760
 xsecs['wqq'] = 2788000
 xsecs['zqq'] = 1187000
-xsecs['QCDHT700'] = 6802000,
-xsecs['QCDHT1000'] = 1206000,
-xsecs['QCDHT1500'] = 120400,
+xsecs['QCDHT700'] = 6802000
+xsecs['QCDHT1000'] = 1206000
+xsecs['QCDHT1500'] = 120400
 xsecs['QCDHT2000'] = 25250
 lumi = 35.872301001
 norm_weight = 1
@@ -74,9 +74,9 @@ if options.process!='data':
 a = analyzer(options.input)
 histos      = []
 allColumns= a.GetActiveNode().DataFrame.GetColumnNames()
-for column in allColumns:
-  if("HLT" in str(column)):
-      print(column)
+# for column in allColumns:
+#   if("HLT" in str(column)):
+#       print(column)
 small_rdf = a.GetActiveNode().DataFrame.Range(50000) # makes an RDF with only the first nentries considered
 small_node = Node('small',small_rdf) # makes a node out of the dataframe
 a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
