@@ -5,9 +5,9 @@ import time, os
 from optparse import OptionParser
 from collections import OrderedDict
 
-from HAMMER.Tools import CMS_lumi
-from HAMMER.Tools.Common import *
-from HAMMER.Analyzer import *
+from TIMBER.Tools import CMS_lumi
+from TIMBER.Tools.Common import *
+from TIMBER.Analyzer import *
 
 parser = OptionParser()
 
@@ -47,17 +47,16 @@ parser.add_option('--taggerShort', metavar='Short tagger suffix', type='string',
 (options, args) = parser.parse_args()
 start_time = time.time()
 
-commonc = CommonCscripts()
-CompileCpp(commonc.vector)
-CompileCpp(commonc.invariantMass)
-CompileCpp('/afs/cern.ch/work/m/mrogulji/X_YH_4b/HAMMER/Framework/rand01.cc') 
+
+CompileCpp('/afs/cern.ch/work/m/mrogulji/X_YH_4b/TIMBER/TIMBER/Framework/rand01.cc') 
+CompileCpp("/afs/cern.ch/work/m/mrogulji/X_YH_4b/TIMBER/TIMBER/Framework/common.cc") 
 
 
 a = analyzer(options.input)
 histos      = []
-#small_rdf = a.GetActiveNode().DataFrame.Range(1000) # makes an RDF with only the first nentries considered
-# small_node = Node('small',small_rdf) # makes a node out of the dataframe
-# a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
+small_rdf = a.GetActiveNode().DataFrame.Range(1000) # makes an RDF with only the first nentries considered
+small_node = Node('small',small_rdf) # makes a node out of the dataframe
+a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
 
 if(options.isSignal):
     a.Cut("YMass","GenModel_YMass_125==1")
