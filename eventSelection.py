@@ -64,6 +64,7 @@ if(options.isSignal):
 totalEvents = a.GetActiveNode().DataFrame.Count().GetValue()
 
 a.Cut("nFatJet","nFatJet>1")
+n_FatJetCut = a.GetActiveNode().DataFrame.Count().GetValue()
 a.Define("idxY","getRand01()")
 a.Define("idxH","1-idxY")
 a.Define('ptjH','FatJet_pt[idxH]')
@@ -80,30 +81,38 @@ histos.append(h_ptjH_total)
 histos.append(h_test1)
 histos.append(h_test2)
 
-selectionCuts    = CutGroup("selection")
-selectionCuts.Add("Jets eta","abs(FatJet_eta[0]) < 2.4 && abs(FatJet_eta[1]) < 2.4")
-selectionCuts.Add("Jets delta eta","abs(FatJet_eta[0] - FatJet_eta[1]) < 1.3")
-selectionCuts.Add("Jets Pt","FatJet_pt[0] > 300 && FatJet_pt[1] > 300")
-#selectionCuts.Add("mjH","mjH>110 && mjH<140")
-selectionCuts.Add("mjY","mjY>110 && mjY<140")
+a.Cut("Jets eta","abs(FatJet_eta[0]) < 2.4 && abs(FatJet_eta[1]) < 2.4")
+n_EtaCut = a.GetActiveNode().DataFrame.Count().GetValue()
+a.Cut("Jets delta eta","abs(FatJet_eta[0] - FatJet_eta[1]) < 1.3")
+n_DeltaEtaCut = a.GetActiveNode().DataFrame.Count().GetValue()
+a.Cut("Jets Pt","FatJet_pt[0] > 300 && FatJet_pt[1] > 300")
+n_PtCut = a.GetActiveNode().DataFrame.Count().GetValue()
+
+#a.Cut("mjH","mjH>110 && mjH<140")
+#a.Cut("mjY","mjY>110 && mjY<140")
+
+pnet_T = 0.93
+pnet_L = 0.85
+dak8_T = 0.97
+dak8_L = 0.80
 
 newcolumns  = VarGroup("newcolumns")
 newcolumns.Add('H_vector',       'analyzer::TLvector(FatJet_pt[idxH],FatJet_eta[idxH],FatJet_phi[idxH],FatJet_msoftdrop[idxH])')
 newcolumns.Add('Y_vector',    'analyzer::TLvector(FatJet_pt[idxY],FatJet_eta[idxY],FatJet_phi[idxY],FatJet_msoftdrop[idxY])')
 newcolumns.Add('mjjHY',     'analyzer::invariantMass(H_vector,Y_vector)') 
 
-newcolumns.Add("pnet_TT","FatJet_ParticleNetMD_probXbb[idxY] > 0.93 && FatJet_ParticleNetMD_probXbb[idxH] > 0.93")
-newcolumns.Add("pnet_LL","FatJet_ParticleNetMD_probXbb[idxY] > 0.85 && FatJet_ParticleNetMD_probXbb[idxH] > 0.85 && (!pnet_TT)")
-newcolumns.Add("pnet_ATT","FatJet_ParticleNetMD_probXbb[idxY] > 0.93 && FatJet_ParticleNetMD_probXbb[idxH]<0.85")#Anti-tag (H) Tight (Y)
-newcolumns.Add("pnet_ALL","FatJet_ParticleNetMD_probXbb[idxY] > 0.85 && FatJet_ParticleNetMD_probXbb[idxH]<0.85 && (!pnet_ATT)")#Anti-tag (H) Loose (Y)
+newcolumns.Add("pnet_TT","FatJet_ParticleNetMD_probXbb[idxY] > {0} && FatJet_ParticleNetMD_probXbb[idxH] > {0}".format(pnet_T))
+newcolumns.Add("pnet_LL","FatJet_ParticleNetMD_probXbb[idxY] > {0} && FatJet_ParticleNetMD_probXbb[idxH] > {0} && (!pnet_TT)".format(pnet_L))
+newcolumns.Add("pnet_ATT","FatJet_ParticleNetMD_probXbb[idxY] > {0} && FatJet_ParticleNetMD_probXbb[idxH]<{1}".format(pnet_T,pnet_L))#Anti-tag (H) Tight (Y)
+newcolumns.Add("pnet_ALL","FatJet_ParticleNetMD_probXbb[idxY] > {0} && FatJet_ParticleNetMD_probXbb[idxH]<{0} && (!pnet_ATT)".format(pnet_L))#Anti-tag (H) Loose (Y)
 
-newcolumns.Add("dak8_TT","FatJet_deepTagMD_ZHbbvsQCD[idxY] > 0.97 && FatJet_deepTagMD_ZHbbvsQCD[idxH] > 0.97")
-newcolumns.Add("dak8_LL","FatJet_deepTagMD_ZHbbvsQCD[idxY] > 0.80 && FatJet_deepTagMD_ZHbbvsQCD[idxH] > 0.80 && (!dak8_TT)")
-newcolumns.Add("dak8_ATT","FatJet_deepTagMD_ZHbbvsQCD[idxY] > 0.97 && FatJet_deepTagMD_ZHbbvsQCD[idxH]<0.80")
-newcolumns.Add("dak8_ALL","FatJet_deepTagMD_ZHbbvsQCD[idxY] > 0.80 && FatJet_deepTagMD_ZHbbvsQCD[idxH]<0.80 && (!dak8_ATT)")
+newcolumns.Add("dak8_TT","FatJet_deepTagMD_ZHbbvsQCD[idxY] > {0} && FatJet_deepTagMD_ZHbbvsQCD[idxH] > {0}".format(dak8_T))
+newcolumns.Add("dak8_LL","FatJet_deepTagMD_ZHbbvsQCD[idxY] > {0} && FatJet_deepTagMD_ZHbbvsQCD[idxH] > {0} && (!dak8_TT)".format(dak8_L))
+newcolumns.Add("dak8_ATT","FatJet_deepTagMD_ZHbbvsQCD[idxY] > {0} && FatJet_deepTagMD_ZHbbvsQCD[idxH]<{1}".format(dak8_T,dak8_L))
+newcolumns.Add("dak8_ALL","FatJet_deepTagMD_ZHbbvsQCD[idxY] > {0} && FatJet_deepTagMD_ZHbbvsQCD[idxH]<{0} && (!dak8_ATT)".format(dak8_L))
 
 
-a.Apply([selectionCuts,newcolumns])
+a.Apply([newcolumns])
 checkpoint  = a.GetActiveNode()
 nAfterSelection = a.GetActiveNode().DataFrame.Count().GetValue()
 h_ptjY_selection = a.GetActiveNode().DataFrame.Histo1D(('{0}_ptjY_sel'.format(options.process),'FatJetY pt',300,0,3000),'ptjY')
@@ -159,14 +168,6 @@ histos.append(h_ptjH_pnet_ALL)
 histos.append(h_mjY_pnet_ALL)
 histos.append(h_mjH_mjjHY_pnet_ALL)
 
-
-hCutFlow_pnet = ROOT.TH1F("hCutFlow_pnet","Number of events after each cut",4,0.,4.)
-hCutFlow_pnet.AddBinContent(1,totalEvents)
-hCutFlow_pnet.AddBinContent(2,nAfterSelection)
-hCutFlow_pnet.AddBinContent(3,n_pnet_TT)
-hCutFlow_pnet.AddBinContent(4,n_pnet_LL)
-histos.append(hCutFlow_pnet)
-
 #-----------------dak8------------------#
 a.SetActiveNode(checkpoint)
 a.Cut("dak8_TT","dak8_TT==1")
@@ -216,13 +217,29 @@ histos.append(h_ptjH_dak8_ALL)
 histos.append(h_mjY_dak8_ALL)
 histos.append(h_mjH_mjjHY_dak8_ALL)
 
+hCutFlow = ROOT.TH1F("hCutFlow","Number of events after each cut",9,0.5,9.5)
+hCutFlow.AddBinContent(1,totalEvents)
+hCutFlow.AddBinContent(2,n_FatJetCut)
+hCutFlow.AddBinContent(3,n_EtaCut)
+hCutFlow.AddBinContent(4,n_DeltaEtaCut)
+hCutFlow.AddBinContent(5,n_PtCut)
+hCutFlow.AddBinContent(6,n_dak8_TT)
+hCutFlow.AddBinContent(7,n_dak8_LL)
+hCutFlow.AddBinContent(8,n_pnet_TT)
+hCutFlow.AddBinContent(9,n_pnet_LL)
 
-hCutFlow_dak8 = ROOT.TH1F("hCutFlow_dak8","Number of events after each cut",4,0.,4.)
-hCutFlow_dak8.AddBinContent(1,totalEvents)
-hCutFlow_dak8.AddBinContent(2,nAfterSelection)
-hCutFlow_dak8.AddBinContent(3,n_dak8_TT)
-hCutFlow_dak8.AddBinContent(4,n_dak8_LL)
-histos.append(hCutFlow_dak8)
+hCutFlow.GetXaxis().SetBinLabel(1, "no cuts")
+hCutFlow.GetXaxis().SetBinLabel(2, "nFatJet>1")
+hCutFlow.GetXaxis().SetBinLabel(3, "|eta|<2.4")
+hCutFlow.GetXaxis().SetBinLabel(4, "Delta eta < 1.3")
+hCutFlow.GetXaxis().SetBinLabel(5, "FatJet pT 1,2 > 300")
+hCutFlow.GetXaxis().SetBinLabel(6, "pnet TT")
+hCutFlow.GetXaxis().SetBinLabel(7, "pnet LL")
+hCutFlow.GetXaxis().SetBinLabel(8, "dak8 TT")
+hCutFlow.GetXaxis().SetBinLabel(9, "dak8 LL")
+
+histos.append(hCutFlow)
+
 
 out_f = ROOT.TFile(options.output,"RECREATE")
 out_f.cd()
