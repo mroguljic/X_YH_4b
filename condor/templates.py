@@ -1,12 +1,15 @@
 run_script_template='''#!/bin/bash
 
-export WORK_DIR=/afs/cern.ch/user/m/mrogulji/X_YH_4b/
+cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+source timber-env/bin/activate
+
+export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
 
 export RUN_DIR=RUNDIR
 
 cd ${RUN_DIR}
 
-python ${WORK_DIR}/eventSelection.py -i ${RUN_DIR}/input/INPUT -o ${RUN_DIR}/output/output_NJOB.root --PROCTYPE -p SAMPLE
+python ${WORK_DIR}/eventSelection.py -i ${RUN_DIR}/input/INPUT -o ${RUN_DIR}/output/output_NJOB.root --PROCTYPE -p SAMPLE -m YMASS
 '''
 
 condor_template = """universe              = vanilla

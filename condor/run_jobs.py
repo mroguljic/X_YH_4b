@@ -40,17 +40,21 @@ def create_jobs(config, dry=True, batch=False, queue=''):
       for query in das_query:
         files = subprocess.check_output(das_query, shell=True).split()
         for file in files:
-          allFiles.append(file)
-      njobs = max(1, len(allFiles)/20)
+          allFiles.append(file.decode("utf-8"))
+      njobs = int(max(1, len(allFiles)/50))
 
       job_list = split_jobs(allFiles, njobs)
       for n, l  in enumerate(list(job_list)):
+        #print(n,l)
         open(os.path.join(run_dir, 'input', 'job_{}.txt'.format(n)), 'w').writelines("{}\n".format('root://cms-xrd-global.cern.ch//'+root_file) for root_file in l)
         run_script = run_script_template.replace('INPUT', 'job_{}.txt'.format(n))
         run_script = run_script.replace('NJOB', str(n))
         run_script = run_script.replace('SAMPLE', sample)
         run_script = run_script.replace('RUNDIR', run_dir)
         run_script = run_script.replace('PROCTYPE', proctype)
+        if(proctype=="sig"):
+          ymass = sample_cfg["YMass"]
+          run_script = run_script.replace('YMASS',str(ymass))
         open(os.path.join(run_dir, 'input', 'run_{}.sh'.format(n)), 'w').write(run_script)
         
         if batch == True:
