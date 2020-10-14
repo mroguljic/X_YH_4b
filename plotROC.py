@@ -126,56 +126,44 @@ def higgsDependanceOnMassY():
     inputFile.Close()
 def compareTaggers():
         # input file
-    massPoints = [100,125,200,300]
-    inputFile_dak8 = TFile.Open('efficiencies_dak8.root')
-    H_dak8 = inputFile_dak8.Get('matchedH_pt_vs_tag_Y100')
-    jet0_dak8 = inputFile_dak8.Get('FatJet[0]_pt_vs_tag_QCD')
-    jet1_dak8 = inputFile_dak8.Get('FatJet[1]_pt_vs_tag_QCD')
-    jet0_dak8.Add(jet1_dak8)
-    Ys_dak8 = []
-    for i,massPoint in enumerate(massPoints):
-        temp = inputFile_dak8.Get('matchedY_pt_vs_tag_Y{0}'.format(massPoint))
-        temp.SetName("dak8_Y_{0}".format(massPoint))
-        temp.SetDirectory(0)
-        Ys_dak8.append(temp)
-        if(i==0):
-            continue
-        H_dak8.Add(inputFile_dak8.Get('matchedH_pt_vs_tag_Y{0}'.format(massPoint)))
-    
-    H_dak8.SetName("H_dak8")
-    jet0_dak8.SetName("QCD_dak8")
-    H_dak8.SetDirectory(0)
-    jet0_dak8.SetDirectory(0)
-    inputFile_dak8.Close()
+    massPoints = [90,100,125,200,250,300,400]
+    massPoints = [90,125,200]#,250,300]
+    taggers = ['dak8','pnet']
+    inputFile = TFile.Open('efficiencies.root')
+    H_histos = {}
+    Y_histos = {}
+    QCD_histos = {}
+    for tagger in taggers:
+        H_histos[tagger] = {}
+        Y_histos[tagger] = {}
+        QCD_histos[tagger] = inputFile.Get("QCD_{0}".format(tagger))
+        for massPoint in massPoints:
+            H_histo = inputFile.Get("H_mx1600_Y{0}_{1}".format(massPoint,tagger))
+            Y_histo = inputFile.Get("Y_mx1600_Y{0}_{1}".format(massPoint,tagger))
+            H_histos[tagger][massPoint] = H_histo
+            Y_histos[tagger][massPoint] = Y_histo
 
 
+    for tagger in taggers:
+        for i,massPoint in enumerate(massPoints):
+            if i==0:
+                H_histos[tagger]['sum'] = H_histos[tagger][massPoint]
+            else:
+                H_histos[tagger]['sum'].Add(H_histos[tagger][massPoint])
 
-    inputFile_pnet = TFile.Open('efficiencies.root')
-    H_pnet = inputFile_pnet.Get('matchedH_pt_vs_tag_Y100')
-    jet0_pnet = inputFile_pnet.Get('FatJet[0]_pt_vs_tag_QCD')
-    jet1_pnet = inputFile_pnet.Get('FatJet[1]_pt_vs_tag_QCD')
-    jet0_pnet.Add(jet1_pnet)
-    Ys_pnet = []
-    for i,massPoint in enumerate(massPoints):
-        temp = inputFile_pnet.Get('matchedY_pt_vs_tag_Y{0}'.format(massPoint))
-        temp.SetName("pnet_Y_{0}".format(massPoint))
-        temp.SetDirectory(0)
-        Ys_pnet.append(temp)
-        if(i==0):
-            continue
-        H_pnet.Add(inputFile_pnet.Get('matchedH_pt_vs_tag_Y{0}'.format(massPoint)))
-    
-    H_pnet.SetName("H_pnet")
-    jet0_pnet.SetName("QCD_pnet")
-    H_pnet.SetDirectory(0)
-    jet0_pnet.SetDirectory(0)
-    inputFile_pnet.Close()
 
     color = [kOrange, kRed, kCyan, kGreen, kMagenta, kBlue, kBlack]
-    legend = ['dak8 H eff','pnet H eff','dak8 Y 100 eff','pnet Y 100 eff','dak8 Y 200 eff','pnet Y 200 eff']
+    lineStyle = [1,2,3,4,5,6]
+    legend = []
+    for tagger in taggers:
+        legend.append("{0} H eff".format(tagger))
+    
+    for tagger in taggers:
+        for massPoint in massPoints:
+            legend.append("{0} Y eff at Y_M {1}".format(tagger,massPoint))
 
     # create canvas
-    c = TCanvas("c", "",1000,1000)
+    c = TCanvas("c", "",2000,2000)
     c.cd()
     c.SetGridx()
     c.SetGridy()
@@ -187,7 +175,7 @@ def compareTaggers():
     bkg.Draw()
 
     # create legend
-    leg = TLegend(.20,.80-4*0.04,.40,.80)
+    leg = TLegend(.20,.90-12*0.04,.40,.90)
     leg.SetBorderSize(0)
     leg.SetFillColor(0)
     leg.SetFillStyle(0)
@@ -195,7 +183,7 @@ def compareTaggers():
     leg.SetTextSize(0.03)
 
 
-    g = [0]*10
+    g = []
     # for i,massPoint in enumerate(massPoints):
     #     if(i==0):
     #         continue
@@ -206,25 +194,30 @@ def compareTaggers():
     c.SetGridx()
     c.SetGridy()
     c.SetLogy()
-
-
-    discrH_dak8 = H_dak8.ProjectionY()
-    discr_qcd_dak8 = jet0_dak8.ProjectionY()
-    discrH_pnet = H_pnet.ProjectionY()
-    discr_qcd_pnet = jet0_pnet.ProjectionY()
     allowNegative = False
-    # get eff vs mistag rate graph
-    g[0] = makeEffVsMistagTGraph(discrH_dak8,discr_qcd_dak8,allowNegative)
-    g[1] = makeEffVsMistagTGraph(discrH_pnet,discr_qcd_pnet,allowNegative)
-    g[2] = makeEffVsMistagTGraph(Ys_dak8[0].ProjectionY(),discr_qcd_dak8,allowNegative)
-    g[3] = makeEffVsMistagTGraph(Ys_pnet[0].ProjectionY(),discr_qcd_pnet,allowNegative)
-    g[4] = makeEffVsMistagTGraph(Ys_dak8[2].ProjectionY(),discr_qcd_dak8,allowNegative)
-    g[5] = makeEffVsMistagTGraph(Ys_pnet[2].ProjectionY(),discr_qcd_pnet,allowNegative)
-    for i in range(0,6):
-        g[i].SetLineWidth(2)
-        g[i].SetLineColor(color[i])
-        g[i].Draw('l')
-        leg.AddEntry(g[i],legend[i],"l")
+
+    for i,tagger in enumerate(taggers):
+        h_Sig = H_histos[tagger]['sum'].ProjectionY()
+        h_Bkg = QCD_histos[tagger].ProjectionY()
+        temp = makeEffVsMistagTGraph(h_Sig,h_Bkg,allowNegative)
+        temp.SetLineWidth(3)
+        temp.SetLineStyle(lineStyle[i])
+        temp.SetLineColor(kBlack)
+        g.append(temp)
+    
+    for i,tagger in enumerate(taggers):
+        for j,massPoint in enumerate(massPoints):
+                h_Sig = Y_histos[tagger][massPoint].ProjectionY()
+                h_Bkg = QCD_histos[tagger].ProjectionY()
+                temp  = makeEffVsMistagTGraph(h_Sig,h_Bkg,allowNegative)
+                temp.SetLineWidth(3)
+                temp.SetLineStyle(lineStyle[i])
+                temp.SetLineColor(color[j])
+                g.append(temp)
+
+    for i,graph in enumerate(g):
+        graph.Draw('l')
+        leg.AddEntry(graph,legend[i],"l")
 
     leg.Draw()
 
@@ -240,8 +233,7 @@ def compareTaggers():
         #bkg.Delete()
 
         # close the input file
-    inputFile_pnet.Close()
-    inputFile_dak8.Close()
+    inputFile.Close()
 
 def main():
         # input file
