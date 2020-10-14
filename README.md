@@ -1,2 +1,3 @@
 # X_YH_4b
-`git clone --recurse-submodules https://github.com/mroguljic/X_YH_4b.git`
+Requires TIMBER
+`git clone https://github.com/mroguljic/TIMBER.git`
