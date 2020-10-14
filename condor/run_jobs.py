@@ -55,6 +55,8 @@ def create_jobs(config, dry=True, batch=False, queue=''):
         if(proctype=="sig"):
           ymass = sample_cfg["YMass"]
           run_script = run_script.replace('YMASS',str(ymass))
+        else:
+          run_script = run_script.replace('-m YMASS',"")
         open(os.path.join(run_dir, 'input', 'run_{}.sh'.format(n)), 'w').write(run_script)
         
         if batch == True:

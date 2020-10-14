@@ -9,6 +9,7 @@ export RUN_DIR=RUNDIR
 
 cd ${RUN_DIR}
 
+echo "${WORK_DIR}/eventSelection.py -i ${RUN_DIR}/input/job_1.txt -o ${RUN_DIR}/output/output_1.root --bkg -p QCD500 -m YMASS"
 python ${WORK_DIR}/eventSelection.py -i ${RUN_DIR}/input/INPUT -o ${RUN_DIR}/output/output_NJOB.root --PROCTYPE -p SAMPLE -m YMASS
 '''
 
