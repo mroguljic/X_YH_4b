@@ -1,0 +1,19 @@
+{
+  "X1600_Y100": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/X1600_Y100_normalized.root",
+    "xsec": 0.01,
+    "color":2
+  },
+  "QCD": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/QCD_normalized.root",
+    "xsec": 40145.00,
+    "color":5
+  },
+  "ttbar": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/ttbar_normalized.root",
+    "xsec": 831.76,
+    "color":4
+  }	
+}
+
+

@@ -1,7 +1,7 @@
 {
-  "X1600": {
-    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/X1600.root",
-    "xsec": 0.01,
+  "X1600_Y100": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/X1600_Y100.root",
+    "xsec": 1.00,
     "color":2
   },
   "QCD500": {
