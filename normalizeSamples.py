@@ -12,17 +12,17 @@ def normalizeProcess(process,luminosity,outFile):
         xsec     = processInfo['xsec']
         file     = processInfo['file']
         f        = r.TFile.Open(file)
-        hCutFlow = f.Get("hCutFlow_pnet")#nTotal is the same for pnet and dak8
-        nTotal   = hCutFlow.GetBinContent(1)
+        print(file)
+        hCutFlow = f.Get("hCutFlow")
+        nProc    = hCutFlow.GetBinContent(1)#number of processed events
+        nLumi    = xsec*luminosity
+        scaling  = nLumi/nProc
+        print("Scale: {0:.2f}".format(scaling))
         for key in f.GetListOfKeys():
             h = key.ReadObj()
             hName = h.GetName()
-            print(hName, h.Integral())
-            nRegion  = h.Integral()
-            eff      = nRegion/nTotal
-            norm     = eff*luminosity*xsec
-            print(norm/h.Integral())
-            h.Scale(norm/h.Integral())
+            if not ("hCutFlow" in h.GetName()):
+                h.Scale(scaling)
             h.SetDirectory(0)
             h_dict[hName] = h
         f.Close()
@@ -33,7 +33,7 @@ def normalizeProcess(process,luminosity,outFile):
         histo.Write()
     f.Close()
 
-def mergeQCD(luminosity):
+def mergeQCD(luminosity,outFile):
     with open("results.json") as json_file:
         data = json.load(json_file)
         h_dict = {}
@@ -44,17 +44,16 @@ def mergeQCD(luminosity):
             file     = sample_cfg['file']
             f        = r.TFile.Open(file)
             print(file)
-            hCutFlow = f.Get("hCutFlow_pnet")#nTotal is the same for pnet and dak8
-            nTotal   = hCutFlow.GetBinContent(1)
+            hCutFlow = f.Get("hCutFlow")
+            nProc    = hCutFlow.GetBinContent(1)#number of processed events
+            nLumi    = xsec*luminosity
+            scaling  = nLumi/nProc
+            print("Scale: {0:.2f}".format(scaling))
             for key in f.GetListOfKeys():
                 h = key.ReadObj()
                 hName = h.GetName()
-                if not "QCD" in hName:
-                    continue
-                nRegion  = h.Integral()
-                eff      = nRegion/nTotal
-                norm     = eff*luminosity*xsec
-                h.Scale(norm/h.Integral())
+                if not ("hCutFlow" in hName):
+                    h.Scale(scaling)
                 h.SetDirectory(0)
                 hKey = re.sub("QCD\d+_","QCD_",hName)
                 if not hKey in h_dict:
@@ -63,7 +62,7 @@ def mergeQCD(luminosity):
                 else:
                     h_dict[hKey].Add(h)
             f.Close()
-    f = r.TFile("QCD_normalized.root","recreate")
+    f = r.TFile(outFile,"recreate")
     f.cd()
     for key in h_dict:
         histo = h_dict[key]
@@ -72,6 +71,6 @@ def mergeQCD(luminosity):
 
 if __name__ == '__main__':
     luminosity = 137000
-    mergeQCD(luminosity)
-    #normalizeProcess("ttbar",luminosity,"ttbar_normalized.root")
-    #normalizeProcess("X1600",luminosity,"X1600_normalized.root")
+    mergeQCD(luminosity,"results/histograms/QCD_normalized.root")
+    normalizeProcess("ttbar",luminosity,"results/histograms/ttbar_normalized.root")
+    normalizeProcess("X1600_Y100",luminosity,"results/histograms/X1600_Y100_normalized.root")
