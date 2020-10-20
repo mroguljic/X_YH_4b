@@ -1,2 +1,7 @@
 TIMBER/
 timber-env/
+data/
+*png
+*pdf
+*pyc
+*root
