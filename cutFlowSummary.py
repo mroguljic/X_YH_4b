@@ -22,4 +22,4 @@ for i in range(1,nBin+1):
 	relRatio = nCut/nPreviousCut
 	nPreviousCut = nCut
 	absRatio = nCut/nTotal
-	print("{0} {1:.5f} {2:.5f}".format(cutLabel,relRatio,absRatio))
+	print("{0} {1:.3e} {2:.3e}".format(cutLabel,nCut,relRatio,absRatio))
