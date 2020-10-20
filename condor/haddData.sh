@@ -1,7 +1,3 @@
 #!/bin/bash
 
-dataRun="B C D E F G H"
-for val in $dataRun; do
-    #echo Data$val/Data$val.root Data$val/output/output*root
-    hadd Data$val/Data$val.root Data$val/output/output*root
-done
+hadd data_obs/data_obs.root data_obs/output/output*root
