@@ -50,6 +50,9 @@ def rebin2d(h2d):
 
 tagger = "pnet"
 histos  = []
+h_pseudoData_LL = r.TH2F("mJJ_mjY_LL_data_obs","",15,60,360,20,1000,3000)
+h_pseudoData_TT = r.TH2F("mJJ_mjY_TT_data_obs","",15,60,360,20,1000,3000)
+
 for sample, fileName in sigSamples.items():
 	print(sample)
 	h2dName    = "mJJ_mY_REGION_{0}".format(sample)
@@ -78,7 +81,7 @@ for sample, fileName in bkgSamples.items():
 	print(sample)
 	h2dName    = "mJJ_mY_REGION_{0}".format(sample)
 	if(sample=="ttbar"):
-		h2dName.replace("ttbar","TTbar")
+		h2dName = h2dName.replace("ttbar","TTbar")
 	fTemp      = r.TFile.Open(fileName)
 	TT_h3dTemp = fTemp.Get("{0}_mjY_mjH_mjjHY_{1}_TT".format(sample,tagger))
 	TT_h2d 	   = TT_h3dTemp.Project3D("zxe")
@@ -88,6 +91,7 @@ for sample, fileName in bkgSamples.items():
 	TT_rebined.SetTitle(";mj_Y [GeV];mJJ [GeV]")
 	TT_rebined.SetDirectory(0)
 	histos.append(TT_rebined)
+	h_pseudoData_TT.Add(TT_rebined)
 
 	LL_h3dTemp = fTemp.Get("{0}_mjY_mjH_mjjHY_{1}_LL".format(sample,tagger))
 	LL_h2d 	   = LL_h3dTemp.Project3D("zxe")
@@ -97,8 +101,10 @@ for sample, fileName in bkgSamples.items():
 	LL_rebined.SetTitle(";mj_Y [GeV];mJJ [GeV]")
 	LL_rebined.SetDirectory(0)
 	histos.append(LL_rebined)
+	h_pseudoData_LL.Add(LL_rebined)
 
-
+histos.append(h_pseudoData_LL)
+histos.append(h_pseudoData_TT)
 
 
 f = r.TFile.Open("{0}_templates.root".format(tagger),"RECREATE")
