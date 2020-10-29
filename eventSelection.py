@@ -65,32 +65,30 @@ if(options.isSignal):
 
 totalEvents = a.GetActiveNode().DataFrame.Count().GetValue()
 
+#Jet(s) definition
 a.Cut("nFatJet","nFatJet>1")
+a.Cut("pT0_cut","FatJet_pt[0]>300")
+a.Cut("pT1_cut","FatJet_pt[1]>200")
+a.Cut("Eta0_cut","abs(FatJet_eta[0])<2.4")
+a.Cut("Eta1_cut","abs(FatJet_eta[1])<2.4")
+n_presel = a.GetActiveNode().DataFrame.Count().GetValue()
 
-#need to define this if we want to fill n-1 histograms
-preselColumns = VarGroup("Preselection Columns")
-preselColumns.Add("DeltaEta","abs(FatJet_eta[0] - FatJet_eta[1])")
-preselColumns.Add("pT0","FatJet_pt[0]")
-preselColumns.Add("pT1","FatJet_pt[1]")
-preselColumns.Add("Eta0","FatJet_eta[0]")
-preselColumns.Add("Eta1","FatJet_eta[1]")
-preselColumns.Add("mSD0","FatJet_msoftdrop[0]")
-preselColumns.Add("mSD1","FatJet_msoftdrop[1]")
-a.Apply([preselColumns])
+#need to define variables which we want in n-1 histograms
+nm1Columns = VarGroup("NminusOne Columns")
+nm1Columns.Add("DeltaEta","abs(FatJet_eta[0] - FatJet_eta[1])")
+nm1Columns.Add("mSD0","FatJet_msoftdrop[0]")
+nm1Columns.Add("mSD1","FatJet_msoftdrop[1]")
+a.Apply([nm1Columns])
 
-preselectionCuts = CutGroup('Preselection')
-preselectionCuts.Add("DeltaEta_cut","DeltaEta < 1.3")
-preselectionCuts.Add("pT0_cut","pT0 > 300")
-preselectionCuts.Add("pT1_cut","pT1 > 200")
-preselectionCuts.Add("Eta0_cut","abs(Eta0) < 2.4")
-preselectionCuts.Add("Eta1_cut","abs(Eta1) < 2.4")
-preselectionCuts.Add("mSD0_cut","mSD0 > 30")
-preselectionCuts.Add("mSD1_cut","mSD1 > 30")
+nm1Cuts = CutGroup('Preselection')
+nm1Cuts.Add("DeltaEta_cut","DeltaEta < 1.3")
+nm1Cuts.Add("mSD0_cut","mSD0 > 30")
+nm1Cuts.Add("mSD1_cut","mSD1 > 30")
 
-nminusOneNodes = a.Nminus1(a.GetActiveNode(),preselectionCuts) # NOTE: Returns the nodes with N-1 selections
+nminusOneNodes = a.Nminus1(a.GetActiveNode(),nm1Cuts) # NOTE: Returns the nodes with N-1 selections
 nminusOneHists = HistGroup('nminus1Hists') # NOTE: HistGroup used to batch operate on histograms
 
-nMinusOneLimits = {"DeltaEta":[0.,5.0,100],"pT0":[0.,2000.,100],"pT1":[0.,2000.,100],"mSD0":[0.,330.,33],"mSD1":[30.,330.,33],"Eta0":[-3.,3.,60],"Eta1":[-3.,3.,60]}
+nMinusOneLimits = {"DeltaEta":[0.,5.0,100],"mSD0":[0.,330.,33],"mSD1":[30.,330.,33]}
 
 # Add hists to group and write out at the end
 for nkey in nminusOneNodes.keys():
@@ -102,53 +100,34 @@ for nkey in nminusOneNodes.keys():
 
 
 a.SetActiveNode(nminusOneNodes["full"])
-n_presel = a.GetActiveNode().DataFrame.Count().GetValue()
+n_kinematic = a.GetActiveNode().DataFrame.Count().GetValue()
+
 a.Define("pnet0","FatJet_ParticleNetMD_probXbb[0]")
 a.Define("pnet1","FatJet_ParticleNetMD_probXbb[1]")
 h_nm1_pnet0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet0'.format(options.process),';Leading jet ParticleNet score;Events/0.01;',100,0,1),"pnet0")
-h_nm1_pnet1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet1'.format(options.process),';Subleading jet ParticleNet score;Events/0.01;',100,1,1),"pnet1")
+h_nm1_pnet1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet1'.format(options.process),';Subleading jet ParticleNet score;Events/0.01;',100,0,1),"pnet1")
 histos.append(h_nm1_pnet1)
 histos.append(h_nm1_pnet0)
 
 a.Define("idxH","higgsMassMatchingAlt(FatJet_msoftdrop[0],FatJet_msoftdrop[1])")
 a.Define("idxY","1-idxH")
-a.Cut("foundJets","idxH>=0")
-a.Define('ptjH','FatJet_pt[idxH]')
-a.Define('ptjY','FatJet_pt[idxY]')
-a.Define('mjY','FatJet_msoftdrop[idxY]')
-a.Define('mjH','FatJet_msoftdrop[idxH]')
-a.Define("pnetH","FatJet_ParticleNetMD_probXbb[idxH]")
-a.Define("pnetY","FatJet_ParticleNetMD_probXbb[idxY]")
-a.Define("dak8H","FatJet_deepTagMD_ZHbbvsQCD[idxH]")
-a.Define("dak8Y","FatJet_deepTagMD_ZHbbvsQCD[idxY]")
-if not options.isData:
-    a.Define("idx_GenJetH","genJetToRecoMatching(nGenJetAK8,FatJet_phi[idxH],FatJet_eta[idxH],GenJetAK8_phi,GenJetAK8_eta)")
-    a.Define("idx_GenJetY","genJetToRecoMatching(nGenJetAK8,FatJet_phi[idxY],FatJet_eta[idxY],GenJetAK8_phi,GenJetAK8_eta)")
-    a.Define("GenJetH_mass","GenJetAK8_mass[idxH]")
-    a.Define("GenJetY_mass","GenJetAK8_mass[idxY]")
-    h_idx_reco_vs_gen = a.GetActiveNode().DataFrame.Histo2D(('{0}_reco_vs_gen'.format(options.process),'Reco Idx vs Gen Idx;Reco jet index; Get jet index',3,-1,2,10,-1,9),'idxH','idx_GenJetH')
-    histos.append(h_idx_reco_vs_gen)
-n_JetMassTagging = a.GetActiveNode().DataFrame.Count().GetValue()
-
-h_ptjY_presel = a.GetActiveNode().DataFrame.Histo1D(('{0}_ptjY_presel'.format(options.process),'FatJetY pt;pT_Y [GeV];Events / 10 GeV;',300,0,3000),'ptjY')
-h_ptjH_presel = a.GetActiveNode().DataFrame.Histo1D(('{0}_ptjH_presel'.format(options.process),'FatJetY pt;pT_H [GeV];Events / 10 GeV;',300,0,3000),'ptjH')
-h_mjY_presel = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY_presel'.format(options.process),'FatJetY mSD;mSD_Y [GeV];Events / 10 GeV;',30,30,330),'mjY')
-h_mjH_presel = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjH_presel'.format(options.process),'FatJetH mSD;mSD_H [GeV];Events / 10 GeV;',30,30,330),'mjH')
-h_idxY = a.GetActiveNode().DataFrame.Histo1D(('{0}_idxY'.format(options.process),'idxY',5,-1,4),'idxY')
-h_idxH = a.GetActiveNode().DataFrame.Histo1D(('{0}_idxH'.format(options.process),'idxH',5,-1,4),'idxH')
-histos.append(h_ptjY_presel)
-histos.append(h_ptjH_presel)
-histos.append(h_mjY_presel)
-histos.append(h_mjH_presel)
-histos.append(h_idxY)
-histos.append(h_idxH)
-
+a.Cut("Higgs-tagged cut","idxH>=0")
+n_HMassCut = a.GetActiveNode().DataFrame.Count().GetValue()
 pnet_T = 0.90
 pnet_L = 0.80
 dak8_T = 0.90
 dak8_L = 0.80
 
 newcolumns  = VarGroup("newcolumns")
+newcolumns.Add('ptjH','FatJet_pt[idxH]')
+newcolumns.Add('ptjY','FatJet_pt[idxY]')
+newcolumns.Add('mjY','FatJet_msoftdrop[idxY]')
+newcolumns.Add('mjH','FatJet_msoftdrop[idxH]')
+newcolumns.Add("pnetH","FatJet_ParticleNetMD_probXbb[idxH]")
+newcolumns.Add("pnetY","FatJet_ParticleNetMD_probXbb[idxY]")
+newcolumns.Add("dak8H","FatJet_deepTagMD_ZHbbvsQCD[idxH]")
+newcolumns.Add("dak8Y","FatJet_deepTagMD_ZHbbvsQCD[idxY]")
+
 newcolumns.Add('H_vector', 'analyzer::TLvector(FatJet_pt[idxH],FatJet_eta[idxH],FatJet_phi[idxH],FatJet_msoftdrop[idxH])')
 newcolumns.Add('Y_vector',  'analyzer::TLvector(FatJet_pt[idxY],FatJet_eta[idxY],FatJet_phi[idxY],FatJet_msoftdrop[idxY])')
 newcolumns.Add('mjjHY',     'analyzer::invariantMass(H_vector,Y_vector)') 
@@ -160,6 +139,33 @@ newcolumns.Add("pnet_AT","FatJet_ParticleNetMD_probXbb[idxH] > {0} && FatJet_Par
 newcolumns.Add("dak8_TT","FatJet_deepTagMD_ZHbbvsQCD[idxY] > {0} && FatJet_deepTagMD_ZHbbvsQCD[idxH] > {0}".format(dak8_T))
 newcolumns.Add("dak8_LL","FatJet_deepTagMD_ZHbbvsQCD[idxY] > {0} && FatJet_deepTagMD_ZHbbvsQCD[idxH] > {0} && (!dak8_TT)".format(dak8_L))
 newcolumns.Add("dak8_AT","FatJet_deepTagMD_ZHbbvsQCD[idxH] > {0} && FatJet_deepTagMD_ZHbbvsQCD[idxY]<{1}".format(dak8_L,dak8_L))
+a.Apply([newcolumns])
+
+a.Cut("pt H cut","ptjH>300")
+n_HpTCut = a.GetActiveNode().DataFrame.Count().GetValue()
+a.Cut("pt Y cut","ptjY>200")
+n_YpTCut = a.GetActiveNode().DataFrame.Count().GetValue()
+
+triggerList = ["HLT_AK8DiPFJet280_200_TrimMass30","HLT_AK8PFJet450","HLT_PFHT650_WideJetMJJ900DEtaJJ1p5","HLT_AK8PFHT650_TrimR0p1PT0p03Mass50",
+"HLT_AK8PFHT700_TrimR0p1PT0p03Mass50","HLT_PFHT800","HLT_PFHT900","HLT_AK8PFJet360_TrimMass30","HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20"]
+triggersStringAll = ' || '.join(triggerList)
+triggersStringNoBtag = ' || '.join(triggerList[:-1])
+h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
+a.Cut("triggers_all",triggersStringAll)
+h_triggersAll = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersAll'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
+trigCheckpoint  = a.GetActiveNode()#node with all triggers included
+a.Cut("triggers_noBtag",triggersStringNoBtag)
+h_triggersNoBtag = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersNoBtag'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
+
+
+histos.append(h_noTriggers)
+histos.append(h_triggersAll)
+histos.append(h_triggersNoBtag)
+#return to node with all triggers
+a.SetActiveNode(trigCheckpoint)
+
+a.Cut("mjY cut","mjY>60")
+n_YMassCut = a.GetActiveNode().DataFrame.Count().GetValue()
 
 
 h_pnet_pT_H = a.GetActiveNode().DataFrame.Histo2D(('{0}_pnet_pT_H'.format(options.process),'ParticleNet vs pT Y;ParticleNet_H score ;pT_H [GeV];',100,0,1,300,0,3000),'pnetH','ptjH')
@@ -172,23 +178,29 @@ histos.append(h_pnet_pT_H)
 histos.append(h_dak8_pT_Y)
 histos.append(h_dak8_pT_H)
 
-a.Apply([newcolumns])
+if not options.isData:
+    a.Define("idx_GenJetH","genJetToRecoMatching(nGenJetAK8,FatJet_phi[idxH],FatJet_eta[idxH],GenJetAK8_phi,GenJetAK8_eta)")
+    a.Define("idx_GenJetY","genJetToRecoMatching(nGenJetAK8,FatJet_phi[idxY],FatJet_eta[idxY],GenJetAK8_phi,GenJetAK8_eta)")
+    a.Define("GenJetH_mass","GenJetAK8_mass[idxH]")
+    a.Define("GenJetY_mass","GenJetAK8_mass[idxY]")
+    h_idx_reco_vs_gen = a.GetActiveNode().DataFrame.Histo2D(('{0}_reco_vs_gen'.format(options.process),'Reco Idx vs Gen Idx;Reco jet index; Get jet index',3,-1,2,10,-1,9),'idxH','idx_GenJetH')
+    histos.append(h_idx_reco_vs_gen)
 
-triggerList = ["HLT_AK8DiPFJet280_200_TrimMass30","HLT_AK8PFJet450","HLT_PFHT650_WideJetMJJ900DEtaJJ1p5","HLT_AK8PFHT650_TrimR0p1PT0p03Mass50",
-"HLT_AK8PFHT700_TrimR0p1PT0p03Mass50","HLT_PFHT800","HLT_PFHT900","HLT_AK8PFJet360_TrimMass30","HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20"]
-triggersStringAll = ' || '.join(triggerList)
-triggersStringNoBtag = ' || '.join(triggerList[:-1])
-h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
-a.Cut("triggers_all",triggersStringAll)
-h_triggersAll = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersAll'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
-checkpoint  = a.GetActiveNode()#node before we start applying tagger cuts
-a.Cut("triggers_noBtag",triggersStringNoBtag)
-h_triggersNoBtag = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersNoBtag'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
+h_ptjY = a.GetActiveNode().DataFrame.Histo1D(('{0}_ptjY'.format(options.process),'FatJetY pt;pT_Y [GeV];Events / 10 GeV;',300,0,3000),'ptjY')
+h_ptjH = a.GetActiveNode().DataFrame.Histo1D(('{0}_ptjH'.format(options.process),'FatJetY pt;pT_H [GeV];Events / 10 GeV;',300,0,3000),'ptjH')
+h_mjY = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY'.format(options.process),'FatJetY mSD;mSD_Y [GeV];Events / 10 GeV;',30,30,330),'mjY')
+h_mjH = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjH'.format(options.process),'FatJetH mSD;mSD_H [GeV];Events / 10 GeV;',30,30,330),'mjH')
+h_idxY = a.GetActiveNode().DataFrame.Histo1D(('{0}_idxY'.format(options.process),'idxY',5,-1,4),'idxY')
+h_idxH = a.GetActiveNode().DataFrame.Histo1D(('{0}_idxH'.format(options.process),'idxH',5,-1,4),'idxH')
+histos.append(h_ptjY)
+histos.append(h_ptjH)
+histos.append(h_mjY)
+histos.append(h_mjH)
+histos.append(h_idxY)
+histos.append(h_idxH)
 
-histos.append(h_noTriggers)
-histos.append(h_triggersAll)
-histos.append(h_triggersNoBtag)
-
+#node before we start applying tagger cuts
+checkpoint  = a.GetActiveNode()
 #-----------------pnet------------------#
 a.SetActiveNode(checkpoint)
 a.Cut("pnet_TT","pnet_TT==1")
@@ -303,22 +315,30 @@ histos.append(h_pnet_mjj_mjY)
 
 
 
-hCutFlow = ROOT.TH1F("hCutFlow","Number of events after each cut",7,0.5,7.5)
+hCutFlow = ROOT.TH1F("hCutFlow","Number of events after each cut",11,0.5,1.5)
 hCutFlow.AddBinContent(1,totalEvents)
 hCutFlow.AddBinContent(2,n_presel)
-hCutFlow.AddBinContent(3,n_JetMassTagging)
-hCutFlow.AddBinContent(4,n_dak8_TT)
-hCutFlow.AddBinContent(5,n_dak8_LL)
-hCutFlow.AddBinContent(6,n_pnet_TT)
-hCutFlow.AddBinContent(7,n_pnet_LL)
+hCutFlow.AddBinContent(3,n_kinematic)
+hCutFlow.AddBinContent(4,n_HMassCut)
+hCutFlow.AddBinContent(5,n_HpTCut)
+hCutFlow.AddBinContent(6,n_YpTCut)
+hCutFlow.AddBinContent(7,n_YMassCut)
+hCutFlow.AddBinContent(8,n_dak8_TT)
+hCutFlow.AddBinContent(9,n_dak8_LL)
+hCutFlow.AddBinContent(10,n_pnet_TT)
+hCutFlow.AddBinContent(11,n_pnet_LL)
 
 hCutFlow.GetXaxis().SetBinLabel(1, "no cuts")
 hCutFlow.GetXaxis().SetBinLabel(2, "Preselection")
-hCutFlow.GetXaxis().SetBinLabel(3, "Jet H/Y tagging")
-hCutFlow.GetXaxis().SetBinLabel(4, "dak8 TT")
-hCutFlow.GetXaxis().SetBinLabel(5, "dak8 LL")
-hCutFlow.GetXaxis().SetBinLabel(6, "pnet TT")
-hCutFlow.GetXaxis().SetBinLabel(7, "pnet LL")
+hCutFlow.GetXaxis().SetBinLabel(3, "Delta Eta and mSD")
+hCutFlow.GetXaxis().SetBinLabel(4, "100 < H_mSD <140 GeV")
+hCutFlow.GetXaxis().SetBinLabel(5, "H_pT > 300 GeV")
+hCutFlow.GetXaxis().SetBinLabel(6, "Y_pT > 200 GeV")
+hCutFlow.GetXaxis().SetBinLabel(7, "60< Y_mSD")
+hCutFlow.GetXaxis().SetBinLabel(8, "dak8 TT")
+hCutFlow.GetXaxis().SetBinLabel(9, "dak8 LL")
+hCutFlow.GetXaxis().SetBinLabel(10, "pnet TT")
+hCutFlow.GetXaxis().SetBinLabel(11, "pnet LL")
 
 histos.append(hCutFlow)
 
