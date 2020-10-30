@@ -2,8 +2,7 @@ import ROOT as r
 from optparse import OptionParser
 from time import sleep
 import json
-
-def stackHistos(data,region,tagger,outFile):
+def stackHistos_mSDY(data,region,tagger,outFile):
     if(str(tagger) == "dak8"):
         taggerFull = "DeepAK8"
     elif(str(tagger) == "pnet"):
@@ -12,37 +11,120 @@ def stackHistos(data,region,tagger,outFile):
         taggerFull = tagger
         
     hStack       = r.THStack("hs","{0} region, {1} tagger".format(region,taggerFull))
-    legend       = r.TLegend(0.5,0.6,0.8,0.8)
+    legend       = r.TLegend(0.5,0.55,0.8,0.9)
+    histos       = []
+    for sample, sample_cfg in data.items():
+        h = get_mSDY_h(sample,sample_cfg,region,tagger)
+        hLabel = sample_cfg["label"]
+        histos.append([h,hLabel])
+
+    #histos.sort(key=lambda x: x.GetName())
+    c = r.TCanvas("c","c",1500,1000)
+    c.SetLogy()
+    signalHistos = []
+    signalLabels = []
+    for h in histos:
+        if "X" in h[0].GetName():
+            h[0].SetLineWidth(2)
+            signalHistos.append(h[0])
+            signalLabels.append(h[1])
+            continue
+        else:
+            hStack.Add(h[0])
+            h[0].SetLineWidth(1)
+            legend.AddEntry(h[0],h[1],"F")
+        # if "QCD" in h.GetName():
+        #     h.SetLineWidth(1)
+        #     legend.AddEntry(h,"QCD","F")
+        # if "tt" in h.GetName():
+        #     h.SetLineWidth(1)
+        #     legend.AddEntry(h,"ttbar","F")
+
+    hStack.Draw("hist")
+    hStack.GetXaxis().SetLimits(60., 550.);
+    hStack.SetMinimum(1)
+    #hStack.SetMaximum(1300)
+    hStack.SetMaximum(15000)
+    for i, hSignal in enumerate(signalHistos):
+        legend.AddEntry(hSignal,signalLabels[i],"L")
+        hSignal.Draw("hist same")
+    
+    hStack.GetXaxis().SetNdivisions(805, r.kTRUE);
+    hStack.GetXaxis().SetTitle("m_{jj} [GeV]")
+    hStack.GetYaxis().SetTitle("Events / 20 GeV")
+    legend.SetFillStyle(0)
+    legend.SetLineWidth(0)
+    legend.Draw()
+
+    pt = r.TPaveText(0.5,0.50,0.8,0.55,"NDC")
+    pt.SetTextSize(0.04)
+    pt.SetFillColor(0)
+    pt.SetTextAlign(12)
+    pt.SetLineWidth(0)
+    pt.SetBorderSize(1)
+    #pt.AddText("CMS Preliminary")
+    pt.AddText("#sigma #bf{( pp #rightarrow X #rightarrow HY #rightarrow b#bar{b}b#bar{b}) = 1 pb}")
+    pt.Draw()
+
+    pt2 = r.TPaveText(0.71,0.92,0.9,0.95,"NDC")
+    pt2.SetTextSize(0.04)
+    pt2.SetFillColor(0)
+    pt2.SetTextAlign(12)
+    pt2.SetLineWidth(0)
+    pt2.SetBorderSize(1)
+    pt2.AddText("#bf{137 fb^{-1} (13 TeV)}")
+    pt2.Draw()
+
+    c.Update()
+    c.SaveAs(outFile)
+
+
+def stackHistos_InvMass(data,region,tagger,outFile):
+    if(str(tagger) == "dak8"):
+        taggerFull = "DeepAK8"
+    elif(str(tagger) == "pnet"):
+        taggerFull = "ParticleNet"
+    else:
+        taggerFull = tagger
+        
+    hStack       = r.THStack("hs","{0} region, {1} tagger".format(region,taggerFull))
+    legend       = r.TLegend(0.5,0.55,0.8,0.9)
     histos       = []
     for sample, sample_cfg in data.items():
         h = getInvMass_h(sample,sample_cfg,region,tagger)
-        histos.append(h)
+        hLabel = sample_cfg["label"]
+        histos.append([h,hLabel])
 
-    histos.sort(key=lambda x: x.GetName())
+    #histos.sort(key=lambda x: x.GetName())
     c = r.TCanvas("c","c",1500,1000)
     c.SetLogy()
+    signalHistos = []
+    signalLabels = []
     hSignal = False
     for h in histos:
-        print(h.GetTitle())
-        if "X" in h.GetName():
-            hSignal = h
-            hSignal.SetLineWidth(2)
+        if "X" in h[0].GetName():
+            h[0].SetLineWidth(2)
+            signalHistos.append(h[0])
+            signalLabels.append(h[1])
             continue
-        hStack.Add(h)
-        if "QCD" in h.GetName():
-            h.SetLineWidth(1)
-            legend.AddEntry(h,"QCD","F")
-        if "tt" in h.GetName():
-            h.SetLineWidth(1)
-            legend.AddEntry(h,"ttbar","F")
+        else:
+            hStack.Add(h[0])
+            h[0].SetLineWidth(1)
+            legend.AddEntry(h[0],h[1],"F")
+        # if "QCD" in h.GetName():
+        #     h.SetLineWidth(1)
+        #     legend.AddEntry(h,"QCD","F")
+        # if "tt" in h.GetName():
+        #     h.SetLineWidth(1)
+        #     legend.AddEntry(h,"ttbar","F")
 
     hStack.Draw("hist")
     hStack.GetXaxis().SetLimits(1000., 3000.);
-    hStack.SetMinimum(10)
+    hStack.SetMinimum(1)
     #hStack.SetMaximum(1300)
-    hStack.SetMaximum(130000)
-    if(hSignal):
-        legend.AddEntry(hSignal,"M_X, M_Y = 1600, 100 GeV","L")
+    hStack.SetMaximum(15000)
+    for i, hSignal in enumerate(signalHistos):
+        legend.AddEntry(hSignal,signalLabels[i],"L")
         hSignal.Draw("hist same")
     
     hStack.GetXaxis().SetNdivisions(805, r.kTRUE);
@@ -52,7 +134,7 @@ def stackHistos(data,region,tagger,outFile):
     legend.SetLineWidth(0)
     legend.Draw()
 
-    pt = r.TPaveText(0.5,0.55,0.8,0.60,"NDC")
+    pt = r.TPaveText(0.5,0.50,0.8,0.55,"NDC")
     pt.SetTextSize(0.04)
     pt.SetFillColor(0)
     pt.SetTextAlign(12)
@@ -78,9 +160,10 @@ def stackHistos(data,region,tagger,outFile):
 def getInvMass_h (sample,sample_cfg,region,tagger,luminosity=137000):#inverse pb
     tempFile = r.TFile.Open(sample_cfg["file"])
     print(tempFile)
-    print("{0}_mjH_mjHY_{1}_{2}".format(sample,tagger,region))
-    h2d      = tempFile.Get("{0}_mjH_mjjHY_{1}_{2}".format(sample,tagger,region))
-    hInvMass = h2d.ProjectionY("{0}_mjjHY_{1}_{2}".format(sample,tagger,region))
+    #print(sample_cfg["file"])
+    print("{0}_mjY_mjH_mjjHY_{1}_{2}".format(sample,tagger,region))
+    h3d      = tempFile.Get("{0}_mjY_mjH_mjjHY_{1}_{2}".format(sample,tagger,region))
+    hInvMass = h3d.ProjectionZ("{0}_mjjHY_{1}_{2}".format(sample,tagger,region))
     hInvMass.SetTitle("{0}_{1}_{2} HY invariant mass".format(sample,tagger,region))   
     hInvMass.Rebin(10) 
     color    = sample_cfg["color"]
@@ -96,6 +179,27 @@ def getInvMass_h (sample,sample_cfg,region,tagger,luminosity=137000):#inverse pb
     tempFile.Close()
 
     return hInvMass
+
+def get_mSDY_h (sample,sample_cfg,region,tagger,luminosity=137000):#inverse pb
+    tempFile = r.TFile.Open(sample_cfg["file"])
+    #print("{0}_mjH_mjHY_{1}_{2}".format(sample,tagger,region))
+    h = tempFile.Get("{0}_mjY_{1}_{2}".format(sample,tagger,region))
+    h.SetTitle("{0}_{1}_{2} Y-tagged jet mSD".format(sample,tagger,region))   
+    h.Rebin(2) 
+    color    = sample_cfg["color"]
+
+    if "X" in str(sample):
+        h.SetLineColor(color)
+        h.SetLineWidth(3)
+    else:
+        h.SetFillColorAlpha(color,0.50)
+        h.SetLineWidth(0)
+
+    h.SetDirectory(0)#otherwise the histogram is destroyed when file is closed
+    tempFile.Close()
+
+    return h
+
 
 
 def nMinusOnePlot(data,cut,outFile,xTitle="",yTitle="",rangeX=[],stackTitle="",sigLabel="Signal"):
@@ -196,7 +300,11 @@ if __name__ == '__main__':
         # nMinusOnePlot(data,"pnetY","pnetY.png",rangeX=[0,1],xTitle="ParticleNetMD_probXbb score",yTitle="Events/bin",stackTitle="N-1: b-tagger for Y-tagged jets",sigLabel="M_X, M_Y = 1600, 100 GeV")
         # # for cut in cuts:
         #     nMinusOnePlot(data,cut,"{0}.png".format(cut))
-        stackHistos(data,"TT","pnet","TT_pnet.pdf")
-        stackHistos(data,"LL","pnet","LL_pnet.pdf")
-        stackHistos(data,"TT","dak8","TT_dak8.pdf")
-        stackHistos(data,"LL","dak8","LL_dak8.pdf")
+        stackHistos_InvMass(data,"TT","pnet","results/plots/TT_pnet_mjj.png")
+        stackHistos_InvMass(data,"LL","pnet","results/plots/LL_pnet_mjj.png")
+        stackHistos_InvMass(data,"TT","dak8","results/plots/TT_dak8_mjj.png")
+        stackHistos_InvMass(data,"LL","dak8","results/plots/LL_dak8_mjj.png")
+        stackHistos_mSDY(data,"TT","pnet","results/plots/TT_pnet_mjY.png")
+        stackHistos_mSDY(data,"LL","pnet","results/plots/LL_pnet_mjY.png")
+        stackHistos_mSDY(data,"TT","dak8","results/plots/TT_dak8_mjY.png")
+        stackHistos_mSDY(data,"LL","dak8","results/plots/LL_dak8_mjY.png")
