@@ -18,7 +18,6 @@ def stackHistos_mSDY(data,region,tagger,outFile):
         hLabel = sample_cfg["label"]
         histos.append([h,hLabel])
 
-    #histos.sort(key=lambda x: x.GetName())
     c = r.TCanvas("c","c",1500,1000)
     c.SetLogy()
     signalHistos = []
@@ -33,17 +32,11 @@ def stackHistos_mSDY(data,region,tagger,outFile):
             hStack.Add(h[0])
             h[0].SetLineWidth(1)
             legend.AddEntry(h[0],h[1],"F")
-        # if "QCD" in h.GetName():
-        #     h.SetLineWidth(1)
-        #     legend.AddEntry(h,"QCD","F")
-        # if "tt" in h.GetName():
-        #     h.SetLineWidth(1)
-        #     legend.AddEntry(h,"ttbar","F")
+
 
     hStack.Draw("hist")
     hStack.GetXaxis().SetLimits(60., 550.);
     hStack.SetMinimum(1)
-    #hStack.SetMaximum(1300)
     hStack.SetMaximum(15000)
     for i, hSignal in enumerate(signalHistos):
         legend.AddEntry(hSignal,signalLabels[i],"L")
@@ -95,7 +88,6 @@ def stackHistos_InvMass(data,region,tagger,outFile):
         hLabel = sample_cfg["label"]
         histos.append([h,hLabel])
 
-    #histos.sort(key=lambda x: x.GetName())
     c = r.TCanvas("c","c",1500,1000)
     c.SetLogy()
     signalHistos = []
@@ -111,17 +103,10 @@ def stackHistos_InvMass(data,region,tagger,outFile):
             hStack.Add(h[0])
             h[0].SetLineWidth(1)
             legend.AddEntry(h[0],h[1],"F")
-        # if "QCD" in h.GetName():
-        #     h.SetLineWidth(1)
-        #     legend.AddEntry(h,"QCD","F")
-        # if "tt" in h.GetName():
-        #     h.SetLineWidth(1)
-        #     legend.AddEntry(h,"ttbar","F")
 
     hStack.Draw("hist")
     hStack.GetXaxis().SetLimits(1000., 3000.);
     hStack.SetMinimum(1)
-    #hStack.SetMaximum(1300)
     hStack.SetMaximum(15000)
     for i, hSignal in enumerate(signalHistos):
         legend.AddEntry(hSignal,signalLabels[i],"L")
@@ -159,8 +144,6 @@ def stackHistos_InvMass(data,region,tagger,outFile):
 
 def getInvMass_h (sample,sample_cfg,region,tagger,luminosity=137000):#inverse pb
     tempFile = r.TFile.Open(sample_cfg["file"])
-    print(tempFile)
-    #print(sample_cfg["file"])
     print("{0}_mjY_mjH_mjjHY_{1}_{2}".format(sample,tagger,region))
     h3d      = tempFile.Get("{0}_mjY_mjH_mjjHY_{1}_{2}".format(sample,tagger,region))
     hInvMass = h3d.ProjectionZ("{0}_mjjHY_{1}_{2}".format(sample,tagger,region))
@@ -182,7 +165,6 @@ def getInvMass_h (sample,sample_cfg,region,tagger,luminosity=137000):#inverse pb
 
 def get_mSDY_h (sample,sample_cfg,region,tagger,luminosity=137000):#inverse pb
     tempFile = r.TFile.Open(sample_cfg["file"])
-    #print("{0}_mjH_mjHY_{1}_{2}".format(sample,tagger,region))
     h = tempFile.Get("{0}_mjY_{1}_{2}".format(sample,tagger,region))
     h.SetTitle("{0}_{1}_{2} Y-tagged jet mSD".format(sample,tagger,region))   
     h.Rebin(2) 
