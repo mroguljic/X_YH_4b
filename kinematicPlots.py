@@ -56,7 +56,7 @@ def stackHistos_mSDY(data,region,tagger,outFile):
     pt.SetLineWidth(0)
     pt.SetBorderSize(1)
     #pt.AddText("CMS Preliminary")
-    pt.AddText("#sigma #bf{( pp #rightarrow X #rightarrow HY #rightarrow b#bar{b}b#bar{b}) = 1 pb}")
+    pt.AddText("#sigma #bf{( pp #rightarrow X #rightarrow HY #rightarrow b#bar{b}b#bar{b}) = 10 fb}")
     pt.Draw()
 
     pt2 = r.TPaveText(0.71,0.92,0.9,0.95,"NDC")
@@ -126,7 +126,7 @@ def stackHistos_InvMass(data,region,tagger,outFile):
     pt.SetLineWidth(0)
     pt.SetBorderSize(1)
     #pt.AddText("CMS Preliminary")
-    pt.AddText("#sigma #bf{( pp #rightarrow X #rightarrow HY #rightarrow b#bar{b}b#bar{b}) = 1 pb}")
+    pt.AddText("#sigma #bf{( pp #rightarrow X #rightarrow HY #rightarrow b#bar{b}b#bar{b}) = 10 fb}")
     pt.Draw()
 
     pt2 = r.TPaveText(0.71,0.92,0.9,0.95,"NDC")
@@ -245,7 +245,7 @@ def nMinusOnePlot(data,cut,outFile,xTitle="",yTitle="",rangeX=[],stackTitle="",s
     pt.SetLineWidth(0)
     pt.SetBorderSize(1)
     #pt.AddText("CMS Preliminary")
-    pt.AddText("#sigma #bf{( pp #rightarrow X #rightarrow HY #rightarrow b#bar{b}b#bar{b}) = 1 pb}")
+    pt.AddText("#sigma #bf{( pp #rightarrow X #rightarrow HY #rightarrow b#bar{b}b#bar{b}) = 10 fb}")
     pt.Draw()
 
     pt2 = r.TPaveText(0.71,0.92,0.9,0.95,"NDC")
