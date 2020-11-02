@@ -63,7 +63,7 @@ if(options.isSignal):
     YMass = options.massY
     a.Cut("YMass","GenModel_YMass_{0}==1".format(YMass))
 
-totalEvents = a.GetActiveNode().DataFrame.Count().GetValue()
+nTotal = a.GetActiveNode().DataFrame.Count().GetValue()
 
 
 triggerList = ["HLT_AK8DiPFJet280_200_TrimMass30","HLT_AK8PFJet450","HLT_PFHT650_WideJetMJJ900DEtaJJ1p5","HLT_AK8PFHT650_TrimR0p1PT0p03Mass50",
@@ -79,7 +79,7 @@ triggersStringAll = ' || '.join(triggerList)
 
 beforeTrigCheckpoint = a.GetActiveNode()
 a.Cut("Triggers",triggersStringAll)
-nAfterTrig = a.GetActiveNode().DataFrame.Count().GetValue()
+nTrig = a.GetActiveNode().DataFrame.Count().GetValue()
 
 #Jet(s) definition
 jetDefinitionCuts = CutGroup("Jet definition")
@@ -89,7 +89,7 @@ jetDefinitionCuts.Add("pT1_cut","FatJet_pt[1]>200")
 jetDefinitionCuts.Add("Eta0_cut","abs(FatJet_eta[0])<2.4")
 jetDefinitionCuts.Add("Eta1_cut","abs(FatJet_eta[1])<2.4")
 a.Apply([jetDefinitionCuts])
-n_presel = a.GetActiveNode().DataFrame.Count().GetValue()
+nJets = a.GetActiveNode().DataFrame.Count().GetValue()
 
 #need to define variables which we want in n-1 histograms
 nm1Columns = VarGroup("NminusOne Columns")
@@ -123,7 +123,7 @@ for nkey in nminusOneNodes.keys():
 
 
 a.SetActiveNode(nminusOneNodes["full"])
-n_kinematic = a.GetActiveNode().DataFrame.Count().GetValue()
+nPreselection = a.GetActiveNode().DataFrame.Count().GetValue()
 
 a.Define("pnet0","FatJet_ParticleNetMD_probXbb[0]")
 a.Define("pnet1","FatJet_ParticleNetMD_probXbb[1]")
@@ -139,7 +139,7 @@ idxCuts   = CutGroup("idxCuts")
 idxCuts.Add("Higgs-tagged cut","idxH>=0")
 a.Apply([idxColumns])
 a.Apply([idxCuts])
-n_HMassCut = a.GetActiveNode().DataFrame.Count().GetValue()
+nHiggs = a.GetActiveNode().DataFrame.Count().GetValue()
 pnet_T = 0.90
 pnet_L = 0.80
 dak8_T = 0.90
@@ -167,9 +167,8 @@ taggerColumns.Add("dak8_AT","FatJet_deepTagMD_ZHbbvsQCD[idxH] > {0} && FatJet_de
 a.Apply([candidateColumns,taggerColumns])
 
 a.Cut("pt H cut","ptjH>300")
-n_HpTCut = a.GetActiveNode().DataFrame.Count().GetValue()
 a.Cut("pt Y cut","ptjY>200")
-n_YpTCut = a.GetActiveNode().DataFrame.Count().GetValue()
+nBoosted = a.GetActiveNode().DataFrame.Count().GetValue()
 
 h_pnet_pT_H = a.GetActiveNode().DataFrame.Histo2D(('{0}_pnet_pT_H'.format(options.process),'ParticleNet vs pT Y;ParticleNet_H score ;pT_H [GeV];',100,0,1,300,0,3000),'pnetH','ptjH')
 h_pnet_pT_Y = a.GetActiveNode().DataFrame.Histo2D(('{0}_pnet_pT_Y'.format(options.process),'ParticleNet vs pT Y;ParticleNet_Y score ;pT_Y [GeV];',100,0,1,300,0,3000),'pnetY','ptjY')
@@ -373,30 +372,28 @@ histos.append(h_pnet_mjj_mjY)
 
 
 
-hCutFlow = ROOT.TH1F("hCutFlow","Number of events after each cut",11,0.5,1.5)
-hCutFlow.AddBinContent(1,totalEvents)
-hCutFlow.AddBinContent(2,n_presel)
-hCutFlow.AddBinContent(3,n_kinematic)
-hCutFlow.AddBinContent(4,n_HMassCut)
-hCutFlow.AddBinContent(5,n_HpTCut)
-hCutFlow.AddBinContent(6,n_YpTCut)
-hCutFlow.AddBinContent(7,0)
-hCutFlow.AddBinContent(8,n_dak8_TT)
-hCutFlow.AddBinContent(9,n_dak8_LL)
-hCutFlow.AddBinContent(10,n_pnet_TT)
-hCutFlow.AddBinContent(11,n_pnet_LL)
+hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",10,0.5,10.5)
+hCutFlow.AddBinContent(1,nTotal)
+hCutFlow.AddBinContent(2,nTrig)
+hCutFlow.AddBinContent(3,nJets)
+hCutFlow.AddBinContent(4,nPreselection)
+hCutFlow.AddBinContent(5,nHiggs)
+hCutFlow.AddBinContent(6,nBoosted)
+hCutFlow.AddBinContent(7,n_pnet_TT)
+hCutFlow.AddBinContent(8,n_pnet_LL)
+hCutFlow.AddBinContent(9,n_dak8_TT)
+hCutFlow.AddBinContent(10,n_dak8_LL)
 
-hCutFlow.GetXaxis().SetBinLabel(1, "no cuts")
-hCutFlow.GetXaxis().SetBinLabel(2, "Preselection")
-hCutFlow.GetXaxis().SetBinLabel(3, "Delta Eta and mSD")
-hCutFlow.GetXaxis().SetBinLabel(4, "100 < H_mSD <140 GeV")
-hCutFlow.GetXaxis().SetBinLabel(5, "H_pT > 300 GeV")
-hCutFlow.GetXaxis().SetBinLabel(6, "Y_pT > 200 GeV")
-hCutFlow.GetXaxis().SetBinLabel(7, "60< Y_mSD")
-hCutFlow.GetXaxis().SetBinLabel(8, "dak8 TT")
-hCutFlow.GetXaxis().SetBinLabel(9, "dak8 LL")
-hCutFlow.GetXaxis().SetBinLabel(10, "pnet TT")
-hCutFlow.GetXaxis().SetBinLabel(11, "pnet LL")
+hCutFlow.GetXaxis().SetBinLabel(1, "No cuts")
+hCutFlow.GetXaxis().SetBinLabel(2, "Triggers")
+hCutFlow.GetXaxis().SetBinLabel(3, "Jets definition")
+hCutFlow.GetXaxis().SetBinLabel(4, "Preselection")
+hCutFlow.GetXaxis().SetBinLabel(5, "100<H m_{SD}<140")
+hCutFlow.GetXaxis().SetBinLabel(6, "H,Y pT")
+hCutFlow.GetXaxis().SetBinLabel(7, "pnet TT")
+hCutFlow.GetXaxis().SetBinLabel(8, "pnet LL")
+hCutFlow.GetXaxis().SetBinLabel(9, "dak8 TT")
+hCutFlow.GetXaxis().SetBinLabel(10, "dak8 LL")
 
 histos.append(hCutFlow)
 
