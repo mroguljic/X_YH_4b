@@ -383,6 +383,12 @@ hCutFlow.AddBinContent(7,n_pnet_TT)
 hCutFlow.AddBinContent(8,n_pnet_LL)
 hCutFlow.AddBinContent(9,n_dak8_TT)
 hCutFlow.AddBinContent(10,n_dak8_LL)
+if options.isData:
+    hCutFlow.SetBinContent(7,0)
+    hCutFlow.SetBinContent(8,0)
+    hCutFlow.SetBinContent(9,0)
+    hCutFlow.SetBinContent(10,0)
+
 
 hCutFlow.GetXaxis().SetBinLabel(1, "No cuts")
 hCutFlow.GetXaxis().SetBinLabel(2, "Triggers")
