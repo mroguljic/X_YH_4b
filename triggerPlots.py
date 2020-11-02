@@ -29,7 +29,7 @@ def get2DTrigEff(hPass,hTot,outputFile,RebinX=1,RebinY=1,xTitle="",yTitle="",xLi
     g = eff.GetPaintedHistogram()
     if(xLimits):
         g.GetXaxis().SetRangeUser(xLimits[0],xLimits[1])
-    if(xLimits):
+    if(yLimits):
         g.GetYaxis().SetRangeUser(yLimits[0],yLimits[1])
     r.gPad.Update()
     if(outputFile):
@@ -45,8 +45,16 @@ def getTrigEff(hPass,hTot,outputFile="",RebinX=1,xTitle="",yTitle="",color=0):
     h1.RebinX(RebinX)
     h2.RebinX(RebinX)
     eff = r.TEfficiency(h1,h2)
+    #Debug
+    c2 = r.TCanvas("c2","c2",1000,1000)
+    c2.cd()
+    h1.Draw("h")
+    h2.SetLineColor(r.kRed)
+    h2.Draw("h same")
+    c2.SaveAs("debug.png")
     eff.SetTitle(";{0};{1}".format(xTitle,yTitle))
     c = r.TCanvas("","",1500,1500)
+    c.cd()
     if(color!=0):
         eff.SetLineColor(color)
     eff.SetLineWidth(3)
@@ -68,7 +76,7 @@ def plotTrigEffs(efficiencies,labels,outputFile,xLimits=[],yLimits=[]):
             g = eff.GetPaintedGraph()
             if(xLimits):
                 g.GetXaxis().SetRangeUser(xLimits[0],xLimits[1])
-            if(xLimits):
+            if(yLimits):
                 g.GetYaxis().SetRangeUser(yLimits[0],yLimits[1])
             r.gPad.Update()
         else:
@@ -94,18 +102,19 @@ with open(options.json) as json_file:
         labels.append(sample_cfg["label"])
         h2D_Tot             = f.Get("{0}_noTriggers".format(sample))
         h2D_Tot.SetDirectory(0)
-        h_mJJ_Tot           = h2D_Tot.ProjectionX("mJJ_tot")
-        h_mJY_Tot           = h2D_Tot.ProjectionY("mJY_tot")
+        h_mJJ_Tot           = h2D_Tot.ProjectionX("mJJ_tot_{0}".format(sample),1)#excluding underflow bin!
+        h_mJY_Tot           = h2D_Tot.ProjectionY("mJY_tot_{0}".format(sample),1)
 
-        h2D_AllTrigers      = f.Get("{0}_triggersNoBtag".format(sample))
+        h2D_AllTrigers      = f.Get("{0}_triggersAll".format(sample))
         h2D_AllTrigers.SetDirectory(0)
-        h_mJJ_AllTrigers    = h2D_AllTrigers.ProjectionX("mJJ_all")
-        h_mJY_AllTrigers    = h2D_AllTrigers.ProjectionY("mJY_all")
 
-        h2D_withoutBTrig    = f.Get("{0}_triggersAll".format(sample))
+        h_mJJ_AllTrigers    = h2D_AllTrigers.ProjectionX("mJJ_all_{0}".format(sample),1)
+        h_mJY_AllTrigers    = h2D_AllTrigers.ProjectionY("mJY_all_{0}".format(sample),1)
+
+        h2D_withoutBTrig    = f.Get("{0}_triggersNoBtag".format(sample))
         h2D_withoutBTrig.SetDirectory(0)
-        h_mJJ_withoutBTrig  = h2D_withoutBTrig.ProjectionX("mJJ_no_b")
-        h_mJY_withoutBTrig  = h2D_withoutBTrig.ProjectionY("mJY_no_b")
+        h_mJJ_withoutBTrig  = h2D_withoutBTrig.ProjectionX("mJJ_no_b_{0}".format(sample),1)
+        h_mJY_withoutBTrig  = h2D_withoutBTrig.ProjectionY("mJY_no_b_{0}".format(sample),1)
 
         eff_mJJ = getTrigEff(h_mJJ_AllTrigers,h_mJJ_Tot,"".format(sample),RebinX=5,xTitle="m_{jj}[GeV]",yTitle="Efficiency/50 GeV",color=sample_cfg["color"])
         effs_mJJ.append(eff_mJJ)
