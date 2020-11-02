@@ -213,6 +213,9 @@ candidateColumns.name = "candidateColumns For Trigger"
 idxColumns.name = "idxColumns For Trigger"
 idxCuts.name = "idxCuts For Trigger"
 a.Apply([jetDefinitionCuts,nm1Columns,nm1Cuts,idxColumns,idxCuts,candidateColumns])
+a.Cut("pt H cut For Trigger","ptjH>300")
+a.Cut("pt Y cut For Trigger","ptjY>200")
+
 triggersStringAll = ' || '.join(triggerList)
 triggersStringNoBtag = ' || '.join(triggerList[:-1])
 h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
