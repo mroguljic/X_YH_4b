@@ -4,6 +4,11 @@
 
 from array import array
 from ROOT import *
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+import mplhep as hep
 
 #---------------------------------------------------------------------
 # to run in the batch mode (to prevent canvases from popping up)
@@ -35,29 +40,37 @@ gStyle.SetLabelFont(42, "XYZ")
 
 def makeEffVsMistagTGraph(histo_b,histo_nonb,allowNegative):
 
-    b_eff = array('f')
-    nonb_eff = array('f')
-    tot_b= histo_b.GetEntries()
-    tot_nonb= histo_nonb.GetEntries()
-
-    print "Total number of jets:"
-    print tot_b,"b jets"
-    print tot_nonb,"non-b jets"
-
-    b_abovecut = 0
-    nonb_abovecut = 0
-
     firstbin = histo_b.GetXaxis().FindBin(0.) - 1
     if allowNegative: firstbin = -1
     lastbin = histo_b.GetXaxis().GetNbins() + 1 # '+ 1' to also include any entries in the overflow bin
 
-    for i in xrange(lastbin,firstbin,-1) : # from 'overflow' bin to 0, in steps of "-1"
+    b_eff = array('f')
+    nonb_eff = array('f')
+    tot_b= histo_b.Integral(firstbin,lastbin)
+    tot_nonb= histo_nonb.Integral(firstbin,lastbin)
+
+    print("Total number of jets:")
+    print(tot_b,"b jets")
+    print(tot_nonb,"non-b jets")
+
+    b_abovecut = 0
+    nonb_abovecut = 0
+
+    wpT = (0.,0.)
+    wpL = (0.,0.)
+
+    for i in range(lastbin,firstbin,-1) : # from 'overflow' bin to 0, in steps of "-1"
         b_abovecut += histo_b.GetBinContent(i)
         nonb_abovecut += histo_nonb.GetBinContent(i)
         b_eff.append(b_abovecut/tot_b)
         nonb_eff.append(nonb_abovecut/tot_nonb)
+        if(histo_b.GetBinCenter(i)==0.905):
+            wpT = b_eff[-1],nonb_eff[-1]
+        if(histo_b.GetBinCenter(i)==0.805):
+            wpL = b_eff[-1],nonb_eff[-1]
+        #print(b_eff[-1],nonb_eff[-1],histo_b.GetBinCenter(i),histo_nonb.GetBinCenter(i))
 
-    return TGraph(len(b_eff), b_eff, nonb_eff)
+    return TGraph(len(b_eff), b_eff, nonb_eff), b_eff, nonb_eff, wpT,wpL
 
 def higgsDependanceOnMassY():
         # input file
@@ -235,15 +248,7 @@ def compareTaggers():
         # close the input file
     inputFile.Close()
 
-def main():
-        # input file
-    inputFile = TFile.Open('efficiencies.root')
-
-
-    color = [kOrange, kRed, kCyan, kGreen, kMagenta, kBlue, kBlack]
-    legend = ['matched H vs FatJet0','matched H vs FatJet1','matched Y vs FatJet0','matched Y vs FatJet1',]
-
-
+def plotSelectedGraphs(graphs,legend,colors,output):
     # create canvas
     c = TCanvas("c", "",1000,1000)
     c.cd()
@@ -252,10 +257,9 @@ def main():
     c.SetLogy()
 
     # empty 2D background historgram to simplify defining axis ranges to display
-    bkg = TH2F('bkg','title',100,0.,1.,100,1e-4,1.)
-    bkg.GetYaxis().SetTitleOffset(1.2)
+    bkg = TH2F('bkg','title;Signal efficiency;Background mistag rate;',100,0.,1.,100,1e-3,1.)
+    bkg.GetYaxis().SetTitleOffset(1.5)
     bkg.Draw()
-
     # create legend
     leg = TLegend(.20,.80-4*0.04,.40,.80)
     leg.SetBorderSize(0)
@@ -264,48 +268,63 @@ def main():
     leg.SetTextFont(42)
     leg.SetTextSize(0.03)
 
-    massPoints = [100,125,200,300]
-    g = [0]*4
-    for massPoint in massPoints:
-        discrVsPt_H    = inputFile.Get('matchedH_pt_vs_tag_Y{0}'.format(massPoint))
-        discrVsPt_Y    = inputFile.Get('matchedY_pt_vs_tag_Y{0}'.format(massPoint))
-        discrVsPt_Jet0 = inputFile.Get('FatJet[0]_pt_vs_tag_QCD')
-        discrVsPt_Jet1 = inputFile.Get('FatJet[1]_pt_vs_tag_QCD')
-        print("Pt bin width in GeV: {0}".format(discrVsPt_H.ProjectionX().GetBinWidth(10)))
-        # make y-axis projections to get 1D discriminator distributions
-        discr_H    = discrVsPt_H.ProjectionY()
-        discr_Y    = discrVsPt_Y.ProjectionY()
-        discr_Jet0 = discrVsPt_Jet0.ProjectionY()
-        discr_Jet1 = discrVsPt_Jet1.ProjectionY()
-
-        allowNegative = False
-        # get eff vs mistag rate graph
-        g[0] = makeEffVsMistagTGraph(discr_H,discr_Jet0,allowNegative)
-        g[1] = makeEffVsMistagTGraph(discr_H,discr_Jet1,allowNegative)
-        g[2] = makeEffVsMistagTGraph(discr_Y,discr_Jet0,allowNegative)
-        g[3] = makeEffVsMistagTGraph(discr_Y,discr_Jet1,allowNegative)
-        for i in range(4):
-            g[i].SetLineWidth(2)
-            g[i].SetLineColor(color[i])
-            g[i].Draw('l')
-            leg.AddEntry(g[i],legend[i],"l")
-
-        leg.Draw()
-
-        gPad.RedrawAxis()
-
+    for i,g in enumerate(graphs):
+        g.SetLineWidth(2)
+        g.SetLineColor(colors[i])
+        g.Draw('l')
+        leg.AddEntry(g,legend[i],"l")
+    
+    leg.Draw()
+    gPad.RedrawAxis()
         # save the plot
-        c.SaveAs('ROC_Y{0}.png'.format(massPoint))
+    c.SaveAs(output)
 
-        leg.Clear()
-        for gr in g:
-            gr.Delete()
+    leg.Clear()
     c.Close()
-        #bkg.Delete()
 
-        # close the input file
-    inputFile.Close()
+def main():
+    # input file
+    sigFile = TFile.Open("results/histograms/lumiScaled/X1600_Y100_normalized.root")
+    bkgFile = TFile.Open("results/histograms/lumiScaled/QCD_normalized.root")
+    ttbarFile = TFile.Open("results/histograms/lumiScaled/ttbar_normalized.root")
 
+    legend = ["Signal vs QCD", "Signal vs ttbar"]
+    colors = [1,2]
 
+    graphs = []
+    h_sig_pnet = sigFile.Get("X1600_Y100_nm1_pnet0")
+    #h_sig_pnet = sigFile.Get("X1600_pnet_pT_Y").ProjectionX()
+    h_sig_pnet.SetDirectory(0)
+    #h_bkg_pnet = bkgFile.Get("QCD_pnet_pT_Y").ProjectionX()
+    h_bkg_pnet = bkgFile.Get("QCD_nm1_pnet0")
+    #h_tt_pnet = ttbarFile.Get("ttbar_pnet_pT_Y").ProjectionX()
+    h_tt_pnet = ttbarFile.Get("ttbar_nm1_pnet0")
+
+    allowNegative = False
+    # get eff vs mistag rate graph
+    gVsQCD, effVsSig, mistagVsQCD, wpTVsQCD,wpLVsQCD = makeEffVsMistagTGraph(h_sig_pnet,h_bkg_pnet,allowNegative)
+    graphs.append(gVsQCD)
+    gVsTT, effVsTT, mistagVsTT, wpTVsTT,wpLVsTT = makeEffVsMistagTGraph(h_sig_pnet,h_tt_pnet,allowNegative)
+    graphs.append(gVsTT)
+    print(wpTVsQCD)
+    allowNegative = False
+    # get eff vs mistag rate graph
+    #plotSelectedGraphs(graphs,legend,colors,"results/plots/ROC.png")
+    effVsSig = np.asarray(effVsSig)
+    mistagVsQCD = np.asarray(mistagVsQCD)
+    effVsTT = np.asarray(effVsTT)
+    mistagVsTT = np.asarray(mistagVsTT)
+    plt.style.use([hep.style.CMS])
+    f, axs = plt.subplots()
+    axs.set_ylim([0.5*10e-3,1])
+    plt.yscale("log")
+    plt.grid(which='both')
+    plt.plot(effVsSig,mistagVsQCD,lineStyle="-" ,color="b",label="Signal vs QCD")
+    plt.plot(effVsTT,mistagVsTT,lineStyle="-",color="k", label=r"Signal vs $t\bar{t}$")
+    plt.plot([wpTVsQCD[0],wpTVsTT[0]], [wpTVsQCD[1],wpTVsTT[1]], marker='o', markersize=5, color="r",label="WP = 0.9",linewidth=0)
+    plt.plot([wpLVsQCD[0],wpLVsTT[0]], [wpLVsQCD[1],wpLVsTT[1]], marker='o', markersize=5, color="m",label="WP = 0.8",linewidth=0)
+    axs.legend()
+    plt.savefig("results/plots/ROC.png")
 if __name__ == '__main__':
-    compareTaggers()
+    main()
+    #compareTaggers()
