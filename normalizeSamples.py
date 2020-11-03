@@ -115,14 +115,14 @@ def mergeSamples(inFiles,outFile,regexMatch,regexReplace):
     f.Close()
 
 def createPseudo(inFiles,outFile):
+    h_dict = {}   
     for inFile in inFiles:
         f      = r.TFile.Open(inFile) 
-        h_dict = {}   
         for key in f.GetListOfKeys():
             h = key.ReadObj()
             hName = h.GetName()
             h.SetDirectory(0)
-            hKey = re.sub("[a-zA-Z]+","data_obs",hName,count=1)
+            hKey = re.sub("[a-zA-Z]+","pseudodata",hName,count=1)
             if not hKey in h_dict:
                 h.SetName(hKey)
                 h_dict[hKey] = h
