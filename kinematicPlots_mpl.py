@@ -389,7 +389,7 @@ def getmJY_h(h,rebin):
     hist, edges = hist2array(h,return_edges=True)
     return hist,edges[0]
 
-def plotMJY(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRange=[]):
+def plotMJY(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRange=[],sigXSec=20):
     histosSig = []
     labelsSig = []
     histosBkg = []
@@ -399,8 +399,11 @@ def plotMJY(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         hTemp = tempFile.Get("{0}_mjY_{1}_{2}".format(sample,tagger,region))
         if("X" in sample):
             h,edges = getmJY_h(hTemp,rebin)
+            #signal is normalized to 20pb in .root file
+            h = h*(sigXSec/20.)
             histosSig.append([h,edges])
             labelsSig.append(sample_cfg["label"])
+
         else:
             h,edges = getmJY_h(hTemp,rebin)
             histosBkg.append([h,edges])
@@ -428,13 +431,12 @@ def plotMJY(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         ax.set_xlim(xRange)
     hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=None, fontname=None, fontsize=None)
     hep.cms.text("Simulation WIP",loc=1)
-    #plt.text(0.37, 0.85, r"pp$\rightarrow$X$\rightarrow$HY$\rightarrow\bar{b}\bar{b}$bb cross sections = 10 fb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
-    plt.plot([], [], ' ', label=r"pp$\rightarrow$X$\rightarrow$HY$\rightarrow\bar{b}\bar{b}$bb cross sections = 10 fb")
-    plt.legend(loc="best")#loc = (0.4,0.2))
+    plt.text(0.37, 0.85, r"pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$ cross sections = 1 pb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
+    plt.legend(loc=(0.05,0.55),ncol=2)#loc = 'best'
     print("Saving {0}".format(outFile))
     plt.savefig(outFile)
 
-def plotMJJ(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRange=[]):
+def plotMJJ(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRange=[],sigXSec=20.):
     histosSig = []
     labelsSig = []
     histosBkg = []
@@ -444,6 +446,8 @@ def plotMJJ(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         h3d = tempFile.Get("{0}_mjY_mjH_mjjHY_{1}_{2}".format(sample,tagger,region))
         if("X" in sample):
             h,edges = getInvMass_h(h3d,rebin)
+            #signal is normalized to 20pb in .root file
+            h = h*(sigXSec/20.)
             histosSig.append([h,edges])
             labelsSig.append(sample_cfg["label"])
         else:
@@ -473,9 +477,8 @@ def plotMJJ(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         ax.set_xlim(xRange)
     hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=None, fontname=None, fontsize=None)
     hep.cms.text("Simulation WIP",loc=1)
-    plt.legend(loc = (0.4,0.2))
-    #plt.text(0.37, 0.85, r"pp$\rightarrow$X$\rightarrow$HY$\rightarrow\bar{b}\bar{b}$bb cross sections = 10 fb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
-    plt.plot([], [], ' ', label=r"pp$\rightarrow$X$\rightarrow$HY$\rightarrow\bar{b}\bar{b}$bb cross sections = 10 fb")    
+    plt.text(0.37, 0.85, r"pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$ cross sections = 1 pb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
+    plt.legend(loc=(0.05,0.55),ncol=2)#loc = 'best'
     print("Saving {0}".format(outFile))
     plt.savefig(outFile)    
 
@@ -516,15 +519,15 @@ if __name__ == '__main__':
         nMinusOnePlotSeparated(data,"mSD1","results/plots/nm1_separated/lin/mSD1.png",xTitle="Sub-leading jet $m_{SD}[GeV]$",yTitle="Events/10 GeV",xRange=[30,330],log=False)
         nMinusOnePlotSeparated(data,"DeltaEta","results/plots/nm1_separated/lin/DeltaEta.png",xTitle="$\Delta \eta (j1,j2)$",yTitle="Events/0.05",xRange=[0,4.5],log=False)
 
-        plotMJJ(data,"results/plots/kinematic/mJJ_pnet_TT.png","pnet","TT",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6])
-        plotMJJ(data,"results/plots/kinematic/mJJ_pnet_LL.png","pnet","LL",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6])
-        plotMJJ(data,"results/plots/kinematic/mJJ_dak8_TT.png","dak8","TT",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6])
-        plotMJJ(data,"results/plots/kinematic/mJJ_dak8_LL.png","dak8","LL",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6])
+        plotMJJ(data,"results/plots/kinematic/mJJ_pnet_TT.png","pnet","TT",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6],sigXSec=1.)
+        plotMJJ(data,"results/plots/kinematic/mJJ_pnet_LL.png","pnet","LL",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6],sigXSec=1.)
+        plotMJJ(data,"results/plots/kinematic/mJJ_dak8_TT.png","dak8","TT",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6],sigXSec=1.)
+        plotMJJ(data,"results/plots/kinematic/mJJ_dak8_LL.png","dak8","LL",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6],sigXSec=1.)
 
-        plotMJY(data,"results/plots/kinematic/mJY_pnet_TT.png","pnet","TT",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/10 GeV",xRange=[60,300],yRange=[1,10e6])
-        plotMJY(data,"results/plots/kinematic/mJY_pnet_LL.png","pnet","LL",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/10 GeV",xRange=[60,300],yRange=[1,10e6])
-        plotMJY(data,"results/plots/kinematic/mJY_dak8_TT.png","dak8","TT",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/10 GeV",xRange=[60,300],yRange=[1,10e6])
-        plotMJY(data,"results/plots/kinematic/mJY_dak8_LL.png","dak8","LL",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/10 GeV",xRange=[60,300],yRange=[1,10e6])
+        plotMJY(data,"results/plots/kinematic/mJY_pnet_TT.png","pnet","TT",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/10 GeV",xRange=[60,300],yRange=[1,10e6],sigXSec=1.)
+        plotMJY(data,"results/plots/kinematic/mJY_pnet_LL.png","pnet","LL",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/10 GeV",xRange=[60,300],yRange=[1,10e6],sigXSec=1.)
+        plotMJY(data,"results/plots/kinematic/mJY_dak8_TT.png","dak8","TT",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/10 GeV",xRange=[60,300],yRange=[1,10e6],sigXSec=1.)
+        plotMJY(data,"results/plots/kinematic/mJY_dak8_LL.png","dak8","LL",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/10 GeV",xRange=[60,300],yRange=[1,10e6],sigXSec=1.)
         
         cutFlowWithData(data,"results/plots/cutflows/total_cutflow.png",xTitle="",yTitle="Events",xRange=[1.5,6.5],log=True)
         for sample, sample_cfg in data.items():
