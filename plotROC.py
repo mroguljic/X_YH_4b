@@ -306,7 +306,6 @@ def main():
     graphs.append(gVsQCD)
     gVsTT, effVsTT, mistagVsTT, wpTVsTT,wpLVsTT = makeEffVsMistagTGraph(h_sig_pnet,h_tt_pnet,allowNegative)
     graphs.append(gVsTT)
-    print(wpTVsQCD)
     allowNegative = False
     # get eff vs mistag rate graph
     #plotSelectedGraphs(graphs,legend,colors,"results/plots/ROC.png")
@@ -318,6 +317,8 @@ def main():
     f, axs = plt.subplots()
     axs.set_ylim([0.5*10e-3,1])
     plt.yscale("log")
+    axs.set_xlabel("Signal efficiency")
+    axs.set_ylabel("Mistag rate")
     plt.grid(which='both')
     plt.plot(effVsSig,mistagVsQCD,lineStyle="-" ,color="b",label="Signal vs QCD")
     plt.plot(effVsTT,mistagVsTT,lineStyle="-",color="k", label=r"Signal vs $t\bar{t}$")
