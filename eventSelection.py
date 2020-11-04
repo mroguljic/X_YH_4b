@@ -144,7 +144,7 @@ nm1Cuts.Add("mjjHY_cut","mjjHY > 700")
 nminusOneNodes = a.Nminus1(a.GetActiveNode(),nm1Cuts) # NOTE: Returns the nodes with N-1 selections
 nminusOneHists = HistGroup('nminus1Hists') # NOTE: HistGroup used to batch operate on histograms
 
-nMinusOneLimits = {"DeltaEta":[0.,5.0,100],"mSD0":[0.,330.,33],"mSD1":[30.,330.,33],"mjjHY":[0.,3000.,30]}#[xMin,xMax,nBins]
+nMinusOneLimits = {"DeltaEta":[0.,5.0,100],"mSD0":[0.,600.,60],"mSD1":[0.,600.,60],"mjjHY":[0.,3000.,30]}#[xMin,xMax,nBins]
 
 # Add hists to group and write out at the end
 for nkey in nminusOneNodes.keys():
