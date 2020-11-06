@@ -5,7 +5,6 @@ import time, os
 from optparse import OptionParser
 from collections import OrderedDict
 
-from TIMBER.Tools import CMS_lumi
 from TIMBER.Tools.Common import *
 from TIMBER.Analyzer import *
 
@@ -34,6 +33,10 @@ parser.add_option('-d', '--outdir', metavar='ODIR', type='string', action='store
                 default   =   '.',
                 dest      =   'outdir',
                 help      =   'Output directory.')
+parser.add_option('-y', '--year', metavar='year', type='string', action='store',
+                default   =   '2016',
+                dest      =   'year',
+                help      =   'Dataset year')
 # parser.add_option('-t', '--tagger', metavar='FatJet_Tagger', type='string', action='store',
 #                 default   =   'FatJet_ParticleNetMD_probXbb',
 #                 dest      =   'tagger',
@@ -48,11 +51,11 @@ parser.add_option('-d', '--outdir', metavar='ODIR', type='string', action='store
 start_time = time.time()
 
 
-CompileCpp('/afs/cern.ch/work/m/mrogulji/X_YH_4b/TIMBER/TIMBER/Framework/massMatching.cc') 
-CompileCpp("/afs/cern.ch/work/m/mrogulji/X_YH_4b/TIMBER/TIMBER/Framework/common.cc") 
-CompileCpp("/afs/cern.ch/work/m/mrogulji/X_YH_4b/TIMBER/TIMBER/Framework/deltaRMatching.cc") 
-CompileCpp("/afs/cern.ch/work/m/mrogulji/X_YH_4b/TIMBER/TIMBER/Framework/taggerOrdering.cc") 
-CompileCpp("/afs/cern.ch/work/m/mrogulji/X_YH_4b/TIMBER/TIMBER/Framework/helperFunctions.cc") 
+CompileCpp('TIMBER/Framework/massMatching.cc') 
+CompileCpp("TIMBER/Framework/common.cc") 
+CompileCpp("TIMBER/Framework/deltaRMatching.cc") 
+CompileCpp("TIMBER/Framework/taggerOrdering.cc") 
+CompileCpp("TIMBER/Framework/helperFunctions.cc") 
 
 
 a = analyzer(options.input)
@@ -61,12 +64,23 @@ histos      = []
 # small_node = Node('small',small_rdf) # makes a node out of the dataframe
 # a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
 
+deepJetM = 0.3093
+deepJetL = 0.0614
+if(options.year=="2017"):
+    deepJetM = 0.3033
+    deepJetL = 0.0521 
+if(options.year=="2018"):
+    deepJetM = 0.2770
+    deepJetL = 0.0494 
+
 if(options.isSignal):
     YMass = options.massY
     a.Cut("YMass","GenModel_YMass_{0}==1".format(YMass))
 
 nTotal = a.GetActiveNode().DataFrame.Count().GetValue()
 
+MetFilters = ["Flag_BadPFMuonFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_HBHENoiseIsoFilter","Flag_HBHENoiseFilter","Flag_globalSuperTightHalo2016Filter","Flag_goodVertices"]
+MetFiltersString = ' && '.join(MetFilters)
 
 triggerList = ["HLT_AK8DiPFJet280_200_TrimMass30","HLT_AK8PFJet450","HLT_PFHT650_WideJetMJJ900DEtaJJ1p5","HLT_AK8PFHT650_TrimR0p1PT0p03Mass50",
 "HLT_AK8PFHT700_TrimR0p1PT0p03Mass50","HLT_PFHT800","HLT_PFHT900","HLT_AK8PFJet360_TrimMass30","HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20"]
@@ -77,10 +91,11 @@ if options.process == "DataB":
 #Without HLT_AK8PFJet450 for DataB
     triggerList.remove("HLT_AK8PFJet450")
 
-triggersStringAll = ' || '.join(triggerList)
-
+triggersStringAll = ' || '.join(triggerList)    
 beforeTrigCheckpoint = a.GetActiveNode()
 a.Cut("Triggers",triggersStringAll)
+if(options.isData):
+    a.Cut("MET",MetFiltersString)
 nTrig = a.GetActiveNode().DataFrame.Count().GetValue()
 
 #Jet(s) definition
@@ -97,8 +112,8 @@ evtColumns.Add("HT_2p4","calculateHT(nJet,Jet_eta,Jet_pt,30.0,2.4)")
 evtColumns.Add("HT_5p0","calculateHT(nJet,Jet_eta,Jet_pt,30.0,5.0)")
 evtColumns.Add("nAK4_2p4","nAK4(nJet,Jet_eta,Jet_pt,30.0,2.4)")
 evtColumns.Add("nAK4_5p0","nAK4(nJet,Jet_eta,Jet_pt,30.0,5.0)")
-evtColumns.Add("n_bAK4","n_bAK4(nJet,Jet_eta,Jet_phi,Jet_pt,Jet_btagDeepB,0.8,nFatJet,FatJet_eta,FatJet_phi)")
-evtColumns.Add("n_nonbAK4","n_nonbAK4(nJet,Jet_eta,Jet_phi,Jet_pt,Jet_btagDeepB,0.5,nFatJet,FatJet_eta,FatJet_phi)")
+evtColumns.Add("n_bAK4","n_bAK4(nJet,Jet_eta,Jet_phi,Jet_pt,Jet_btagDeepB,{0},nFatJet,FatJet_eta,FatJet_phi)".format(deepJetM))
+evtColumns.Add("n_nonbAK4","n_nonbAK4(nJet,Jet_eta,Jet_phi,Jet_pt,Jet_btagDeepB,{0},nFatJet,FatJet_eta,FatJet_phi)".format(deepJetL))
 evtColumns.Add("FatJet_pt0","FatJet_pt[0]")
 evtColumns.Add("FatJet_pt1","FatJet_pt[1]")
 evtColumns.Add("FatJet_eta0","FatJet_eta[0]")
@@ -141,7 +156,7 @@ nm1Cuts.Add("mSD0_cut","mSD0 > 30")
 nm1Cuts.Add("mSD1_cut","mSD1 > 30")
 nm1Cuts.Add("mjjHY_cut","mjjHY > 700")
 
-nminusOneNodes = a.Nminus1(a.GetActiveNode(),nm1Cuts) # NOTE: Returns the nodes with N-1 selections
+nminusOneNodes = a.Nminus1(nm1Cuts) # NOTE: Returns the nodes with N-1 selections
 nminusOneHists = HistGroup('nminus1Hists') # NOTE: HistGroup used to batch operate on histograms
 
 nMinusOneLimits = {"DeltaEta":[0.,5.0,100],"mSD0":[0.,600.,60],"mSD1":[0.,600.,60],"mjjHY":[0.,3000.,30]}#[xMin,xMax,nBins]
@@ -159,7 +174,7 @@ a.SetActiveNode(nminusOneNodes["full"])
 nPreselection = a.GetActiveNode().DataFrame.Count().GetValue()
 h_HT_2p4 = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT_2p4_presel'.format(options.process),';AK4 HT, pT>30GeV and |eta|<2.4;Events/10 GeV;',300,0,3000),"HT_2p4")
 h_HT_5p0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT_5p0_presel'.format(options.process),';AK4 HT, pT>30GeV and |eta|<5.0;Events/10 GeV;',300,0,3000),"HT_5p0")
-h_nAK4_2p4 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nAK4_2p4_presel'.format(options.process),';Number of AK4, pT>30GeV and |eta|<2.4;Jets;',10,0,10),"nAK4_2p4")
+h_nAK4_2p4 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nAK4_2p4_presel'.format(options.process),';Number of AK4, pT>30GeV and |eta|<2.4;Jets;',15,0,15),"nAK4_2p4")
 h_bAK4 = a.GetActiveNode().DataFrame.Histo1D(('{0}_n_bAK4_presel'.format(options.process),';Number of b-tagged AK4;Jets;',10,0,10),"n_bAK4")
 h_nonbAK4 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nonbAK4_presel'.format(options.process),';Number of non b-tagged AK4;Jets;',10,0,10),"n_nonbAK4")
 h_pt0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_pt0_presel'.format(options.process),';Leading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt0")
@@ -183,10 +198,16 @@ h_nm1_pnet0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet0'.format(option
 h_nm1_pnet1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet1'.format(options.process),';Subleading jet ParticleNet score;Events/0.01;',100,0,1),"pnet1")
 h_nm1_pnetLow = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnetLow'.format(options.process),';Lower ParticleNet score;Events/0.01;',100,0,1),"pnetLow")
 h_nm1_pnetHigh = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnetHigh'.format(options.process),';Higher ParticleNet score;Events/0.01;',100,0,1),"pnetHigh")
+h_nPV = a.GetActiveNode().DataFrame.Histo1D(('{0}_nPV_presel'.format(options.process),';Number of primary vertices;Events;',100,0,100),"PV_npvsGood")
+h_nPV_vs_mSD0 = a.GetActiveNode().DataFrame.Histo2D(('{0}_nPV_mSD0_presel'.format(options.process),';Number of primary vertices;Leading jet m_{SD};',100,0,100,60,0.,600.),"PV_npvsGood","mSD0")
+h_nPV_vs_mSD1 = a.GetActiveNode().DataFrame.Histo2D(('{0}_nPV_mSD1_presel'.format(options.process),';Number of primary vertices;Subleading jet m_{SD};',100,0,100,60,0.,600.),"PV_npvsGood","mSD1")
 histos.append(h_nm1_pnet1)
 histos.append(h_nm1_pnet0)
 histos.append(h_nm1_pnetLow)
 histos.append(h_nm1_pnetHigh)
+histos.append(h_nPV)
+histos.append(h_nPV_vs_mSD0)
+histos.append(h_nPV_vs_mSD1)
 
 idxColumns = VarGroup("idxColumns")
 idxColumns.Add("idxH","higgsMassMatchingAlt(FatJet_msoftdrop[0],FatJet_msoftdrop[1])")
@@ -262,6 +283,9 @@ checkpoint  = a.GetActiveNode()
 #-----Trigger study part------
 #Separated from the rest of the cut tree
 a.SetActiveNode(beforeTrigCheckpoint)
+if(options.isData):
+    a.Cut("MET For Trigger",MetFiltersString)
+#need to change names to create nodes with different names than already existing
 jetDefinitionCuts.name = "Jet Definition For Trigger"
 nm1Columns.name = "NminusOne Columns For Trigger"
 nm1Cuts.name = "Preselection For Trigger"
@@ -271,6 +295,7 @@ idxCuts.name = "idxCuts For Trigger"
 a.Apply([jetDefinitionCuts,nm1Columns,nm1Cuts,idxColumns,idxCuts,candidateColumns])
 a.Cut("pt H cut For Trigger","ptjH>300")
 a.Cut("pt Y cut For Trigger","ptjY>200")
+
 
 triggersStringAll = ' || '.join(triggerList)
 triggersStringNoBtag = ' || '.join(triggerList[:-1])
@@ -467,5 +492,5 @@ for h in histos:
 nminusOneHists.Do('Write')
 out_f.Close()
 
-a.PrintNodeTree('node_tree',verbose=True)
+#a.PrintNodeTree('node_tree',verbose=True) #not supported at the moment
 print("Total time: "+str((time.time()-start_time)/60.) + ' min')
