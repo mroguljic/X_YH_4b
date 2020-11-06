@@ -114,7 +114,7 @@ def plotSidebandsMJJ_mpl(h_3d,outFile,xTitle="",yTitle="",yRange=[],xRange=[],lo
     if(xRange):
         axs[0].set_xlim(xRange)
     hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
-    hep.cms.text("Simulation WIP",loc=1)
+    hep.cms.text("Simulation WiP",loc=1)
     plt.legend(loc="best")#loc = (0.4,0.2))
 
     plt.sca(axs[1])#switch to lower pad
@@ -171,7 +171,7 @@ def plotSidebandsMJY_mpl(h_3d,outFile,xTitle="",yTitle="",yRange=[],xRange=[],lo
     if(xRange):
         axs[0].set_xlim(xRange)
     hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
-    hep.cms.text("Simulation WIP",loc=1)
+    hep.cms.text("Simulation WiP",loc=1)
     plt.legend(loc="best")#loc = (0.4,0.2))
 
     plt.sca(axs[1])#switch to lower pad
@@ -183,7 +183,7 @@ def plotSidebandsMJY_mpl(h_3d,outFile,xTitle="",yTitle="",yRange=[],xRange=[],lo
     print("Saving {0}".format(outFile))
     plt.savefig(outFile)
 
-def compareShapes(h1,h2,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=False,label1="",label2="",labelR="Data/MC"):
+def compareShapes(h1,h2,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=False,label1="",label2="",labelR="Data/MC",data=False):
     hRpf_mj = createRatio(h1,h2)
     hRatio = []
     hRatioErrors = []
@@ -213,8 +213,11 @@ def compareShapes(h1,h2,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=Fals
         axs[0].set_ylim(yRange)
     if(xRange):
         axs[0].set_xlim(xRange)
-    hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
-    hep.cms.text("Simulation WIP",loc=1)
+    if data:
+        hep.cms.text("WiP",loc=1)
+        hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
+    else:
+        hep.cms.text("Simulation WiP",loc=1)
     plt.legend(loc="best")#loc = (0.4,0.2))
 
     plt.sca(axs[1])#switch to lower pad
@@ -336,31 +339,35 @@ hMJJ_QCD_AT.Rebin(10)
 hMJY_QCD_AT.Rebin(2)
 hMJY_data_AT.Rebin(2)
 
-# compareShapes(hMJJ_QCD_AT,hMJJ_data_AT,"results/sidebands/lin/QCD_data_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Events/100GeV",label1="Multijet",label2="data_obs",yRange=[0,60000],xRange=[750, 3050],log=False)
-# compareShapes(hMJJ_QCD_AT,hMJJ_data_AT,"results/sidebands/log/QCD_data_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Events/100GeV",label1="Multijet",label2="data_obs",yRange=[None,10e5],xRange=[750, 3050],log=True)
-# compareShapes(hMJY_QCD_AT,hMJY_data_AT,"results/sidebands/lin/QCD_data_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Multijet",label2="data_obs",yRange=[0,35000],xRange=[50, 300],log=False)
-# compareShapes(hMJY_QCD_AT,hMJY_data_AT,"results/sidebands/log/QCD_data_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Multijet",label2="data_obs",yRange=[None,10e5],xRange=[50, 300],log=True)
+compareShapes(hMJJ_QCD_AT,hMJJ_data_AT,"results/sidebands/lin/QCD_data_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Events/100GeV",label1="Multijet",label2="data_obs",yRange=[0,60000],xRange=[750, 3050],log=False,data=True)
+compareShapes(hMJJ_QCD_AT,hMJJ_data_AT,"results/sidebands/log/QCD_data_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Events/100GeV",label1="Multijet",label2="data_obs",yRange=[None,10e5],xRange=[750, 3050],log=True,data=True)
+compareShapes(hMJY_QCD_AT,hMJY_data_AT,"results/sidebands/lin/QCD_data_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Multijet",label2="data_obs",yRange=[0,35000],xRange=[50, 300],log=False,data=True)
+compareShapes(hMJY_QCD_AT,hMJY_data_AT,"results/sidebands/log/QCD_data_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Multijet",label2="data_obs",yRange=[None,10e5],xRange=[50, 300],log=True,data=True)
 
 
 hMJJ_QCD_TT = f.Get("QCD_mjjHY_pnet_TT")
 hMJJ_QCD_LL = f.Get("QCD_mjjHY_pnet_LL")
 hMJY_QCD_TT = f.Get("QCD_mjY_pnet_TT")
 hMJY_QCD_LL = f.Get("QCD_mjY_pnet_LL")
+
+hMJJ_QCD_TT.Scale(1/hMJJ_QCD_TT.Integral())
+hMJJ_QCD_LL.Scale(1/hMJJ_QCD_LL.Integral())
+hMJJ_QCD_AT.Scale(1/hMJJ_QCD_AT.Integral())
+hMJY_QCD_TT.Scale(1/hMJY_QCD_TT.Integral())
+hMJY_QCD_LL.Scale(1/hMJY_QCD_LL.Integral())
+hMJY_QCD_AT.Scale(1/hMJY_QCD_AT.Integral())
+
 hMJJ_QCD_LL.Rebin(10)
 hMJY_QCD_LL.Rebin(2)
 hMJJ_QCD_TT.Rebin(10)
 hMJY_QCD_TT.Rebin(2)
-hMJJ_QCD_LL.Scale(hMJJ_QCD_AT.Integral()/hMJJ_QCD_LL.Integral())
-hMJJ_QCD_TT.Scale(hMJJ_QCD_AT.Integral()/hMJJ_QCD_TT.Integral())
-hMJY_QCD_LL.Scale(hMJY_QCD_AT.Integral()/hMJY_QCD_LL.Integral())
-hMJY_QCD_TT.Scale(hMJY_QCD_AT.Integral()/hMJY_QCD_TT.Integral())
 
 
-compareShapes(hMJJ_QCD_TT,hMJJ_QCD_AT,"results/sidebands/lin/QCD_TTAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Scaled events/100GeV",label1="Tight-tight",label2="Anti-tag",yRange=[0,60000],xRange=[750, 3050],log=False)
-compareShapes(hMJJ_QCD_TT,hMJJ_QCD_AT,"results/sidebands/log/QCD_TTAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Scaled events/100GeV",label1="Tight-tight",label2="Anti-tag",yRange=[None,10e5],xRange=[750, 3050],log=True)
-compareShapes(hMJJ_QCD_LL,hMJJ_QCD_AT,"results/sidebands/lin/QCD_LLAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Scaled events/100GeV",label1="Loose-loose",label2="Anti-tag",yRange=[0,60000],xRange=[750, 3050],log=False)
-compareShapes(hMJJ_QCD_LL,hMJJ_QCD_AT,"results/sidebands/log/QCD_LLAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Scaled events/100GeV",label1="Loose-loose",label2="Anti-tag",yRange=[None,10e5],xRange=[750, 3050],log=True)
-compareShapes(hMJY_QCD_TT,hMJY_QCD_AT,"results/sidebands/lin/QCD_TTAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Tight-tight",label2="Anti-tag",yRange=[0,45000],xRange=[50, 300],log=False)
-compareShapes(hMJY_QCD_TT,hMJY_QCD_AT,"results/sidebands/log/QCD_TTAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Tight-tight",label2="Anti-tag",yRange=[None,10e5],xRange=[50, 300],log=True)
-compareShapes(hMJY_QCD_LL,hMJY_QCD_AT,"results/sidebands/lin/QCD_LLAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Loose-loose",label2="Anti-tag",yRange=[0,45000],xRange=[50, 300],log=False)
-compareShapes(hMJY_QCD_LL,hMJY_QCD_AT,"results/sidebands/log/QCD_LLAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Loose-loose",label2="Anti-tag",yRange=[None,10e5],xRange=[50, 300],log=True)
+compareShapes(hMJJ_QCD_TT,hMJJ_QCD_AT,"results/sidebands/lin/QCD_TTAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Tight-tight",label2="Anti-tag",yRange=[0,0.5],xRange=[750, 3050],log=False,data=False)
+compareShapes(hMJJ_QCD_TT,hMJJ_QCD_AT,"results/sidebands/log/QCD_TTAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Tight-tight",label2="Anti-tag",yRange=[None,10e1],xRange=[750, 3050],log=True,data=False)
+compareShapes(hMJJ_QCD_LL,hMJJ_QCD_AT,"results/sidebands/lin/QCD_LLAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Loose-loose",label2="Anti-tag",yRange=[0,0.5],xRange=[750, 3050],log=False,data=False)
+compareShapes(hMJJ_QCD_LL,hMJJ_QCD_AT,"results/sidebands/log/QCD_LLAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Loose-loose",label2="Anti-tag",yRange=[None,10e1],xRange=[750, 3050],log=True,data=False)
+compareShapes(hMJY_QCD_TT,hMJY_QCD_AT,"results/sidebands/lin/QCD_TTAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Tight-tight",label2="Anti-tag",yRange=[0,0.5],xRange=[50, 300],log=False,data=False)
+compareShapes(hMJY_QCD_TT,hMJY_QCD_AT,"results/sidebands/log/QCD_TTAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Tight-tight",label2="Anti-tag",yRange=[None,10e1],xRange=[50, 300],log=True,data=False)
+compareShapes(hMJY_QCD_LL,hMJY_QCD_AT,"results/sidebands/lin/QCD_LLAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Loose-loose",label2="Anti-tag",yRange=[0,0.5],xRange=[50, 300],log=False,data=False)
+compareShapes(hMJY_QCD_LL,hMJY_QCD_AT,"results/sidebands/log/QCD_LLAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Loose-loose",label2="Anti-tag",yRange=[None,10e1],xRange=[50, 300],log=True,data=False)
