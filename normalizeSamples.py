@@ -5,13 +5,14 @@ import re
 
 
 
-def normalizeProcess(process,xsec,luminosity,outFile):
+def normalizeProcess(process,xsec,luminosity,year,outFile):
     h_dict = {}
-    file     = "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/nonScaled/{0}.root".format(process)
+    file     = "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/{0}/nonScaled/{1}.root".format(year,process)
     f        = r.TFile.Open(file)
     print(file)
     hCutFlow = f.Get("{0}_cutflow".format(process))
     nProc    = hCutFlow.GetBinContent(1)#number of processed events
+    print(nProc,xsec*luminosity)
     nLumi    = xsec*luminosity
     scaling  = nLumi/nProc
     print("Scale: {0:.4f}".format(scaling))
@@ -32,7 +33,7 @@ def normalizeProcess(process,xsec,luminosity,outFile):
         histo.Write()
     f.Close()
 
-def mergeHT(fJson,luminosity,process,outFile):
+def mergeHT(fJson,luminosity,process,year,outFile):
     #process - QCD, ZJets, WJets
     with open(fJson) as json_file:
         data = json.load(json_file)
@@ -41,7 +42,7 @@ def mergeHT(fJson,luminosity,process,outFile):
             if not process in sample:
                 continue
             xsec     = sample_cfg['xsec']
-            file     = "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/nonScaled/{0}.root".format(sample)
+            file     = "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/{0}/nonScaled/{1}.root".format(year,sample)
             f        = r.TFile.Open(file)
             print(file)
             hCutFlow = hCutFlow = f.Get("{0}_cutflow".format(sample))
@@ -139,7 +140,8 @@ def createPseudo(inFiles,outFile):
 
 
 if __name__ == '__main__':
-    luminosity = 35900
+    luminosity = float(sys.argv[2])#35900,41500,59800
+    year     = sys.argv[3]
     with open(sys.argv[1]) as json_file:
         config = json.load(json_file)
         for sample, sample_cfg in config.items():
@@ -149,23 +151,27 @@ if __name__ == '__main__':
                 continue
             if("ZJets" in sample):
                 continue
-    #         normalizeProcess(sample,sample_cfg['xsec'],luminosity,"results/histograms/lumiScaled/{0}_normalized.root".format(sample))
-    # mergeHT(sys.argv[1],luminosity,"QCD","results/histograms/lumiScaled/QCD_normalized.root")
-    # mergeHT(sys.argv[1],luminosity,"ZJets","results/histograms/lumiScaled/ZJets_normalized.root")
-    # mergeHT(sys.argv[1],luminosity,"WJets","results/histograms/lumiScaled/WJets_normalized.root")
+            #normalizeProcess(sample,sample_cfg['xsec'],luminosity,year,"results/histograms/{0}/lumiScaled/{1}_normalized.root".format(year,sample))
+    # mergeHT(sys.argv[1],luminosity,"QCD",year,"results/histograms/{0}/lumiScaled/QCD_normalized.root".format(year))
+    # mergeHT(sys.argv[1],luminosity,"ZJets",year,"results/histograms/{0}/lumiScaled/ZJets_normalized.root".format(year))
+    # mergeHT(sys.argv[1],luminosity,"WJets",year,"results/histograms/{0}/lumiScaled/WJets_normalized.root".format(year))
 
-    #mergeData("/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/nonScaled/data_obs.root","/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/data_obs.root")
-    createPseudo(["results/histograms/lumiScaled/QCD_normalized.root","results/histograms/lumiScaled/ttbar_normalized.root"],"/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/pseudodata.root")
+    mergeData("/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/{0}/nonScaled/data_obs.root".format(year,sample),"/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/{0}/lumiScaled/data_obs.root".format(year,sample))
+    createPseudo(["results/histograms/{0}/lumiScaled/QCD_normalized.root".format(year),"results/histograms/{0}/lumiScaled/ttbar_normalized.root".format(year)],"/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/{0}/lumiScaled/pseudodata.root".format(year))
+    # ST_samples = ["ST_antitop_normalized.root","ST_top_normalized.root","ST_tW_antitop_normalized.root","ST_tW_top_normalized.root"]
+    # ST_files = []
+    # for sample in ST_samples:
+    #     ST_files.append("results/histograms/{0}/lumiScaled/{1}".format(year,sample))
     
-#     ST_files = ["results/histograms/lumiScaled/ST_antitop_normalized.root",
-# "results/histograms/lumiScaled/ST_top_normalized.root",
-# "results/histograms/lumiScaled/ST_tW_antitop_normalized.root",
-# "results/histograms/lumiScaled/ST_tW_top_normalized.root"]
-#     VH_files = ["results/histograms/lumiScaled/WminusH_normalized.root",
-# "results/histograms/lumiScaled/WplusH_normalized.root",
-# "results/histograms/lumiScaled/ZH_normalized.root"]
-#     VJets_files = ["results/histograms/lumiScaled/ZJets_normalized.root",
-# "results/histograms/lumiScaled/WJets_normalized.root"]
-#     mergeSamples(ST_files,"results/histograms/lumiScaled/ST_normalized.root",".+top_","ST_")    
-#     mergeSamples(VH_files,"results/histograms/lumiScaled/VH_normalized.root","[a-zA-Z]+H","VH")
-#     mergeSamples(VJets_files,"results/histograms/lumiScaled/VJets_normalized.root","[A-Z]Jets","VJets")
+    # VH_samples = ["WminusH_normalized.root","WplusH_normalized.root","ZH_normalized.root"]
+    # VH_files = []
+    # for sample in VH_samples:
+    #     VH_files.append("results/histograms/{0}/lumiScaled/{1}".format(year,sample))
+    # VJets_samples = ["ZJets_normalized.root","WJets_normalized.root"]
+    # VJets_files = []
+    # for sample in VJets_samples:
+    #     VJets_files.append("results/histograms/{0}/lumiScaled/{1}".format(year,sample))
+
+    # mergeSamples(ST_files,"results/histograms/{0}/lumiScaled/ST_normalized.root".format(year),".+top_","ST_")    
+    # mergeSamples(VH_files,"results/histograms/{0}/lumiScaled/VH_normalized.root".format(year),"[a-zA-Z]+H","VH")
+    # mergeSamples(VJets_files,"results/histograms/{0}/lumiScaled/VJets_normalized.root".format(year),"[A-Z]Jets","VJets")

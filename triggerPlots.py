@@ -120,9 +120,9 @@ with open(options.json) as json_file:
         effs_mJJ.append(eff_mJJ)
         eff_mJY = getTrigEff(h_mJY_AllTrigers,h_mJY_Tot,"".format(sample),RebinX=2,xTitle="m_{Y}[GeV]",yTitle="Efficiency/20 GeV",color=sample_cfg["color"])
         effs_mJY.append(eff_mJY)
-        get2DTrigEff(h2D_AllTrigers,h2D_Tot,"results/plots/trigger/{0}_mJJ_mJ_allTrigger.png".format(sample),RebinX=5,RebinY=2,xTitle="m_{jj} / 50 GeV",yTitle="m_{Y} / 20 GeV",xLimits=[750,1500],yLimits=[30,330])
-        get2DTrigEff(h2D_withoutBTrig,h2D_Tot,"results/plots/trigger/{0}_mJJ_mJ_noBTrigger.png".format(sample),RebinX=5,RebinY=2,xTitle="m_{jj} / 50 GeV",yTitle="m_{Y} / 20 GeV",xLimits=[750,1500],yLimits=[30,330])
+        get2DTrigEff(h2D_AllTrigers,h2D_Tot,"results/plots/2017/trigger/{0}_mJJ_mJ_allTrigger.png".format(sample),RebinX=5,RebinY=2,xTitle="m_{jj} / 50 GeV",yTitle="m_{Y} / 20 GeV",xLimits=[750,1500],yLimits=[30,330])
+        get2DTrigEff(h2D_withoutBTrig,h2D_Tot,"results/plots/2017/trigger/{0}_mJJ_mJ_noBTrigger.png".format(sample),RebinX=5,RebinY=2,xTitle="m_{jj} / 50 GeV",yTitle="m_{Y} / 20 GeV",xLimits=[750,1500],yLimits=[30,330])
         f.Close()
 
-plotTrigEffs(effs_mJJ,labels,"results/plots/trigger/all_mJJ.png",xLimits=[750,1500],yLimits=[0.5,1.1])
-plotTrigEffs(effs_mJY,labels,"results/plots/trigger/all_mJY.png",xLimits=[30,330],yLimits=[0.5,1.1])
+plotTrigEffs(effs_mJJ,labels,"results/plots/2017/trigger/all_mJJ.png",xLimits=[750,1500],yLimits=[0.0,1.1])
+plotTrigEffs(effs_mJY,labels,"results/plots/2017/trigger/all_mJY.png",xLimits=[30,330],yLimits=[0.0,1.1])
