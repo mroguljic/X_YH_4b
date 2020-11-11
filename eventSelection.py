@@ -80,18 +80,21 @@ if(options.isSignal):
 nTotal = a.GetActiveNode().DataFrame.Count().GetValue()
 
 MetFilters = ["Flag_BadPFMuonFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_HBHENoiseIsoFilter","Flag_HBHENoiseFilter","Flag_globalSuperTightHalo2016Filter","Flag_goodVertices"]
-MetFiltersString = ' && '.join(MetFilters)
+#MetFiltersString = ' && '.join(MetFilters)
+MetFiltersString = a.GetFlagString(MetFilters)
 
+baselineTrigger="HLT_PFJet260"
 triggerList = ["HLT_AK8DiPFJet280_200_TrimMass30","HLT_AK8PFJet450","HLT_PFHT650_WideJetMJJ900DEtaJJ1p5","HLT_AK8PFHT650_TrimR0p1PT0p03Mass50",
 "HLT_AK8PFHT700_TrimR0p1PT0p03Mass50","HLT_PFHT800","HLT_PFHT900","HLT_AK8PFJet360_TrimMass30","HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20"]
-if options.process == "DataH":
-#Without HLT_PFHT800 for DataH
-    triggerList.remove("HLT_PFHT800")
-if options.process == "DataB":
-#Without HLT_AK8PFJet450 for DataB
-    triggerList.remove("HLT_AK8PFJet450")
 
-triggersStringAll = ' || '.join(triggerList)    
+if(options.year=="2017"):
+    triggerList=["HLT_PFHT1050","HLT_AK8PFJet400_TrimMass30","HLT_AK8PFJet420_TrimMass30","HLT_AK8PFHT800_TrimMass50",
+"HLT_PFJet500","HLT_AK8PFJet500","HLT_AK8PFJet330_PFAK8BTagCSV_p17"]
+if(options.year=="2018"):
+   triggerList=["HLT_PFHT1050","HLT_AK8PFJet400_TrimMass30","HLT_AK8PFJet420_TrimMass30","HLT_AK8PFHT800_TrimMass50",
+"HLT_PFJet500","HLT_AK8PFJet500","HLT_AK8PFJet330_PFAK8BTagCSV_p17","HLT_AK8PFJet330_TrimMass30_PFAK8BoostedDoubleB_np2"]
+
+triggersStringAll = a.GetTriggerString(triggerList)    
 beforeTrigCheckpoint = a.GetActiveNode()
 a.Cut("Triggers",triggersStringAll)
 if(options.isData):
@@ -283,6 +286,7 @@ checkpoint  = a.GetActiveNode()
 #-----Trigger study part------
 #Separated from the rest of the cut tree
 a.SetActiveNode(beforeTrigCheckpoint)
+a.Cut("Baseline",baselineTrigger)
 if(options.isData):
     a.Cut("MET For Trigger",MetFiltersString)
 #need to change names to create nodes with different names than already existing
@@ -297,8 +301,8 @@ a.Cut("pt H cut For Trigger","ptjH>300")
 a.Cut("pt Y cut For Trigger","ptjY>200")
 
 
-triggersStringAll = ' || '.join(triggerList)
-triggersStringNoBtag = ' || '.join(triggerList[:-1])
+triggersStringAll = a.GetTriggerString(triggerList)  
+triggersStringNoBtag = a.GetTriggerString(triggerList[:-1])
 h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
 a.Cut("triggers_all",triggersStringAll)
 h_triggersAll = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersAll'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
