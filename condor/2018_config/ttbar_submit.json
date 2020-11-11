@@ -1,0 +1,8 @@
+{
+  "ttbar": {
+    "maxEvents": -1,
+    "dataset": "/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER,/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-ext2-v2-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 377.96,
+    "color": 4
+  }
+}

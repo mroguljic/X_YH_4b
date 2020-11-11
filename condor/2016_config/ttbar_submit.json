@@ -1,0 +1,8 @@
+{
+  "ttbar": {
+    "maxEvents": -1,
+    "dataset": "/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/bortigno-NanoTuples-30Apr2020_RunIISummer16MiniAODv3-PUMoriond17_94X_v3-v1-44377faedc969dcf531f5eb3e501054b/USER",
+    "xsec": 377.96,
+    "color": 4
+  }
+}

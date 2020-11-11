@@ -1,0 +1,86 @@
+{
+  "ZJets400": {
+    "maxEvents": -1,
+    "dataset":"/ZJetsToQQ_HT400to600_qc19_4j_TuneCP5_13TeV-madgraphMLM-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 145.3,
+    "color": 8
+  },
+  "ZJets600": {
+    "maxEvents": -1,
+    "dataset":"/ZJetsToQQ_HT600to800_qc19_4j_TuneCP5_13TeV-madgraphMLM-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 34.29,
+    "color": 8
+  },
+  "ZJets800": {
+    "maxEvents": -1,
+    "dataset":"/ZJetsToQQ_HT-800toInf_qc19_4j_TuneCP5_13TeV-madgraphMLM-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 18.67,
+    "color": 8
+  },
+  "WJets400": {
+    "maxEvents": -1,
+    "dataset":"/WJetsToQQ_HT400to600_qc19_3j_TuneCP5_13TeV-madgraphMLM-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 315.6,
+    "color": 44
+  },
+  "WJets600": {
+    "maxEvents": -1,
+    "dataset":"/WJetsToQQ_HT600to800_qc19_3j_TuneCP5_13TeV-madgraphMLM-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 68.57,
+    "color": 44
+  },
+  "WJets800": {
+    "maxEvents": -1,
+    "dataset":"/WJetsToQQ_HT-800toInf_qc19_3j_TuneCP5_13TeV-madgraphMLM-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 34.9,
+    "color": 44
+  },
+  "ST_antitop": {
+    "maxEvents": -1,
+    "dataset":"/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 67.91,
+    "color": 46
+  },
+  "ST_top": {
+    "maxEvents": -1,
+    "dataset":"/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 113.3,
+    "color": 47
+  },
+  "ST_tW_top": {
+    "maxEvents": -1,
+    "dataset":"/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-ext1-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 34.91,
+    "color": 48
+  },
+  "ST_tW_antitop": {
+    "maxEvents": -1,
+    "dataset":"/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-ext1-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 34.97,
+    "color": 49
+  },
+  "WminusH": {
+    "maxEvents": -1,
+    "dataset":"/WminusH_HToBB_WToQQ_M125_13TeV_powheg_pythia8/slaurila-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 0.36,
+    "color": 49
+  },
+  "WplusH": {
+    "maxEvents": -1,
+    "dataset":"/WplusH_HToBB_WToQQ_M125_13TeV_powheg_pythia8/slaurila-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 0.57,
+    "color": 49
+  },
+  "ZH": {
+    "maxEvents": -1,
+    "dataset":"/ZH_HToBB_ZToQQ_M125_13TeV_powheg_pythia8/slaurila-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 0.52,
+    "color": 49
+  },
+  "ttH": {
+    "maxEvents": -1,
+    "dataset":"/ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8/slaurila-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v2-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 0.54,
+    "color": 49
+  }
+}

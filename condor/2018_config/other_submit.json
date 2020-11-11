@@ -1,0 +1,14 @@
+{
+  "ST_antitop": {
+    "maxEvents": -1,
+    "dataset":"/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 67.91,
+    "color": 46
+  },
+  "ST_top": {
+    "maxEvents": -1,
+    "dataset":"/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/gouskos-NanoTuples-30Apr2020_RunIIAutumn18MiniAOD-102X_v15-v1-27c3bb388d728791ecf339ca1f755fce/USER",
+    "xsec": 113.3,
+    "color": 47
+  }
+}
