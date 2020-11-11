@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os, sys, re
+from pathlib import Path
 
 from templates import *
 
@@ -11,8 +12,9 @@ def split_jobs(files, njobs):
 
 
 
-def create_jobs(config, dry=True, batch=False, queue=''):
+def create_jobs(config, dry=True, batch=False, queue='',year="2016",out_dir=""):
     for sample, sample_cfg in config.items():
+      print(sample)
       if re.match('^X', sample):
         proctype = 'sig'
       elif re.match('^Data', sample):
@@ -20,10 +22,12 @@ def create_jobs(config, dry=True, batch=False, queue=''):
       else:
         proctype = 'bkg'
       
-      run_dir = os.path.join(os.getcwd(), sample)
-      os.mkdir(run_dir)
-      os.mkdir(os.path.join(run_dir, 'input'))
-      os.mkdir(os.path.join(run_dir, 'output'))
+      run_dir = os.path.join(os.getcwd(),sample)
+      sample_dir = os.path.join(out_dir, sample)
+
+      Path(os.path.join(run_dir, 'input')).mkdir(parents=True, exist_ok=True)
+      Path(os.path.join(run_dir, 'output')).mkdir(parents=True, exist_ok=True)
+      Path(os.path.join(sample_dir, 'output')).mkdir(parents=True, exist_ok=True)
 
       dataset = sample_cfg["dataset"]
       if dataset.split('/')[-1] == "USER":
@@ -32,7 +36,6 @@ def create_jobs(config, dry=True, batch=False, queue=''):
         instance = 'global'
       das_query=[]
       for singleDataset in dataset.split(','):
-        print(singleDataset)
         query = "dasgoclient -query='file dataset={singleDataset} instance={instance}'".format(**locals())
         das_query.append(query)
       import subprocess
@@ -42,7 +45,6 @@ def create_jobs(config, dry=True, batch=False, queue=''):
         for file in files:
           allFiles.append(file.decode("utf-8"))
       njobs = int(max(1, len(allFiles)/50))
-
       job_list = split_jobs(allFiles, njobs)
       for n, l  in enumerate(list(job_list)):
         #print(n,l)
@@ -51,7 +53,9 @@ def create_jobs(config, dry=True, batch=False, queue=''):
         run_script = run_script.replace('NJOB', str(n))
         run_script = run_script.replace('SAMPLE', sample)
         run_script = run_script.replace('RUNDIR', run_dir)
+        run_script = run_script.replace('OUTDIR', sample_dir)
         run_script = run_script.replace('PROCTYPE', proctype)
+        run_script = run_script.replace('YEAR', year)
         if(proctype=="sig"):
           ymass = sample_cfg["YMass"]
           run_script = run_script.replace('YMASS',str(ymass))
@@ -88,7 +92,9 @@ def main():
 
   parser.add_argument('-v', '--verbose', action='store_true')
   parser.add_argument('-c', '--config', help='Job config file in JSON format')
+  parser.add_argument('-y', '--year', help='Dataset year')
   parser.add_argument('-d', '--dry', action='store_true', help='Dry run (Do not submit jobs)')
+  parser.add_argument('-o', '--outdir',help='Output directory')
   
   subparsers = parser.add_subparsers(dest='command')
   
@@ -105,10 +111,10 @@ def main():
     config = json.load(config_file)
 
   if args.command == 'run':
-    create_jobs(config, args.dry)
+    create_jobs(config, args.dry,out_dir=option.outdir, year=args.year)
 
   if args.command == 'batch':
-    create_jobs(config, args.dry, batch=True, queue=args.queue)
+    create_jobs(config, args.dry, batch=True, queue=args.queue, year=args.year,out_dir=args.outdir)
       
 
       

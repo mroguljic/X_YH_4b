@@ -6,11 +6,11 @@ source timber-env/bin/activate
 export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
 
 export RUN_DIR=RUNDIR
-
+export OUT_DIR=OUTDIR
 cd ${RUN_DIR}
 
-echo "${WORK_DIR}/eventSelection.py -i ${RUN_DIR}/input/INPUT -o ${RUN_DIR}/output/output_NJOB.root --PROCTYPE -p SAMPLE -m YMASS"
-python ${WORK_DIR}/eventSelection.py -i ${RUN_DIR}/input/INPUT -o ${RUN_DIR}/output/output_NJOB.root --PROCTYPE -p SAMPLE -m YMASS
+echo "${WORK_DIR}/eventSelection.py -i ${RUN_DIR}/input/INPUT -o ${OUT_DIR}/output/output_NJOB.root --PROCTYPE -p SAMPLE -m YMASS -y YEAR"
+python ${WORK_DIR}/eventSelection.py -i ${RUN_DIR}/input/INPUT -o ${OUT_DIR}/output/output_NJOB.root --PROCTYPE -p SAMPLE -m YMASS -y YEAR
 '''
 
 condor_template = """universe              = vanilla
