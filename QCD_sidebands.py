@@ -108,18 +108,20 @@ def plotSidebandsMJJ_mpl(h_3d,outFile,xTitle="",yTitle="",yRange=[],xRange=[],lo
     axs[0].legend()
     axs[1].set_xlabel(xTitle)
     axs[0].set_ylabel(yTitle)
+    plt.ylabel(yTitle,horizontalalignment='right', y=1.0)
     axs[1].set_ylabel("Data/MC")
     if(yRange):
         axs[0].set_ylim(yRange)
     if(xRange):
         axs[0].set_xlim(xRange)
-    hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
+    hep.cms.lumitext(text='59.8 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     plt.legend(loc="best")#loc = (0.4,0.2))
 
     plt.sca(axs[1])#switch to lower pad
     axs[1].axhline(y=1.0, xmin=0, xmax=1, color="r")
     axs[1].set_ylim([0.0,2.0])
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
 
     plt.errorbar(centresRatio,hRatio, yerr=hRatioErrors, fmt='o',color="k")    
 
@@ -166,17 +168,19 @@ def plotSidebandsMJY_mpl(h_3d,outFile,xTitle="",yTitle="",yRange=[],xRange=[],lo
     axs[1].set_xlabel(xTitle)
     axs[0].set_ylabel(yTitle)
     axs[1].set_ylabel("Data/MC")
+    plt.ylabel(yTitle, horizontalalignment='right', x=1.0)
     if(yRange):
         axs[0].set_ylim(yRange)
     if(xRange):
         axs[0].set_xlim(xRange)
-    hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
+    hep.cms.lumitext(text='59.8 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     plt.legend(loc="best")#loc = (0.4,0.2))
 
     plt.sca(axs[1])#switch to lower pad
     axs[1].axhline(y=1.0, xmin=0, xmax=1, color="r")
     axs[1].set_ylim([0.0,2.0])
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
 
     plt.errorbar(centresRatio,hRatio, yerr=hRatioErrors, fmt='o',color="k")    
 
@@ -187,9 +191,16 @@ def compareShapes(h1,h2,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=Fals
     hRpf_mj = createRatio(h1,h2)
     hRatio = []
     hRatioErrors = []
+    hDataErrors = []
+    hData = []
+    hDataCentres = []
     for i in range(1,hRpf_mj.GetNbinsX()+1):
         hRatio.append(hRpf_mj.GetBinContent(i))
         hRatioErrors.append(hRpf_mj.GetBinError(i))
+    for i in range(1,h2.GetNbinsX()+1):
+        hData.append(h2.GetBinContent(i))
+        hDataCentres.append(h2.GetBinCenter(i))
+        hDataErrors.append(h2.GetBinError(i))
     #numpy histograms
     h1, h1Edges = hist2array(h1,return_edges=True)
     h2, h2Edges = hist2array(h2,return_edges=True)
@@ -204,10 +215,16 @@ def compareShapes(h1,h2,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=Fals
     if(log):
         axs[0].set_yscale("log")
     hep.histplot(h1,h1Edges[0],stack=False,ax=axs[0],label = label1, histtype="step",color="r")
-    hep.histplot(h2,h2Edges[0],stack=False,ax=axs[0],label = label2, histtype="step",color="k")
+
+    if(label2=="data_obs"):
+        print("Plotting data")
+        plt.errorbar(hDataCentres,hData, yerr=hDataErrors, fmt='o',color="k",label = label2)
+    else:
+        hep.histplot(h2,h2Edges[0],stack=False,ax=axs[0],label = label2, histtype="step",color="k")
+    plt.ylabel(yTitle, horizontalalignment='right', y=1.0)
     axs[0].legend()
     axs[1].set_xlabel(xTitle)
-    axs[0].set_ylabel(yTitle)
+    #axs[0].set_ylabel(yTitle)
     axs[1].set_ylabel(labelR)
     if(yRange):
         axs[0].set_ylim(yRange)
@@ -215,14 +232,16 @@ def compareShapes(h1,h2,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=Fals
         axs[0].set_xlim(xRange)
     if data:
         hep.cms.text("WiP",loc=1)
-        hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
+        hep.cms.lumitext(text='59.8 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
     else:
+        hep.cms.lumitext(text='2018', ax=axs[0], fontname=None, fontsize=None)
         hep.cms.text("Simulation WiP",loc=1)
     plt.legend(loc="best")#loc = (0.4,0.2))
 
     plt.sca(axs[1])#switch to lower pad
     axs[1].axhline(y=1.0, xmin=0, xmax=1, color="r")
     axs[1].set_ylim([0.0,2.0])
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
 
     plt.errorbar(centresRatio,hRatio, yerr=hRatioErrors, fmt='o',color="k")    
 
@@ -316,8 +335,8 @@ def plotSidebands(h_3d,taggerName):
 
 
 
-f = r.TFile.Open("results/histograms/lumiScaled/QCD_normalized.root")
-g = r.TFile.Open("results/histograms/lumiScaled/data_obs.root")
+f = r.TFile.Open("results/histograms/2018/lumiScaled/QCD_normalized.root")
+g = r.TFile.Open("results/histograms/2018/lumiScaled/data_obs.root")
 
 h_3d_pnet = f.Get("QCD_pnet_mjj_mjY")
 
@@ -339,10 +358,10 @@ hMJJ_QCD_AT.Rebin(10)
 hMJY_QCD_AT.Rebin(2)
 hMJY_data_AT.Rebin(2)
 
-compareShapes(hMJJ_QCD_AT,hMJJ_data_AT,"results/sidebands/lin/QCD_data_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Events/100GeV",label1="Multijet",label2="data_obs",yRange=[0,60000],xRange=[750, 3050],log=False,data=True)
-compareShapes(hMJJ_QCD_AT,hMJJ_data_AT,"results/sidebands/log/QCD_data_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Events/100GeV",label1="Multijet",label2="data_obs",yRange=[None,10e5],xRange=[750, 3050],log=True,data=True)
-compareShapes(hMJY_QCD_AT,hMJY_data_AT,"results/sidebands/lin/QCD_data_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Multijet",label2="data_obs",yRange=[0,35000],xRange=[50, 300],log=False,data=True)
-compareShapes(hMJY_QCD_AT,hMJY_data_AT,"results/sidebands/log/QCD_data_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Multijet",label2="data_obs",yRange=[None,10e5],xRange=[50, 300],log=True,data=True)
+compareShapes(hMJJ_QCD_AT,hMJJ_data_AT,"results/plots/2018/sidebands/lin/QCD_data_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Events/100GeV",label1="Multijet",label2="data_obs",yRange=[0,60000],xRange=[750, 3050],log=False,data=True)
+compareShapes(hMJJ_QCD_AT,hMJJ_data_AT,"results/plots/2018/sidebands/log/QCD_data_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Events/100GeV",label1="Multijet",label2="data_obs",yRange=[None,10e5],xRange=[750, 3050],log=True,data=True)
+compareShapes(hMJY_QCD_AT,hMJY_data_AT,"results/plots/2018/sidebands/lin/QCD_data_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Multijet",label2="data_obs",yRange=[0,35000],xRange=[50, 300],log=False,data=True)
+compareShapes(hMJY_QCD_AT,hMJY_data_AT,"results/plots/2018/sidebands/log/QCD_data_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20GeV",label1="Multijet",label2="data_obs",yRange=[None,10e5],xRange=[50, 300],log=True,data=True)
 
 
 hMJJ_QCD_TT = f.Get("QCD_mjjHY_pnet_TT")
@@ -363,11 +382,11 @@ hMJJ_QCD_TT.Rebin(10)
 hMJY_QCD_TT.Rebin(2)
 
 
-compareShapes(hMJJ_QCD_TT,hMJJ_QCD_AT,"results/sidebands/lin/QCD_TTAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Tight-tight",label2="Anti-tag",yRange=[0,0.5],xRange=[750, 3050],log=False,data=False)
-compareShapes(hMJJ_QCD_TT,hMJJ_QCD_AT,"results/sidebands/log/QCD_TTAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Tight-tight",label2="Anti-tag",yRange=[None,10e1],xRange=[750, 3050],log=True,data=False)
-compareShapes(hMJJ_QCD_LL,hMJJ_QCD_AT,"results/sidebands/lin/QCD_LLAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Loose-loose",label2="Anti-tag",yRange=[0,0.5],xRange=[750, 3050],log=False,data=False)
-compareShapes(hMJJ_QCD_LL,hMJJ_QCD_AT,"results/sidebands/log/QCD_LLAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Loose-loose",label2="Anti-tag",yRange=[None,10e1],xRange=[750, 3050],log=True,data=False)
-compareShapes(hMJY_QCD_TT,hMJY_QCD_AT,"results/sidebands/lin/QCD_TTAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Tight-tight",label2="Anti-tag",yRange=[0,0.5],xRange=[50, 300],log=False,data=False)
-compareShapes(hMJY_QCD_TT,hMJY_QCD_AT,"results/sidebands/log/QCD_TTAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Tight-tight",label2="Anti-tag",yRange=[None,10e1],xRange=[50, 300],log=True,data=False)
-compareShapes(hMJY_QCD_LL,hMJY_QCD_AT,"results/sidebands/lin/QCD_LLAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Loose-loose",label2="Anti-tag",yRange=[0,0.5],xRange=[50, 300],log=False,data=False)
-compareShapes(hMJY_QCD_LL,hMJY_QCD_AT,"results/sidebands/log/QCD_LLAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Loose-loose",label2="Anti-tag",yRange=[None,10e1],xRange=[50, 300],log=True,data=False)
+compareShapes(hMJJ_QCD_TT,hMJJ_QCD_AT,"results/plots/2018/sidebands/lin/QCD_TTAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Tight-tight",label2="Anti-tag",labelR="TT/AT",yRange=[0,0.5],xRange=[750, 3050],log=False,data=False)
+compareShapes(hMJJ_QCD_TT,hMJJ_QCD_AT,"results/plots/2018/sidebands/log/QCD_TTAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Tight-tight",label2="Anti-tag",labelR="TT/AT",yRange=[None,10e1],xRange=[750, 3050],log=True,data=False)
+compareShapes(hMJJ_QCD_LL,hMJJ_QCD_AT,"results/plots/2018/sidebands/lin/QCD_LLAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Loose-loose",label2="Anti-tag",labelR="LL/AT",yRange=[0,0.5],xRange=[750, 3050],log=False,data=False)
+compareShapes(hMJJ_QCD_LL,hMJJ_QCD_AT,"results/plots/2018/sidebands/log/QCD_LLAT_MJJ.png",xTitle="Dijet invariant mass [GeV]",yTitle="Event fraction/100GeV",label1="Loose-loose",label2="Anti-tag",labelR="LL/AT",yRange=[None,10e1],xRange=[750, 3050],log=True,data=False)
+compareShapes(hMJY_QCD_TT,hMJY_QCD_AT,"results/plots/2018/sidebands/lin/QCD_TTAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Tight-tight",label2="Anti-tag",labelR="TT/AT",yRange=[0,0.5],xRange=[50, 300],log=False,data=False)
+compareShapes(hMJY_QCD_TT,hMJY_QCD_AT,"results/plots/2018/sidebands/log/QCD_TTAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Tight-tight",label2="Anti-tag",labelR="TT/AT",yRange=[None,10e1],xRange=[50, 300],log=True,data=False)
+compareShapes(hMJY_QCD_LL,hMJY_QCD_AT,"results/plots/2018/sidebands/lin/QCD_LLAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Loose-loose",label2="Anti-tag",labelR="LL/AT",yRange=[0,0.5],xRange=[50, 300],log=False,data=False)
+compareShapes(hMJY_QCD_LL,hMJY_QCD_AT,"results/plots/2018/sidebands/log/QCD_LLAT_MJY.png",xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Event fraction/20GeV",label1="Loose-loose",label2="Anti-tag",labelR="LL/AT",yRange=[None,10e1],xRange=[50, 300],log=True,data=False)
