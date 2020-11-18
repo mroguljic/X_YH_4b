@@ -7,6 +7,51 @@ import matplotlib.pyplot as plt
 import mplhep as hep
 from root_numpy import hist2array
 
+def plotVarSeparated(data,cut,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=True):
+    histos = []
+    labels  = []
+    edges   = []
+    colors  = []
+    data = sorted(data.items(), key=lambda x: x[1]["order"])#VERY HANDY, reads samples in order
+    for sample, sample_cfg in data:
+        tempFile = r.TFile.Open(sample_cfg["file"])
+        h = tempFile.Get("{0}_{1}".format(sample,cut))
+        hist, hEdges = hist2array(h,return_edges=True)
+        histos.append(hist)
+        edges.append(hEdges[0])
+        labels.append(sample_cfg["label"])
+        colors.append(sample_cfg["color"])
+        if(sample_cfg["label"]=="ttbar"):
+            labels[-1]=r"t$\bar{t}$"#json restrictions workaround
+
+    for i,h in enumerate(histos):
+        scale = 1./np.sum(h)
+        histos[i] = h*scale
+
+    plt.style.use([hep.style.CMS])
+    f, ax = plt.subplots()
+    for i,h in enumerate(histos):
+        hep.histplot(h,edges[i],stack=False,ax=ax,label = labels[i],linewidth=3,zorder=2,color=colors[i])
+    if(log):
+        ax.set_yscale("log")
+    ax.legend()
+    ax.set_ylabel(yTitle)
+    ax.set_xlabel(xTitle)
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
+    plt.ylabel(yTitle,horizontalalignment='right', y=1.0)
+    if(yRange):
+        ax.set_ylim(yRange)
+    if(xRange):
+        ax.set_xlim(xRange)
+    hep.cms.lumitext(text='39.5 $fb^{-1} (13 TeV)$', ax=ax, fontname=None, fontsize=None)
+    hep.cms.text("Simulation WiP",loc=1)
+    plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 pb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
+    plt.legend(loc=(0.02,0.5),ncol=1)#loc = 'best'
+
+    print("Saving {0}".format(outFile))
+    plt.savefig(outFile)
+    plt.clf()
+
 def nMinusOnePlotSeparated(data,cut,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=True,sigXSec=0.01):
     histosSig  = []
     labelsSig  = []
@@ -57,11 +102,13 @@ def nMinusOnePlotSeparated(data,cut,outFile,xTitle="",yTitle="",yRange=[],xRange
     ax.legend()
     ax.set_ylabel(yTitle)
     ax.set_xlabel(xTitle)
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
+    plt.ylabel(yTitle,horizontalalignment='right', y=1.0)
     if(yRange):
         ax.set_ylim(yRange)
     if(xRange):
         ax.set_xlim(xRange)
-    hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=ax, fontname=None, fontsize=None)
+    hep.cms.lumitext(text='39.5 $fb^{-1} (13 TeV)$', ax=ax, fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 pb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
     plt.legend(loc=(0.02,0.5),ncol=2)#loc = 'best'
@@ -74,11 +121,14 @@ def effCutflow(inFile,sample,outFile,xTitle="",yTitle="",label="",yRange=[],xRan
     tempFile = r.TFile.Open(inFile)
     hTemp = tempFile.Get("{0}_cutflow".format(sample))
     hist, edges = hist2array(hTemp,return_edges=True)
+    #print(sample)
+    #print(hist)
     for i in range(1,5):#tagger regions only pnet and dak8 TT/LL
-        hist[-i]=hist[-i]/hist[-5]
+        hist[-i]=hist[-i]/hist[0]
     for i in range(5,len(hist)):#skip tagging regions
-        hist[-i]=hist[-i]/hist[-i-1]
+        hist[-i]=hist[-i]/hist[0]
     hist[0]=1.
+    #print(hist)
 
     plt.style.use([hep.style.CMS])
     f, ax = plt.subplots()
@@ -90,7 +140,7 @@ def effCutflow(inFile,sample,outFile,xTitle="",yTitle="",label="",yRange=[],xRan
     ax.set_xlabel(xTitle)
     ax.set_ylabel(yTitle)
 
-    hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=None, fontname=None, fontsize=None)
+    hep.cms.lumitext(text='2018', ax=None, fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     plt.legend(loc="best")#loc = (0.4,0.2))
     
@@ -195,14 +245,16 @@ def cutFlowWithData(data,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=Tru
     axs[0].legend()
     axs[1].set_xlabel(xTitle)
     axs[0].set_ylabel(yTitle)
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
+    plt.ylabel(yTitle,horizontalalignment='right', y=1.0)
     axs[1].set_ylabel("Data/MC")
     if(yRange):
         axs[0].set_ylim(yRange)
     if(xRange):
         axs[0].set_xlim(xRange)
-    hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
+    hep.cms.lumitext(text='39.5 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
     hep.cms.text("WiP",loc=1)
-    plt.legend(loc=(0.02,0.5),ncol=2)#loc = 'best'
+    plt.legend(loc=(0.02,0.4),ncol=2)#loc = 'best'
     plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 pb", horizontalalignment='center',verticalalignment='center',transform=axs[0].transAxes, fontsize=18)
 
     plt.sca(axs[1])#switch to lower pad
@@ -316,19 +368,21 @@ def nMinusOnePlotWithData(data,cut,outFile,xTitle="",yTitle="",yRange=[],xRange=
     axs[0].legend()
     axs[1].set_xlabel(xTitle)
     axs[0].set_ylabel(yTitle)
+    plt.ylabel(yTitle,horizontalalignment='right', y=1.0)
     axs[1].set_ylabel("Data/MC")
     if(yRange):
         axs[0].set_ylim(yRange)
     if(xRange):
         axs[0].set_xlim(xRange)
-    hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
+    hep.cms.lumitext(text='39.5 $fb^{-1} (13 TeV)$', ax=axs[0], fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 pb", horizontalalignment='center',verticalalignment='center',transform=axs[0].transAxes, fontsize=18)
     plt.legend(loc=(0.05,0.4),ncol=2)#loc = 'best'
 
     plt.sca(axs[1])#switch to lower pad
     axs[1].axhline(y=1.0, xmin=0, xmax=1, color="r")
-    axs[1].set_ylim([0.6,1.4])
+    axs[1].set_ylim([0.,2.1])
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
 
     #plt.scatter(centresData, hRatio,color="k")
     plt.errorbar(centresData,hRatio, yerr=errorsRatio, fmt='o',color="k")    
@@ -378,11 +432,13 @@ def nMinusOnePlot(data,cut,outFile,xTitle="",yTitle="",yRange=[],xRange=[],sigXS
     ax.legend()
     ax.set_xlabel(xTitle)
     ax.set_ylabel(yTitle)
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
+    plt.ylabel(yTitle,horizontalalignment='right', y=1.0)
     if(yRange):
         ax.set_ylim(yRange)
     if(xRange):
         ax.set_xlim(xRange)
-    hep.cms.lumitext(text='35.9 $fb^{-1} (13 TeV)$', ax=None, fontname=None, fontsize=None)
+    hep.cms.lumitext(text='39.5 $fb^{-1} (13 TeV)$', ax=None, fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 pb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
     plt.legend(loc=(0.02,0.5),ncol=2)#loc = 'best'
@@ -424,6 +480,8 @@ def plotMJY(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
             h,edges = getmJY_h(hTemp,rebin)
             histosBkg.append([h,edges])
             labelsBkg.append(sample_cfg["label"])
+            if(sample_cfg["label"]=="ttbar"):
+                labelsBkg[-1]=r"t$\bar{t}$"#json restrictions workaround
             colorsBkg.append(sample_cfg["color"])
 
     plt.style.use([hep.style.CMS])
@@ -440,13 +498,15 @@ def plotMJY(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         hep.histplot(h[0],h[1],stack=False,ax=ax,label = labelsSig[i],zorder=2,linewidth=3,color=colorsSig[i])
     plt.yscale("log")
     ax.legend()
-    ax.set_xlabel(xTitle)
-    ax.set_ylabel(yTitle)
+    #ax.set_xlabel(xTitle)
+    #ax.set_ylabel(yTitle)
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
+    plt.ylabel(yTitle,horizontalalignment='right', y=1.0)
     if(yRange):
         ax.set_ylim(yRange)
     if(xRange):
         ax.set_xlim(xRange)
-    hep.cms.lumitext(text='$(13 TeV)$', ax=None, fontname=None, fontsize=None)
+    hep.cms.lumitext(text='39.5 $fb^{-1} (13 TeV)$', ax=None, fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 pb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
     plt.legend(loc=(0.02,0.5),ncol=2)#loc = 'best'
@@ -477,6 +537,8 @@ def plotMJJ(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
             h,edges = getInvMass_h(h3d,rebin)
             histosBkg.append([h,edges])
             labelsBkg.append(sample_cfg["label"])
+            if(sample_cfg["label"]=="ttbar"):
+                labelsBkg[-1]=r"t$\bar{t}$"#json restrictions workaround
             colorsBkg.append(sample_cfg["color"])
 
     plt.style.use([hep.style.CMS])
@@ -493,13 +555,15 @@ def plotMJJ(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         hep.histplot(h[0],h[1],stack=False,ax=ax,label = labelsSig[i],zorder=2,linewidth=3,color=colorsSig[i])
     plt.yscale("log")
     ax.legend()
-    ax.set_xlabel(xTitle)
-    ax.set_ylabel(yTitle)
+    #ax.set_xlabel(xTitle)
+    #ax.set_ylabel(yTitle)
+    plt.xlabel(xTitle, horizontalalignment='right', x=1.0)
+    plt.ylabel(yTitle,horizontalalignment='right', y=1.0)
     if(yRange):
         ax.set_ylim(yRange)
     if(xRange):
         ax.set_xlim(xRange)
-    hep.cms.lumitext(text='$(13 TeV)$', ax=None, fontname=None, fontsize=None)
+    hep.cms.lumitext(text='39.5 $fb^{-1} (13 TeV)$', ax=None, fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 pb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
     plt.legend(loc=(0.02,0.5),ncol=2)#loc = 'best'
@@ -530,24 +594,28 @@ if __name__ == '__main__':
         nMinusOnePlotWithData(data,"mSD0","{0}/nm1/log/mSD0.png".format(odir),xTitle="Leading jet $m_{SD}[GeV]$",yTitle="Events/10 GeV",xRange=[0,330],yRange=[1,10e14],sigXSec=1.)
         nMinusOnePlotWithData(data,"mSD1","{0}/nm1/log/mSD1.png".format(odir),xTitle="Sub-leading jet $m_{SD}[GeV]$",yTitle="Events/10 GeV",xRange=[0,330],yRange=[1,10e14],sigXSec=1.)
         nMinusOnePlotWithData(data,"DeltaEta","{0}/nm1/log/DeltaEta.png".format(odir),xTitle="$\Delta \eta (j1,j2)$",yTitle="Events/0.05",xRange=[0,4.5],yRange=[1,10e14],sigXSec=1.)
+        nMinusOnePlotWithData(data,"mjjHY","{0}/nm1/log/mjjHY.png".format(odir),xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[0,3000.],yRange=[1,10e16],sigXSec=1.)
 
         nMinusOnePlotWithData(data,"pnet0","{0}/nm1/lin/pnet0.png".format(odir),xTitle="Leading jet ParticleNet score",yTitle="Events/0.01",xRange=[0,1],log=False,sigXSec=1.)
         nMinusOnePlotWithData(data,"pnet1","{0}/nm1/lin/pnet1.png".format(odir),xTitle="Sub-leading jet ParticleNet score",yTitle="Events/0.01",xRange=[0,1],log=False,sigXSec=1.)
         nMinusOnePlotWithData(data,"mSD0","{0}/nm1/lin/mSD0.png".format(odir),xTitle="Leading jet $m_{SD}[GeV]$",yTitle="Events/10 GeV",xRange=[30,330],log=False,sigXSec=1.)
         nMinusOnePlotWithData(data,"mSD1","{0}/nm1/lin/mSD1.png".format(odir),xTitle="Sub-leading jet $m_{SD}[GeV]$",yTitle="Events/10 GeV",xRange=[30,330],log=False,sigXSec=1.)
         nMinusOnePlotWithData(data,"DeltaEta","{0}/nm1/lin/DeltaEta.png".format(odir),xTitle="$\Delta \eta (j1,j2)$",yTitle="Events/0.05",xRange=[0,4.5],log=False,sigXSec=1.)
+        nMinusOnePlotWithData(data,"mjjHY","{0}/nm1/lin/mjjHY.png".format(odir),xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[0,3000.],log=False,sigXSec=1.)
 
         nMinusOnePlotSeparated(data,"pnet0","{0}/nm1_separated/log/pnet0.png".format(odir),xTitle="Leading jet ParticleNet score",yTitle="Events/0.01",xRange=[0,1],sigXSec=1.)
         nMinusOnePlotSeparated(data,"pnet1","{0}/nm1_separated/log/pnet1.png".format(odir),xTitle="Sub-leading jet ParticleNet score",yTitle="Events/0.01",xRange=[0,1],sigXSec=1.)
         nMinusOnePlotSeparated(data,"mSD0","{0}/nm1_separated/log/mSD0.png".format(odir),xTitle="Leading jet $m_{SD}[GeV]$",yTitle="Events/10 GeV",xRange=[30,330],sigXSec=1.)
         nMinusOnePlotSeparated(data,"mSD1","{0}/nm1_separated/log/mSD1.png".format(odir),xTitle="Sub-leading jet $m_{SD}[GeV]$",yTitle="Events/10 GeV",xRange=[30,330],sigXSec=1.)
         nMinusOnePlotSeparated(data,"DeltaEta","{0}/nm1_separated/log/DeltaEta.png".format(odir),xTitle="$\Delta \eta (j1,j2)$",yTitle="Events/0.05",xRange=[0,4.5],sigXSec=1.)
+        nMinusOnePlotSeparated(data,"mjjHY","{0}/nm1_separated/log/mjjHY.png".format(odir),xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[0,3000.],sigXSec=1.)
 
         nMinusOnePlotSeparated(data,"pnet0","{0}/nm1_separated/lin/pnet0.png".format(odir),xTitle="Leading jet ParticleNet score",yTitle="Events/0.01",xRange=[0,1],log=False,sigXSec=1.)
         nMinusOnePlotSeparated(data,"pnet1","{0}/nm1_separated/lin/pnet1.png".format(odir),xTitle="Sub-leading jet ParticleNet score",yTitle="Events/0.01",xRange=[0,1],log=False,sigXSec=1.)
         nMinusOnePlotSeparated(data,"mSD0","{0}/nm1_separated/lin/mSD0.png".format(odir),xTitle="Leading jet $m_{SD}[GeV]$",yTitle="Events/10 GeV",xRange=[30,330],log=False,sigXSec=1.)
         nMinusOnePlotSeparated(data,"mSD1","{0}/nm1_separated/lin/mSD1.png".format(odir),xTitle="Sub-leading jet $m_{SD}[GeV]$",yTitle="Events/10 GeV",xRange=[30,330],log=False,sigXSec=1.)
         nMinusOnePlotSeparated(data,"DeltaEta","{0}/nm1_separated/lin/DeltaEta.png".format(odir),xTitle="$\Delta \eta (j1,j2)$",yTitle="Events/0.05",xRange=[0,4.5],log=False,sigXSec=1.)
+        nMinusOnePlotSeparated(data,"mjjHY","{0}/nm1_separated/lin/mjjHY.png".format(odir),xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[0,3000.],log=False,sigXSec=1.)
 
         plotMJJ(data,"{0}/kinematic/mJJ_pnet_TT.png".format(odir),"pnet","TT",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6],sigXSec=1.)
         plotMJJ(data,"{0}/kinematic/mJJ_pnet_LL.png".format(odir),"pnet","LL",rebin=10,xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6],sigXSec=1.)
@@ -559,8 +627,12 @@ if __name__ == '__main__':
         plotMJY(data,"{0}/kinematic/mJY_dak8_TT.png".format(odir),"dak8","TT",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,300],yRange=[1,10e6],sigXSec=1.)
         plotMJY(data,"{0}/kinematic/mJY_dak8_LL.png".format(odir),"dak8","LL",rebin=2,xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,300],yRange=[1,10e6],sigXSec=1.)
         
-        cutFlowWithData(data,"{0}/cutflows/total_cutflow.png".format(odir),xTitle="",yTitle="Events",xRange=[1.5,8.5],yRange=[None,10e15],log=True,sigXSec=1.0)
+        cutFlowWithData(data,"{0}/cutflows/total_cutflow.png".format(odir),xTitle="",yTitle="Events",xRange=[1.5,8.5],yRange=[None,10e17],log=True,sigXSec=1.0)
         for sample, sample_cfg in data.items():
             tempFile = r.TFile.Open(sample_cfg["file"])
-            effCutflow(sample_cfg["file"],sample,"{0}/cutflows/{1}.png".format(odir,sample),xTitle="",yTitle="",label="{0}".format(sample),xRange=[0.5,8.5],yRange=[None,1.2],log=True)
+            effCutflow(sample_cfg["file"],sample,"{0}/cutflows/{1}.png".format(odir,sample),xTitle="",yTitle="",label="{0}".format(sample),xRange=[0.5,8.5],yRange=[None,10.],log=True)
 
+
+        plotVarSeparated(data,"HT_2p4_presel","HT.png",xTitle="",yTitle="",yRange=[None,0.08],xRange=[500,1600],log=False)
+        plotVarSeparated(data,"pt0_presel","pt0.png",xTitle="",yTitle="",yRange=[None,0.2],xRange=[200,700],log=False)
+        plotVarSeparated(data,"pt1_presel","pt1.png",xTitle="",yTitle="",yRange=[None,0.2],xRange=[200,700],log=False)
