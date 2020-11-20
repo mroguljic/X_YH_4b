@@ -25,10 +25,12 @@ CompileCpp("TIMBER/Framework/deltaRMatching.cc")
 CompileCpp("TIMBER/Framework/helperFunctions.cc") 
 
 a = analyzer(options.input)
+
 print(a.GetActiveNode().DataFrame.Count().GetValue())
-small_rdf = a.GetActiveNode().DataFrame.Range(10000) # makes an RDF with only the first nentries considered
-small_node = Node('small',small_rdf) # makes a node out of the dataframe
-a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
+# small_rdf = a.GetActiveNode().DataFrame.Range(10000) # makes an RDF with only the first nentries considered
+# small_node = Node('small',small_rdf) # makes a node out of the dataframe
+# a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
+
 nTotal = a.GetActiveNode().DataFrame.Count().GetValue()
 a.Define("SingleJetFlag","skimmingLeadingAK8Jet(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop)")
 a.Define("DiJetFlag","skimmingTwoAK8Jets(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop)")
@@ -36,10 +38,6 @@ a.Define("JetLeptonFlag","skimmingIsoLepton(nJet,Jet_eta,Jet_pt,nElectron,Electr
 a.Define("SkimFlag","SingleJetFlag+DiJetFlag+JetLeptonFlag")
 a.Cut("SkimFlagCut","SkimFlag>0")
 
-# a.Cut("nFatJet","nFatJet>1")
-# a.Cut("eta","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
-# a.Cut("pT","FatJet_pt[0]>300 && FatJet_pt[1]>300")
-# a.Cut("mass","FatJet_msoftdrop[0]>30 && FatJet_msoftdrop[1]>30")
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
 a.GetActiveNode().DataFrame.Snapshot("Events",options.output)
@@ -54,5 +52,4 @@ hCutFlow.GetXaxis().SetBinLabel(2, "After skimming")
 out_f = ROOT.TFile(options.output,"UPDATE")
 out_f.cd()
 hCutFlow.Write()
-#a.GetActiveNode().DataFrame.Snapshot("Preselection", options.output,"^((?!GenModel_YMass).+).*$",opts)#Don't store GenModel_YMass branches
 print("Total time: "+str((time.time()-start_time)/60.) + ' min')
