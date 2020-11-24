@@ -24,3 +24,47 @@ use_x509userproxy = true
 queue
 """
 
+selection_condor = """universe              = vanilla
+executable            = EXEC
+output                = OUTPUT/output_$(Cluster)_$(Process).out
+error                 = OUTPUT/output_$(Cluster)_$(Process).err
+log                   = OUTPUT/output_$(Cluster)_$(Process).log
++JobFlavour           = "QUEUE"
+Arguments = "$(args)"
+use_x509userproxy = true
+Queue args from ARGFILE
+queue
+"""
+
+selection_template='''#!/bin/bash
+
+cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+source timber-env/bin/activate
+
+export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
+cd JOB_DIR
+
+echo ${WORK_DIR}/eventSelection.py $*
+python ${WORK_DIR}/eventSelection.py $*
+'''
+
+skim_template='''#!/bin/bash
+export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
+cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+source timber-env/bin/activate
+cd JOB_DIR
+echo ${WORK_DIR}/skim.py $*
+python ${WORK_DIR}/skim.py $*
+'''
+
+skim_condor = """universe              = vanilla
+executable            = EXEC
+output                = OUTPUT/output_$(Cluster)_$(Process).out
+error                 = OUTPUT/output_$(Cluster)_$(Process).err
+log                   = OUTPUT/output_$(Cluster)_$(Process).log
++JobFlavour           = "QUEUE"
+Arguments = "$(args)"
+use_x509userproxy = true
+Queue args from ARGFILE
+queue
+"""
