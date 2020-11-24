@@ -32,15 +32,11 @@ print(a.GetActiveNode().DataFrame.Count().GetValue())
 # a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
 
 nTotal = a.GetActiveNode().DataFrame.Count().GetValue()
-a.Define("SingleJetFlag","skimmingLeadingAK8Jet(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop)")
-a.Define("DiJetFlag","skimmingTwoAK8Jets(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop)")
-a.Define("JetLeptonFlag","skimmingIsoLepton(nJet,Jet_eta,Jet_pt,nElectron,Electron_cutBased,nMuon,Muon_looseId,Muon_pfIsoId)")
-a.Define("SkimFlag","SingleJetFlag+DiJetFlag+JetLeptonFlag")
+a.Define("SkimFlag","skimFlag(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop,nJet,Jet_eta,Jet_pt,nElectron,Electron_cutBased,nMuon,Muon_looseId,Muon_pfIsoId)")
 a.Cut("SkimFlagCut","SkimFlag>0")
-
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
-a.GetActiveNode().DataFrame.Snapshot("Events",options.output)
+a.GetActiveNode().DataFrame.Snapshot("Events",options.output,"",opts)
 nSkim = a.GetActiveNode().DataFrame.Count().GetValue()
 print(nSkim,nTotal,nSkim/nTotal)
 
@@ -53,3 +49,4 @@ out_f = ROOT.TFile(options.output,"UPDATE")
 out_f.cd()
 hCutFlow.Write()
 print("Total time: "+str((time.time()-start_time)/60.) + ' min')
+out_f.Close()
