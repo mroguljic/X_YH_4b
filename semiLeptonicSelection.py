@@ -149,7 +149,7 @@ h_leadingJetPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_partonCategory'.forma
 histos.append(h_leadingJetPt)
 #Classification with partons
 
-a.PrintNodeTree('node_tree.png',verbose=True) #not supported at the moment
+#a.PrintNodeTree('node_tree.png',verbose=True) #not supported at the moment
 out_f = ROOT.TFile(options.output,"RECREATE")
 out_f.cd()
 for h in histos:
