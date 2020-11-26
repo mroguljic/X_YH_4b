@@ -65,11 +65,15 @@ if(options.isSignal):
     a.Cut("YMass","GenModel_YMass_{0}==1".format(YMass))
 
 histos=[]
-#Add triggers
-
-#Event selection
 a.Cut("leptonSkimCut","SkimFlag>3")
 print(a.GetActiveNode().DataFrame.Count().GetValue())
+
+triggerList = ["HLT_Ele27_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele32_WPTight_Gsf","HLT_IsoMu24","HLT_IsoMu27"]
+triggerString = a.GetTriggerString(triggerList) 
+a.Cut("Triggers",triggerString)   
+print(a.GetActiveNode().DataFrame.Count().GetValue())
+
+#Event selection
 a.Define("lGeneration","leptonGeneration(SkimFlag)")
 a.Cut("lGenerationCut","lGeneration>0")#skimming cut should be equivalent to this, defines if we're looking at ele or muon
 a.Define("lIdx","tightLeptonIdx(nElectron,Electron_cutBased,nMuon,Muon_tightId,Muon_pfIsoId,lGeneration)")
