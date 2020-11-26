@@ -29,23 +29,10 @@ parser.add_option('-m', '--massY', metavar='GenY mass (if MC signal)', type=int,
                 default   =   200,
                 dest      =   'massY',
                 help      =   'Mass of the Y')
-parser.add_option('-d', '--outdir', metavar='ODIR', type='string', action='store',
-                default   =   '.',
-                dest      =   'outdir',
-                help      =   'Output directory.')
 parser.add_option('-y', '--year', metavar='year', type='string', action='store',
                 default   =   '2016',
                 dest      =   'year',
                 help      =   'Dataset year')
-# parser.add_option('-t', '--tagger', metavar='FatJet_Tagger', type='string', action='store',
-#                 default   =   'FatJet_ParticleNetMD_probXbb',
-#                 dest      =   'tagger',
-#                 help      =   'Name of tagger for jet tagging')
-# parser.add_option('--taggerShort', metavar='Short tagger suffix', type='string', action='store',
-#                 default   =   'pnet',
-#                 dest      =   'taggerShort',
-#                 help      =   'Will be pasted at the end of histos')
-
 
 (options, args) = parser.parse_args()
 start_time = time.time()
@@ -77,10 +64,10 @@ if(options.isSignal):
     YMass = options.massY
     a.Cut("YMass","GenModel_YMass_{0}==1".format(YMass))
 
-checkpoint  = a.GetActiveNode()
 histos=[]
 #Add triggers
 
+#Event selection
 a.Cut("leptonSkimCut","SkimFlag>3")
 print(a.GetActiveNode().DataFrame.Count().GetValue())
 a.Define("lGeneration","leptonGeneration(SkimFlag)")
@@ -117,11 +104,52 @@ print(a.GetActiveNode().DataFrame.Count().GetValue())
 a.Define("ST","leadingJetPt+MET_pt+lPt")
 a.Cut("STcut","ST>500")
 print(a.GetActiveNode().DataFrame.Count().GetValue())
-
-
 histos.append(h_leadingJetPt)
 histos.append(h_leadingJetIdx)
-#a.PrintNodeTree('node_tree.png',verbose=True) #not supported at the moment
+#Tag and probe
+a.Define("probeJetIdx","probeAK8JetIdx(nFatJet,FatJet_pt,FatJet_msoftdrop,FatJet_phi,FatJet_eta,FatJet_jetId,lPhi,lEta)")
+a.Cut("probeJetIdxCut","probeJetIdx>-1")
+print(a.GetActiveNode().DataFrame.Count().GetValue())
+a.Define("nBH","FatJet_nBHadrons[probeJetIdx]")
+a.Define("nCH","FatJet_nCHadrons[probeJetIdx]")
+
+#Classification with nB/C hadrons
+a.Define("n2plusB","nBH>1")
+a.Define("n1B1plusC","nBH==1 && nCH>0")
+a.Define("n1B0C","nBH==1 && nCH==0")
+a.Define("n0B1plusC","nBH==0 && nCH>0")
+a.Define("n0B0C","nBH==0 && nCH==0")
+a.Define("nBnCElse","!(n2plusB || n1B1plusC || n1B0C || n0B1plusC || n0B0C)")
+checkpoint  = a.GetActiveNode()#checkpoint before applying jet classifications
+
+a.Cut("n2plusBCut","n2plusB")
+print(a.GetActiveNode().DataFrame.Count().GetValue())
+
+a.SetActiveNode(checkpoint)
+a.Cut("n1B1plusCCut","n1B1plusC")
+print(a.GetActiveNode().DataFrame.Count().GetValue())
+
+a.SetActiveNode(checkpoint)
+a.Cut("n1B0CCut","n1B0C")
+print(a.GetActiveNode().DataFrame.Count().GetValue())
+
+a.SetActiveNode(checkpoint)
+a.Cut("n0B0CCut","n0B0C")
+print(a.GetActiveNode().DataFrame.Count().GetValue())
+
+a.SetActiveNode(checkpoint)
+a.Cut("nBnCElseCut","nBnCElse")
+print(a.GetActiveNode().DataFrame.Count().GetValue())
+
+
+a.SetActiveNode(checkpoint)
+a.Define("partonCategory","classifyProbeJet(probeJetIdx, FatJet_phi, FatJet_eta, nGenPart, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
+print(a.GetActiveNode().DataFrame.Count().GetValue())
+h_leadingJetPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_partonCategory'.format(options.process),'Jet content category;Category;;',4,0,4),'partonCategory')
+histos.append(h_leadingJetPt)
+#Classification with partons
+
+a.PrintNodeTree('node_tree.png',verbose=True) #not supported at the moment
 out_f = ROOT.TFile(options.output,"RECREATE")
 out_f.cd()
 for h in histos:
