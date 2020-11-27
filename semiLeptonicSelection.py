@@ -66,58 +66,93 @@ if(options.isSignal):
 
 histos=[]
 a.Cut("leptonSkimCut","SkimFlag>3")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
-
-triggerList = ["HLT_Ele27_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele32_WPTight_Gsf","HLT_IsoMu24","HLT_IsoMu27"]
-triggerString = a.GetTriggerString(triggerList) 
-a.Cut("Triggers",triggerString)   
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+nSkimmed = a.DataFrame.Count().GetValue()
+print(nSkimmed)
 
 #Event selection
+triggerList = ["HLT_Ele27_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele32_WPTight_Gsf","HLT_IsoMu24","HLT_IsoMu27"]
+triggerString = a.GetTriggerString(triggerList) 
+a.Cut("Triggers",triggerString)  
+nTrigger = a.DataFrame.Count().GetValue() 
+print(nTrigger)
+
 a.Define("lGeneration","leptonGeneration(SkimFlag)")
 a.Cut("lGenerationCut","lGeneration>0")#skimming cut should be equivalent to this, defines if we're looking at ele or muon
 a.Define("lIdx","tightLeptonIdx(nElectron,Electron_cutBased,nMuon,Muon_tightId,Muon_pfIsoId,lGeneration)")
 a.Cut("lIdxCut","lIdx>-1")#There is a tight lepton
+nTightLepton = a.DataFrame.Count().GetValue()
+print(nTightLepton)
+
 a.Define("lPt","leptonPt(Electron_pt,Muon_pt,lIdx,lGeneration)")
 a.Define("lPhi","leptonPhi(Electron_phi,Muon_phi,lIdx,lGeneration)")
 a.Define("lEta","leptonEta(Electron_eta,Muon_eta,lIdx,lGeneration)")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
 a.Cut("lPtCut","lPt>40")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+nlPt = a.DataFrame.Count().GetValue()
+print(nlPt)
 a.Cut("lEtaCut","abs(lEta)<2.4")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+nlEta = a.DataFrame.Count().GetValue()
+print(nlEta)
 a.Define("goodJetIdxs","goodAK4JetIdxs(nJet, Jet_pt, Jet_eta, Jet_phi, Jet_jetId, lPhi, lEta)")
 a.Cut("goodJetIdxsCut","goodJetIdxs.size()>0")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+nGoodJets = a.DataFrame.Count().GetValue()
+print(nGoodJets)
 a.Define("leadingJetPt","Jet_pt[goodJetIdxs[0]]")
 a.Define("leadingJetIdx","goodJetIdxs[0]")
-h_leadingJetPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_LeadingJetPt'.format(options.process),'Leading jet pt;p_{T}[GeV];Events/10 GeV;',50,0,500),'leadingJetPt')
-h_leadingJetIdx = a.GetActiveNode().DataFrame.Histo1D(('{0}_LeadingJetIdx'.format(options.process),'Leading jet idx;Index;Jet/index;',10,0,10),'leadingJetIdx')
+
 a.Cut("leadingJetPtCut","leadingJetPt>200")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+nJetPt = a.DataFrame.Count().GetValue()
+print(nJetPt)
 a.Cut("leadingJetBTagCut","Jet_btagDeepB[goodJetIdxs[0]]>{0}".format(deepJetM))
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+nJetBTag = a.DataFrame.Count().GetValue()
+print(nJetBTag)
 a.Define("nbAk4","nbAK4(Jet_btagDeepB, goodJetIdxs, {0})".format(deepJetM))
 a.Cut("nbAk4Cut","nbAk4>1")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+n2Ak4bJets = a.DataFrame.Count().GetValue()
+print(n2Ak4bJets)
 a.Define("HT","HTgoodJets(Jet_pt, goodJetIdxs)")
 a.Cut("HTCut","HT>500")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+nHT = a.DataFrame.Count().GetValue()
+print(nHT)
 a.Cut("METcut","MET_pt>60")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+nMET = a.DataFrame.Count().GetValue()
+print(nMET)
 a.Define("ST","leadingJetPt+MET_pt+lPt")
 a.Cut("STcut","ST>500")
-print(a.GetActiveNode().DataFrame.Count().GetValue())
+nST = a.DataFrame.Count().GetValue()
+print(nST)
+
+#Histograms after event selection
+checkpoint  = a.GetActiveNode()#checkpoint before applying jet classifications
+a.Cut("eleCut","lGeneration==1")
+h_leadingJetPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_eLeadingJetPt'.format(options.process),'Leading jet pt;p_{T}[GeV];Events/10 GeV;',200,0,2000),'leadingJetPt')
+h_leadingJetIdx = a.GetActiveNode().DataFrame.Histo1D(('{0}_eLeadingJetIdx'.format(options.process),'Leading jet idx;Index;Jet/index;',10,0,10),'leadingJetIdx')
+h_lPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_ePt'.format(options.process),'Electron pt;p_{T}[GeV];Events/10 GeV;',200,0,2000),'lPt')
+h_MET = a.GetActiveNode().DataFrame.Histo1D(('{0}_eMET'.format(options.process),'MET pt;p_{T}[GeV];Events/10 GeV;',100,0,1000),'MET_pt')
 histos.append(h_leadingJetPt)
 histos.append(h_leadingJetIdx)
+histos.append(h_lPt)
+histos.append(h_MET)
+
+a.SetActiveNode(checkpoint)
+a.Cut("muCut","lGeneration==2")
+h_leadingJetPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mLeadingJetPt'.format(options.process),'Leading jet pt;p_{T}[GeV];Events/10 GeV;',200,0,2000),'leadingJetPt')
+h_leadingJetIdx = a.GetActiveNode().DataFrame.Histo1D(('{0}_mLeadingJetIdx'.format(options.process),'Leading jet idx;Index;Jet/index;',10,0,10),'leadingJetIdx')
+h_lPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mPt'.format(options.process),'Muon pt;p_{T}[GeV];Events/10 GeV;',200,0,2000),'lPt')
+h_MET = a.GetActiveNode().DataFrame.Histo1D(('{0}_mMET'.format(options.process),'MET pt;p_{T}[GeV];Events/10 GeV;',100,0,1000),'MET_pt')
+histos.append(h_leadingJetPt)
+histos.append(h_leadingJetIdx)
+histos.append(h_lPt)
+histos.append(h_MET)
+
 #Tag and probe
+a.SetActiveNode(checkpoint)
 a.Define("probeJetIdx","probeAK8JetIdx(nFatJet,FatJet_pt,FatJet_msoftdrop,FatJet_phi,FatJet_eta,FatJet_jetId,lPhi,lEta)")
 a.Cut("probeJetIdxCut","probeJetIdx>-1")
 print(a.GetActiveNode().DataFrame.Count().GetValue())
 a.Define("nBH","FatJet_nBHadrons[probeJetIdx]")
 a.Define("nCH","FatJet_nCHadrons[probeJetIdx]")
 
-#Classification with nB/C hadrons
+#Classification with n hadrons
 a.Define("n2plusB","nBH>1")
 a.Define("n1B1plusC","nBH==1 && nCH>0")
 a.Define("n1B0C","nBH==1 && nCH==0")
@@ -145,14 +180,23 @@ a.SetActiveNode(checkpoint)
 a.Cut("nBnCElseCut","nBnCElse")
 print(a.GetActiveNode().DataFrame.Count().GetValue())
 
-
+#Classification with partons
 a.SetActiveNode(checkpoint)
 a.Define("partonCategory","classifyProbeJet(probeJetIdx, FatJet_phi, FatJet_eta, nGenPart, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
 print(a.GetActiveNode().DataFrame.Count().GetValue())
 h_leadingJetPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_partonCategory'.format(options.process),'Jet content category;Category;;',4,0,4),'partonCategory')
 histos.append(h_leadingJetPt)
-#Classification with partons
 
+cutFlowVars = [nSkimmed,nTrigger,nTightLepton,nlPt,nGoodJets,nJetPt,nJetBTag,n2Ak4bJets,nHT,nMET,nST]
+cutFlowLabels = ["Skimmed","Trigger","Tight lepton","Lepton pT > 40 GeV","Good jet exists","Leading Ak4 pT > 200 GeV","Leading jet b-tag","Two b jets","HT>500","MET>60","ST>500"]
+nCutFlowVars = len(cutFlowVars)
+hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowVars,0.5,nCutFlowVars+0.5)
+for i,var in enumerate(cutFlowVars):
+	hCutFlow.AddBinContent(i+1,var)
+	hCutFlow.GetXaxis().SetBinLabel(i+1, cutFlowLabels[i])
+
+
+histos.append(hCutFlow)
 #a.PrintNodeTree('node_tree.png',verbose=True) #not supported at the moment
 out_f = ROOT.TFile(options.output,"RECREATE")
 out_f.cd()
