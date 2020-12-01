@@ -1,12 +1,22 @@
 import ROOT
-ROOT.ROOT.EnableImplicitMT(4)
-
 import time, os
 from optparse import OptionParser
 from collections import OrderedDict
 
 from TIMBER.Tools.Common import *
 from TIMBER.Analyzer import *
+
+def dropColumns(columnList):                                                   
+                                                                               
+    with open("/afs/cern.ch/work/m/mrogulji/X_YH_4b/columnBlackList.txt","r") as f:                                 
+      badColumns = f.read().splitlines()                                       
+                                                                               
+    for c in columnList:                                                       
+      if c in badColumns:                                                      
+        continue                                                               
+      else:                                                                    
+        yield c   
+
 
 parser = OptionParser()
 
@@ -34,11 +44,14 @@ print(a.GetActiveNode().DataFrame.Count().GetValue())
 nTotal = a.GetActiveNode().DataFrame.Count().GetValue()
 a.Define("SkimFlag","skimFlag(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop,nJet,Jet_eta,Jet_pt,nElectron,Electron_cutBased,nMuon,Muon_looseId,Muon_pfIsoId)")
 a.Cut("SkimFlagCut","SkimFlag>0")
-opts = ROOT.RDF.RSnapshotOptions()
-opts.fMode = "RECREATE"
-a.GetActiveNode().DataFrame.Snapshot("Events",options.output,"",opts)
 nSkim = a.GetActiveNode().DataFrame.Count().GetValue()
 print(nSkim,nTotal,nSkim/nTotal)
+
+opts = ROOT.RDF.RSnapshotOptions()
+opts.fMode = "RECREATE"
+goodcols = [str(c) for c in dropColumns(a.DataFrame.GetColumnNames())] 
+a.GetActiveNode().DataFrame.Snapshot("Events",options.output,goodcols,opts)
+
 
 hCutFlow = ROOT.TH1F('skimInfo',"Number of processed events",2,0.5,2.5)
 hCutFlow.AddBinContent(1,nTotal)
