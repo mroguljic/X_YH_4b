@@ -23,6 +23,7 @@ HLT_Ele32_WPTight_Gsf
 HLT_IsoMu24
 HLT_IsoMu27
 HLT_TkMu50
+HLT_TkMu100
 HLT_Mu50
 HLT_Photon175
 HLT_Photon200
