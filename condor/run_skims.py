@@ -12,7 +12,7 @@ def split_jobs(files, njobs):
 
 
 
-def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nFiles=1):
+def create_jobs(config, dry=True, queue='',jobs_dir="",out_dir="",nFiles=1):
     for sample, sample_cfg in config.items():
       #print(sample)
       if re.match('^X', sample):
@@ -87,7 +87,6 @@ def main():
 
   parser.add_argument('-v', '--verbose', action='store_true')
   parser.add_argument('-c', '--config', help='Job config file in JSON format')
-  parser.add_argument('-y', '--year', help='Dataset year',default="2016")
   parser.add_argument('-d', '--dry', action='store_true', help='Dry run (Do not submit jobs)')
   parser.add_argument('-o', '--outdir',help='Output directory')
   parser.add_argument('-j', '--jobdir',help='Jobs directory')
@@ -101,7 +100,7 @@ def main():
 #/afs/cern.ch/work/m/mrogulji/X_YH_4b/condor/skimJobs/2016
   with open(args.config, 'r') as config_file:
     config = json.load(config_file)
-    create_jobs(config, args.dry,queue=args.queue, year=args.year,out_dir=args.outdir,jobs_dir=args.jobdir,nFiles=args.nFiles)
+    create_jobs(config, args.dry,queue=args.queue,out_dir=args.outdir,jobs_dir=args.jobdir,nFiles=args.nFiles)
           
 
       
