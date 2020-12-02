@@ -1,0 +1,37 @@
+{
+  "DataB": {
+    "maxEvents": -1,
+    "dataset": "/JetHT/hqu-NanoTuples-30Apr2020_Run2016B-17Jul2018_ver2-v2-b0abb2002249db2b4f7fad7e7c1c0c68/USER",
+    "xsec": 1
+  },
+  "DataC": {
+    "maxEvents": -1,
+    "dataset": "/JetHT/hqu-NanoTuples-30Apr2020_Run2016C-17Jul2018-v1-b0abb2002249db2b4f7fad7e7c1c0c68/USER",
+    "xsec": 1
+  },
+  "DataD": {
+    "maxEvents": -1,
+    "dataset": "/JetHT/hqu-NanoTuples-30Apr2020_Run2016D-17Jul2018-v1-b0abb2002249db2b4f7fad7e7c1c0c68/USER",
+    "xsec": 1
+  },
+  "DataE": {
+    "maxEvents": -1,
+    "dataset": "/JetHT/hqu-NanoTuples-30Apr2020_Run2016E-17Jul2018-v1-b0abb2002249db2b4f7fad7e7c1c0c68/USER",
+    "xsec": 1
+  },
+  "DataF": {
+    "maxEvents": -1,
+    "dataset": "/JetHT/hqu-NanoTuples-30Apr2020_Run2016F-17Jul2018-v1-b0abb2002249db2b4f7fad7e7c1c0c68/USER",    
+    "xsec": 1
+  },
+  "DataG": {
+    "maxEvents": -1,
+    "dataset": "/JetHT/hqu-NanoTuples-30Apr2020_Run2016G-17Jul2018-v1-b0abb2002249db2b4f7fad7e7c1c0c68/USER",    
+    "xsec": 1
+  },
+  "DataH": {
+    "maxEvents": -1,
+    "dataset": "/JetHT/hqu-NanoTuples-30Apr2020_Run2016H-17Jul2018-v1-b0abb2002249db2b4f7fad7e7c1c0c68/USER",    
+    "xsec": 1
+  }
+}
