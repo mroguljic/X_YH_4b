@@ -47,10 +47,10 @@ CompileCpp("TIMBER/Framework/helperFunctions.cc")
 
 a = analyzer(options.input)
 
-print(a.GetActiveNode().DataFrame.Count().GetValue())
-small_rdf = a.GetActiveNode().DataFrame.Range(1000) # makes an RDF with only the first nentries considered
-small_node = Node('small',small_rdf) # makes a node out of the dataframe
-a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
+# print(a.GetActiveNode().DataFrame.Count().GetValue())
+# small_rdf = a.GetActiveNode().DataFrame.Range(1000) # makes an RDF with only the first nentries considered
+# small_node = Node('small',small_rdf) # makes a node out of the dataframe
+# a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
 
 nTotal = a.GetActiveNode().DataFrame.Count().GetValue()
 a.Define("SkimFlag","skimFlag(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop,nJet,Jet_eta,Jet_pt,nElectron,Electron_cutBased,nMuon,Muon_looseId,Muon_pfIsoId)")
