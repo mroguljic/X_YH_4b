@@ -13,20 +13,7 @@ def split_jobs(files, njobs):
 
 
 def create_jobs(config, dry=True, queue='',jobs_dir="",out_dir="",nFiles=1):
-    for sample, sample_cfg in config.items():
-      #print(sample)
-      if re.match('^X', sample):
-        proctype = 'sig'
-      elif re.match('^Data', sample):
-        proctype = 'data'
-      else:
-        proctype = 'bkg'
-
-      if(proctype=='data'):
-        dataFlag = '--data'
-      else:
-        dataFlag = ''
-      
+    for sample, sample_cfg in config.items():      
       sampleJobs_dir = os.path.join(jobs_dir,sample)
       sampleOut_dir = os.path.join(out_dir, sample)
       #Create dir to store jobs and dir to store output
@@ -70,7 +57,7 @@ def create_jobs(config, dry=True, queue='',jobs_dir="",out_dir="",nFiles=1):
         inputPath = os.path.join(sampleJobs_dir, 'input', 'input_{}.txt'.format(n))
         outputPath = os.path.join(sampleOut_dir,'{0}_{1}.root'.format(sample,n))
         open(inputPath, 'w').writelines("{}\n".format('root://cms-xrd-global.cern.ch//'+root_file) for root_file in l)
-        argsFile.write("-i {0} -o {1} {2}\n".format(inputPath,outputPath,dataFlag))        
+        argsFile.write("-i {0} -o {1}\n".format(inputPath,outputPath))        
 
       #Submit
       print("condor_submit {0}".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}.condor'.format(sample))))

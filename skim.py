@@ -34,7 +34,6 @@ parser.add_option('-i', '--input', metavar='IFILE', type='string', action='store
                 default   =   '',
                 dest      =   'input',
                 help      =   'A root file or text file with multiple root file locations to analyze')
-parser.add_option('--data',action="store_true",dest="isData",default=False)
 parser.add_option('-o', '--output', metavar='OFILE', type='string', action='store',
                 default   =   'output.root',
                 dest      =   'output',
@@ -46,6 +45,13 @@ CompileCpp("TIMBER/Framework/deltaRMatching.cc")
 CompileCpp("TIMBER/Framework/helperFunctions.cc") 
 
 a = analyzer(options.input)
+runNumber = a.DataFrame.Range(1).AsNumpy(["run"])#just checking the first run number to see if data or MC
+if(runNumber["run"][0]>10000):
+    isData=True
+    print("Running on data")
+else:
+    isData=False
+    print("Running on MC")
 
 # print(a.GetActiveNode().DataFrame.Count().GetValue())
 # small_rdf = a.GetActiveNode().DataFrame.Range(1000) # makes an RDF with only the first nentries considered
@@ -53,14 +59,14 @@ a = analyzer(options.input)
 # a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
 
 nTotal = a.GetActiveNode().DataFrame.Count().GetValue()
-a.Define("SkimFlag","skimFlag(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop,nJet,Jet_eta,Jet_pt,nElectron,Electron_cutBased,nMuon,Muon_looseId,Muon_pfIsoId)")
+a.Define("SkimFlag","skimFlag(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop,nJet,Jet_eta,Jet_pt,nElectron,Electron_cutBased,nMuon,Muon_looseId,Muon_pfIsoId,Muon_miniIsoId)")
 a.Cut("SkimFlagCut","SkimFlag>0")
 nSkim = a.GetActiveNode().DataFrame.Count().GetValue()
 print(nSkim,nTotal,nSkim/nTotal)
 
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
-goodcols = [str(c) for c in dropColumns(a.DataFrame.GetColumnNames(),options.isData)] 
+goodcols = [str(c) for c in dropColumns(a.DataFrame.GetColumnNames(),isData)] 
 a.GetActiveNode().DataFrame.Snapshot("Events",options.output,goodcols,opts)
 
 
