@@ -1,9 +1,9 @@
 import ROOT
-ROOT.ROOT.EnableImplicitMT(4)
-
+import sys
 import time, os
 from optparse import OptionParser
 from collections import OrderedDict
+
 
 from TIMBER.Tools.Common import *
 from TIMBER.Analyzer import *
@@ -22,13 +22,11 @@ parser.add_option('-p', '--process', metavar='PROCESS', type='string', action='s
                 default   =   'X1600_Y100',
                 dest      =   'process',
                 help      =   'Process in the given MC file')
-parser.add_option('-s', '--sig', action="store_true",dest="isSignal",default=False)
-parser.add_option('-b', '--bkg', action="store_false",dest="isSignal",default=False)
+parser.add_option('-c', '--channel', metavar='CHANNEL', type='string', action='store',
+                default   =   'mu',
+                dest      =   'channel',
+                help      =   'Electron (e) or muon (mu) channel')
 parser.add_option('--data',action="store_true",dest="isData",default=False)
-parser.add_option('-m', '--massY', metavar='GenY mass (if MC signal)', type=int, action='store',
-                default   =   200,
-                dest      =   'massY',
-                help      =   'Mass of the Y')
 parser.add_option('-y', '--year', metavar='year', type='string', action='store',
                 default   =   '2016',
                 dest      =   'year',
@@ -55,34 +53,40 @@ if(options.year=="2018"):
     deepJetM = 0.2770
     deepJetL = 0.0494 
 
-
-
-if(options.isSignal):
-    YMass = options.massY
-    a.Cut("YMass","GenModel_YMass_{0}==1".format(YMass))
-
 histos=[]
-a.Cut("leptonSkimCut","SkimFlag>3")
+if(options.channel=="mu"):
+    triggerList = ["HLT_IsoMu24","HLT_IsoMu27"]
+    lGeneration = 2
+    a.Cut("leptonSkimCut","SkimFlag>7")
+elif(options.channel=="e"):
+    triggerList = ["HLT_Ele27_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele32_WPTight_Gsf","HLT_Photon200","HLT_Photon175"]
+    lGeneration = 1
+    a.Cut("leptonSkimCut","SkimFlag>3 && SkimFlag<8")
+else:
+    print("Define lepton channel '-c mu' or '-c e'!")
+    sys.exit()
+
+
 nSkimmed = a.DataFrame.Count().GetValue()
 print(nSkimmed)
 
 #Event selection
-triggerList = ["HLT_Ele27_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele32_WPTight_Gsf","HLT_IsoMu24","HLT_IsoMu27"]
-triggerString = a.GetTriggerString(triggerList) 
-a.Cut("Triggers",triggerString)  
+
+if(options.isData):
+    triggerString = a.GetTriggerString(triggerList)
+    #a.Cut("Triggers",triggerString)  
+    print("Skipping triggers, since skims don't have them!")
 nTrigger = a.DataFrame.Count().GetValue() 
 print(nTrigger)
 
-a.Define("lGeneration","leptonGeneration(SkimFlag)")
-a.Cut("lGenerationCut","lGeneration>0")#skimming cut should be equivalent to this, defines if we're looking at ele or muon
-a.Define("lIdx","tightLeptonIdx(nElectron,Electron_cutBased,nMuon,Muon_tightId,Muon_pfIsoId,lGeneration)")
+a.Define("lIdx","tightLeptonIdx(nElectron,Electron_cutBased,nMuon,Muon_tightId,Muon_pfIsoId,{0})".format(lGeneration))
 a.Cut("lIdxCut","lIdx>-1")#There is a tight lepton
 nTightLepton = a.DataFrame.Count().GetValue()
 print(nTightLepton)
 
-a.Define("lPt","leptonPt(Electron_pt,Muon_pt,lIdx,lGeneration)")
-a.Define("lPhi","leptonPhi(Electron_phi,Muon_phi,lIdx,lGeneration)")
-a.Define("lEta","leptonEta(Electron_eta,Muon_eta,lIdx,lGeneration)")
+a.Define("lPt","leptonPt(Electron_pt,Muon_pt,lIdx,{0})".format(lGeneration))
+a.Define("lPhi","leptonPhi(Electron_phi,Muon_phi,lIdx,{0})".format(lGeneration))
+a.Define("lEta","leptonEta(Electron_eta,Muon_eta,lIdx,{0})".format(lGeneration))
 a.Cut("lPtCut","lPt>40")
 nlPt = a.DataFrame.Count().GetValue()
 print(nlPt)
@@ -95,6 +99,7 @@ nGoodJets = a.DataFrame.Count().GetValue()
 print(nGoodJets)
 a.Define("leadingJetPt","Jet_pt[goodJetIdxs[0]]")
 a.Define("leadingJetIdx","goodJetIdxs[0]")
+a.Define("dRmin","deltaRClosestJet(goodJetIdxs,Jet_eta,Jet_phi,lEta,lPhi)")
 
 a.Cut("leadingJetPtCut","leadingJetPt>200")
 nJetPt = a.DataFrame.Count().GetValue()
@@ -117,52 +122,22 @@ a.Define("ST","leadingJetPt+MET_pt+lPt")
 a.Cut("STcut","ST>500")
 nST = a.DataFrame.Count().GetValue()
 print(nST)
+a.Cut("dRcut","dRmin<1.5")
+nDR = a.DataFrame.Count().GetValue()
+print(nDR)
+a.Define("probeJetIdx","probeAK8JetIdx(nFatJet,FatJet_pt,FatJet_msoftdrop,FatJet_phi,FatJet_eta,FatJet_jetId,lPhi,lEta)")
+a.Cut("probeJetIdxCut","probeJetIdx>-1")
+nProbeJet = a.DataFrame.Count().GetValue()
+print(nProbeJet)
+a.Define("probeJetMass","FatJet_msoftdrop[probeJetIdx]")
+a.Define("probeJetPt","FatJet_pt[probeJetIdx]")
+a.Define("probeJetPNet","FatJet_ParticleNetMD_probXbb[probeJetIdx]")
 
-#Histograms after event selection
-checkpoint  = a.GetActiveNode()
-a.Cut("eleCut","lGeneration==1")
-h_leadingJetPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_eLeadingJetPt'.format(options.process),'Leading jet pt;p_{T}[GeV];Events/10 GeV;',200,0,2000),'leadingJetPt')
-h_leadingJetIdx = a.GetActiveNode().DataFrame.Histo1D(('{0}_eLeadingJetIdx'.format(options.process),'Leading jet idx;Index;Jet/index;',10,0,10),'leadingJetIdx')
-h_lPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_ePt'.format(options.process),'Electron pt;p_{T}[GeV];Events/10 GeV;',200,0,2000),'lPt')
-h_MET = a.GetActiveNode().DataFrame.Histo1D(('{0}_eMET'.format(options.process),';MET[GeV];Events/10 GeV;',100,0,1000),'MET_pt')
-h_HT = a.GetActiveNode().DataFrame.Histo1D(('{0}_eHT'.format(options.process),'HT;HT[GeV];Events/100 GeV;',400,20,2400),'HT')
-h_ST = a.GetActiveNode().DataFrame.Histo1D(('{0}_eST'.format(options.process),'ST;ST[GeV];Events/100 GeV;',400,20,2400),'ST')
-histos.append(h_leadingJetPt)
-histos.append(h_leadingJetIdx)
-histos.append(h_lPt)
-histos.append(h_MET)
-histos.append(h_HT)
-histos.append(h_ST)
-
-a.SetActiveNode(checkpoint)
-a.Cut("muCut","lGeneration==2")
-h_leadingJetPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mLeadingJetPt'.format(options.process),'Leading jet pt;p_{T}[GeV];Events/10 GeV;',200,0,2000),'leadingJetPt')
-h_leadingJetIdx = a.GetActiveNode().DataFrame.Histo1D(('{0}_mLeadingJetIdx'.format(options.process),'Leading jet idx;Index;Jet/index;',10,0,10),'leadingJetIdx')
-h_lPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_mPt'.format(options.process),'Muon pt;p_{T}[GeV];Events/10 GeV;',200,0,2000),'lPt')
-h_MET = a.GetActiveNode().DataFrame.Histo1D(('{0}_mMET'.format(options.process),';MET[GeV];Events/10 GeV;',100,0,1000),'MET_pt')
-h_HT = a.GetActiveNode().DataFrame.Histo1D(('{0}_mHT'.format(options.process),'HT;HT[GeV];Events/100 GeV;',400,20,2400),'HT')
-h_HT = a.GetActiveNode().DataFrame.Histo1D(('{0}_mST'.format(options.process),'ST;ST[GeV];Events/100 GeV;',400,20,2400),'ST')
-histos.append(h_leadingJetPt)
-histos.append(h_leadingJetIdx)
-histos.append(h_lPt)
-histos.append(h_MET)
-histos.append(h_HT)
-histos.append(h_ST)
 if not options.isData:
-    #Tag and probe
-    a.SetActiveNode(checkpoint)
-    a.Define("probeJetIdx","probeAK8JetIdx(nFatJet,FatJet_pt,FatJet_msoftdrop,FatJet_phi,FatJet_eta,FatJet_jetId,lPhi,lEta)")
-    a.Cut("probeJetIdxCut","probeJetIdx>-1")
+    #Jet content classification
     print(a.GetActiveNode().DataFrame.Count().GetValue())
     a.Define("nBH","FatJet_nBHadrons[probeJetIdx]")
     a.Define("nCH","FatJet_nCHadrons[probeJetIdx]")
-    a.Define("probeJetMass","FatJet_msoftdrop[probeJetIdx]")
-    a.Define("topPt","tagTopPt(probeJetIdx,FatJet_phi,FatJet_eta,nGenPart,GenPart_phi,GenPart_eta,GenPart_pdgId,GenPart_pt)")
-    a.Define("WFromTopPt","WfromTopPt(probeJetIdx,FatJet_phi,FatJet_eta,nGenPart,GenPart_phi,GenPart_eta,GenPart_pdgId,GenPart_genPartIdxMother,GenPart_pt)")
-    h_topPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_topPt'.format(options.process),';pT[GeV];;',20,0,2000),'topPt')
-    h_WPt = a.GetActiveNode().DataFrame.Histo1D(('{0}_WPt'.format(options.process),';pT[GeV];;',20,0,2000),'WFromTopPt')
-    histos.append(h_topPt)
-    histos.append(h_WPt)
     #Classification with n hadrons
     a.Define("n2plusB","nBH>1")
     a.Define("n1B1plusC","nBH==1 && nCH>0")
@@ -176,40 +151,30 @@ if not options.isData:
     a.Cut("n2plusBCut","n2plusB")
     n2plusB = a.GetActiveNode().DataFrame.Count().GetValue()
     print(n2plusB)
-    h_mSD2plusB = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSD2plusB'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_2BHConf'.format(options.process),'',4,0,4),'partonCategory'))
-    histos.append(h_mSD2plusB)
 
     a.SetActiveNode(checkpoint)
     a.Cut("n1B1plusCCut","n1B1plusC")
     n1B1plusC = a.GetActiveNode().DataFrame.Count().GetValue()
     print(n1B1plusC)
-    h_mSD1B1plusC = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSD1B1plusC'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
-    histos.append(h_mSD1B1plusC)
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_1B1pCHConf'.format(options.process),'',4,0,4),'partonCategory'))
 
     a.SetActiveNode(checkpoint)
     a.Cut("n1B0CCut","n1B0C")
     n1B0C = a.GetActiveNode().DataFrame.Count().GetValue()
     print(n1B0C)
-    h_mSD1B0C = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSD1B0C'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
-    histos.append(h_mSD1B0C)
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_1B1pCHConf'.format(options.process),'',4,0,4),'partonCategory'))
 
     a.SetActiveNode(checkpoint)
     a.Cut("n0B1plusCCut","n0B1plusC")
     n0B1plusC = a.GetActiveNode().DataFrame.Count().GetValue()
     print(n0B1plusC)
-    h_mSD0B1plusC = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSD0B1plusC'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
-    histos.append(h_mSD0B1plusC)
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_0B1pCHConf'.format(options.process),'',4,0,4),'partonCategory'))
 
     a.SetActiveNode(checkpoint)
     a.Cut("n0B0CCut","n0B0C")
     n0B0C = a.GetActiveNode().DataFrame.Count().GetValue()
     print(n0B0C)
-    h_mSD0B0C = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSD0B0C'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
-    histos.append(h_mSD0B0C)
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_0B0CHConf'.format(options.process),'',4,0,4),'partonCategory'))
 
 
@@ -262,21 +227,29 @@ if not options.isData:
 
     a.SetActiveNode(checkpoint)
     a.Cut("otherCut","partonCategory==0")
-    h_mSDother = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSDother'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
+    h_mSDother = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSDunmatched'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
     histos.append(h_mSDother)
+    a.SetActiveNode(checkpoint)
 
-cutFlowVars = [0,nSkimmed,nTrigger,nTightLepton,nlPt,nJetPt,nJetBTag,n2Ak4bJets,nHT,nMET,nST]
-cutFlowLabels = ["nProc","Skimmed","Trigger","Tight lepton","Lepton pT > 40 GeV","Leading Ak4 pT > 200 GeV","Leading jet b-tag","Two b jets","HT>500","MET>60","ST>500"]
+cutFlowVars = [0,nSkimmed,nTrigger,nTightLepton,nlPt,nJetPt,nJetBTag,n2Ak4bJets,nHT,nMET,nST,nDR,nProbeJet]
+cutFlowLabels = ["nProc","Skimmed","Trigger","Tight lepton","Lepton pT > 40 GeV","Leading Ak4 pT > 200 GeV","Leading jet b-tag","Two medium b jets","HT>500","MET>60","ST>500","dR(l, closest jet)<1.5","ProbeJet found"]
 nCutFlowVars = len(cutFlowVars)
 hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowVars,0.5,nCutFlowVars+0.5)
 for i,var in enumerate(cutFlowVars):
 	hCutFlow.AddBinContent(i+1,var)
 	hCutFlow.GetXaxis().SetBinLabel(i+1, cutFlowLabels[i])
-
-
 histos.append(hCutFlow)
-#a.PrintNodeTree('node_tree.png',verbose=True) #not supported at the moment
-out_f = ROOT.TFile(options.output,"RECREATE")
+
+if(options.isData):
+    snapshotColumns = ["lPt","MET_pt","HT","ST","probeJetMass","probeJetPt","probeJetPNet"]
+else:
+    snapshotColumns = ["lPt","MET_pt","HT","ST","probeJetMass","probeJetPt","probeJetPNet","partonCategory"]
+opts = ROOT.RDF.RSnapshotOptions()
+opts.fMode = "RECREATE"
+print(snapshotColumns)
+a.GetActiveNode().DataFrame.Snapshot("Events",options.output,snapshotColumns,opts)
+
+out_f = ROOT.TFile(options.output,"UPDATE")
 out_f.cd()
 for h in histos:
     h.Write()
