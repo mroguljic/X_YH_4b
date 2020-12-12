@@ -53,14 +53,18 @@ python ${WORK_DIR}/eventSelection.py $*
 '''
 
 skim_template='''#!/bin/bash
-export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b/CMSSW_11_1_5/src
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+tar xzf tarball.tgz
+cd CMSSW_11_1_5/src/
 eval `scramv1 runtime -sh`
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+cd ../..
 source timber-env/bin/activate
-cd JOB_DIR
-echo ${WORK_DIR}/skim.py $*
-python ${WORK_DIR}/skim.py $*
+cd TIMBER
+source setup.sh
+cd ..
+python skim.py $*
+xrdcp ${@: -1} OUTDIR/${@: -1}
+rm ${@: -1}
 '''
 
 skim_condor = """universe              = vanilla
@@ -70,6 +74,7 @@ error                 = OUTPUT/output_$(Cluster)_$(Process).err
 log                   = OUTPUT/output_$(Cluster)_$(Process).log
 +JobFlavour           = "QUEUE"
 Arguments = "$(args)"
+transfer_input_files = tarball.tgz
 use_x509userproxy = true
 Queue args from ARGFILE
 queue

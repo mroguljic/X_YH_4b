@@ -4,6 +4,7 @@ import os, sys, re
 from pathlib import Path
 
 from templates import *
+import subprocess
 
 def split_jobs(files, njobs):
   for i in range(0, len(files), njobs):
@@ -22,7 +23,7 @@ def create_jobs(config, dry=True, queue='',jobs_dir="",out_dir="",nFiles=1):
       Path(sampleOut_dir).mkdir(parents=True, exist_ok=True)
 
       #Create condor file and sh file
-      exeScript = skim_template.replace("JOB_DIR",sampleJobs_dir)
+      exeScript = skim_template.replace("OUTDIR",sampleOut_dir)
       open(os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), 'w').write(exeScript)
 
       condor_script = re.sub('EXEC',os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), skim_condor)
@@ -41,7 +42,6 @@ def create_jobs(config, dry=True, queue='',jobs_dir="",out_dir="",nFiles=1):
       for singleDataset in dataset.split(','):
         query = "dasgoclient -query='file dataset={singleDataset} instance={instance}'".format(**locals())
         das_query.append(query)
-      import subprocess
       allFiles = []
       for query in das_query:
         files = subprocess.check_output(das_query, shell=True).split()
@@ -55,7 +55,7 @@ def create_jobs(config, dry=True, queue='',jobs_dir="",out_dir="",nFiles=1):
       for n, l  in enumerate(list(job_list)):
         #print(n,l)
         inputPath = os.path.join(sampleJobs_dir, 'input', 'input_{}.txt'.format(n))
-        outputPath = os.path.join(sampleOut_dir,'{0}_{1}.root'.format(sample,n))
+        outputPath = '{0}_{1}.root'.format(sample,n)
         open(inputPath, 'w').writelines("{}\n".format('root://cms-xrd-global.cern.ch//'+root_file) for root_file in l)
         argsFile.write("-i {0} -o {1}\n".format(inputPath,outputPath))        
 
@@ -83,8 +83,11 @@ def main():
   args = parser.parse_args()
 
   print(args)
-#/eos/cms/store/group/phys_b2g/mrogulji/skims/2016
-#/afs/cern.ch/work/m/mrogulji/X_YH_4b/condor/skimJobs/2016
+
+  print("Creating tarball")
+  subprocess.call('tar czf tarball.tgz ../CMSSW_11_1_5/ ../timber-env/ ../TIMBER ../skim.py ../eventSelection.py ../semiLeptonicSelection.py ../columnBlackList.txt ../HLTsToKeep.txt', shell=True)
+
+  print("Creating job configs")
   with open(args.config, 'r') as config_file:
     config = json.load(config_file)
     create_jobs(config, args.dry,queue=args.queue,out_dir=args.outdir,jobs_dir=args.jobdir,nFiles=args.nFiles)
