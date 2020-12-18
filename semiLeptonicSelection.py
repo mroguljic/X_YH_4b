@@ -26,7 +26,6 @@ parser.add_option('-c', '--channel', metavar='CHANNEL', type='string', action='s
                 default   =   'mu',
                 dest      =   'channel',
                 help      =   'Electron (e) or muon (mu) channel')
-parser.add_option('--data',action="store_true",dest="isData",default=False)
 parser.add_option('-y', '--year', metavar='year', type='string', action='store',
                 default   =   '2016',
                 dest      =   'year',
@@ -42,6 +41,14 @@ CompileCpp("TIMBER/Framework/SemileptonicFunctions.cc")
 
 
 a = analyzer(options.input)
+runNumber = a.DataFrame.Range(1).AsNumpy(["run"])#just checking the first run number to see if data or MC
+if(runNumber["run"][0]>10000):
+    isData=True
+    print("Running on data")
+else:
+    isData=False
+    print("Running on MC")
+
 histos      = []
 
 deepJetM = 0.3093
@@ -68,74 +75,59 @@ else:
 
 
 nSkimmed = a.DataFrame.Count().GetValue()
-print(nSkimmed)
 
 #Event selection
 
-if(options.isData):
+if(isData):
     triggerString = a.GetTriggerString(triggerList)
     #a.Cut("Triggers",triggerString)  
     print("Skipping triggers, since skims don't have them!")
 nTrigger = a.DataFrame.Count().GetValue() 
-print(nTrigger)
 
 a.Define("lIdx","tightLeptonIdx(nElectron,Electron_cutBased,nMuon,Muon_tightId,Muon_pfIsoId,{0})".format(lGeneration))
 a.Cut("lIdxCut","lIdx>-1")#There is a tight lepton
 nTightLepton = a.DataFrame.Count().GetValue()
-print(nTightLepton)
 
 a.Define("lPt","leptonPt(Electron_pt,Muon_pt,lIdx,{0})".format(lGeneration))
 a.Define("lPhi","leptonPhi(Electron_phi,Muon_phi,lIdx,{0})".format(lGeneration))
 a.Define("lEta","leptonEta(Electron_eta,Muon_eta,lIdx,{0})".format(lGeneration))
 a.Cut("lPtCut","lPt>40")
 nlPt = a.DataFrame.Count().GetValue()
-print(nlPt)
 a.Cut("lEtaCut","abs(lEta)<2.4")
 nlEta = a.DataFrame.Count().GetValue()
-print(nlEta)
 a.Define("goodJetIdxs","goodAK4JetIdxs(nJet, Jet_pt, Jet_eta, Jet_phi, Jet_jetId, lPhi, lEta)")
 a.Cut("goodJetIdxsCut","goodJetIdxs.size()>0")
 nGoodJets = a.DataFrame.Count().GetValue()
-print(nGoodJets)
 a.Define("leadingJetPt","Jet_pt[goodJetIdxs[0]]")
 a.Define("leadingJetIdx","goodJetIdxs[0]")
 a.Define("dRmin","deltaRClosestJet(goodJetIdxs,Jet_eta,Jet_phi,lEta,lPhi)")
 
 a.Cut("leadingJetPtCut","leadingJetPt>200")
 nJetPt = a.DataFrame.Count().GetValue()
-print(nJetPt)
 a.Cut("leadingJetBTagCut","Jet_btagDeepB[goodJetIdxs[0]]>{0}".format(deepJetM))
 nJetBTag = a.DataFrame.Count().GetValue()
-print(nJetBTag)
 a.Define("nbAk4","nbAK4(Jet_btagDeepB, goodJetIdxs, {0})".format(deepJetM))
 a.Cut("nbAk4Cut","nbAk4>1")
 n2Ak4bJets = a.DataFrame.Count().GetValue()
-print(n2Ak4bJets)
 a.Define("HT","HTgoodJets(Jet_pt, goodJetIdxs)")
 a.Cut("HTCut","HT>500")
 nHT = a.DataFrame.Count().GetValue()
-print(nHT)
 a.Cut("METcut","MET_pt>60")
 nMET = a.DataFrame.Count().GetValue()
-print(nMET)
 a.Define("ST","leadingJetPt+MET_pt+lPt")
 a.Cut("STcut","ST>500")
 nST = a.DataFrame.Count().GetValue()
-print(nST)
 a.Cut("dRcut","dRmin<1.5")
 nDR = a.DataFrame.Count().GetValue()
-print(nDR)
 a.Define("probeJetIdx","probeAK8JetIdx(nFatJet,FatJet_pt,FatJet_msoftdrop,FatJet_phi,FatJet_eta,FatJet_jetId,lPhi,lEta)")
 a.Cut("probeJetIdxCut","probeJetIdx>-1")
 nProbeJet = a.DataFrame.Count().GetValue()
-print(nProbeJet)
 a.Define("probeJetMass","FatJet_msoftdrop[probeJetIdx]")
 a.Define("probeJetPt","FatJet_pt[probeJetIdx]")
 a.Define("probeJetPNet","FatJet_ParticleNetMD_probXbb[probeJetIdx]")
 
-if not options.isData:
+if not isData:
     #Jet content classification
-    print(a.GetActiveNode().DataFrame.Count().GetValue())
     a.Define("nBH","FatJet_nBHadrons[probeJetIdx]")
     a.Define("nCH","FatJet_nCHadrons[probeJetIdx]")
     #Classification with n hadrons
@@ -150,31 +142,26 @@ if not options.isData:
     confMatrixHistos = []
     a.Cut("n2plusBCut","n2plusB")
     n2plusB = a.GetActiveNode().DataFrame.Count().GetValue()
-    print(n2plusB)
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_2BHConf'.format(options.process),'',4,0,4),'partonCategory'))
 
     a.SetActiveNode(checkpoint)
     a.Cut("n1B1plusCCut","n1B1plusC")
     n1B1plusC = a.GetActiveNode().DataFrame.Count().GetValue()
-    print(n1B1plusC)
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_1B1pCHConf'.format(options.process),'',4,0,4),'partonCategory'))
 
     a.SetActiveNode(checkpoint)
     a.Cut("n1B0CCut","n1B0C")
     n1B0C = a.GetActiveNode().DataFrame.Count().GetValue()
-    print(n1B0C)
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_1B1pCHConf'.format(options.process),'',4,0,4),'partonCategory'))
 
     a.SetActiveNode(checkpoint)
     a.Cut("n0B1plusCCut","n0B1plusC")
     n0B1plusC = a.GetActiveNode().DataFrame.Count().GetValue()
-    print(n0B1plusC)
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_0B1pCHConf'.format(options.process),'',4,0,4),'partonCategory'))
 
     a.SetActiveNode(checkpoint)
     a.Cut("n0B0CCut","n0B0C")
     n0B0C = a.GetActiveNode().DataFrame.Count().GetValue()
-    print(n0B0C)
     confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_0B0CHConf'.format(options.process),'',4,0,4),'partonCategory'))
 
 
@@ -205,7 +192,6 @@ if not options.isData:
     #Classification with partons
     a.SetActiveNode(checkpoint)
     checkpoint  = a.GetActiveNode()#checkpoint before applying jet classifications
-    print(a.GetActiveNode().DataFrame.Count().GetValue())
     h_partonCat = a.GetActiveNode().DataFrame.Histo1D(('{0}_partonCategory'.format(options.process),';Jet category;;',4,0,4),'partonCategory')
     for i,cat in enumerate(partonCats):
         h_partonCat.GetXaxis().SetBinLabel(i+1, partonCats[i])
@@ -240,13 +226,12 @@ for i,var in enumerate(cutFlowVars):
 	hCutFlow.GetXaxis().SetBinLabel(i+1, cutFlowLabels[i])
 histos.append(hCutFlow)
 
-if(options.isData):
+if(isData):
     snapshotColumns = ["lPt","MET_pt","HT","ST","probeJetMass","probeJetPt","probeJetPNet"]
 else:
     snapshotColumns = ["lPt","MET_pt","HT","ST","probeJetMass","probeJetPt","probeJetPNet","partonCategory"]
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
-print(snapshotColumns)
 a.GetActiveNode().DataFrame.Snapshot("Events",options.output,snapshotColumns,opts)
 
 out_f = ROOT.TFile(options.output,"UPDATE")
