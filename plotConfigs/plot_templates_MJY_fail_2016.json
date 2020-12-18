@@ -1,0 +1,26 @@
+{
+  "ttbar": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates/2016/ttbarStitched.root",
+    "color":"moccasin",
+    "label": "ttbar",
+    "hist" : "ttbar_fail_VR_mJY",
+    "order": 1
+  },
+  "QCD": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates/2016/QCDStitched.root",
+    "color":"lightskyblue",
+    "label": "Multijets",
+    "hist" : "qcd_fail_VR_mJY",
+    "order": 2
+
+  },
+  "data_obs": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates/2016/data_obs.root",
+    "color":"k",
+    "label": "data_obs",
+    "hist" : "data_obs_fail_VR_mJY",
+    "order": 3
+  }
+}
+
+

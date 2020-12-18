@@ -1,0 +1,29 @@
+{
+  "QCD": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/QCD_normalized.root",
+    "xsec": 40145.00,
+    "color":2,
+    "label": "QCD"
+
+  },
+  "ttbar": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/ttbar_normalized.root",
+    "xsec": 831.76,
+    "color":3,
+    "label": "ttbar"
+  },
+  "data_obs":{
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/data_obs.root",
+    "xsec": 1,
+    "color":1,
+    "label": "Data"
+  },
+  "pseudodata":{
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/pseudodata.root",
+    "xsec": 1,
+    "color":6,
+    "label": "Pseudodata"
+  }
+}
+
+
