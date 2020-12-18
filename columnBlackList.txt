@@ -81,8 +81,6 @@ PFCands_btagSip3dSig_FatJet
 PFCands_btagJetDistVal_FatJet
 Jet_btagCMVA
 Jet_btagCSVV2
-Muon_miniPFRelIso_all
-Muon_miniPFRelIso_chg
 Muon_tkRelIso
 Muon_tunepRelPt
 Muon_mvaLowPt
