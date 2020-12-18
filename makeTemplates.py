@@ -33,8 +33,14 @@ pnetHHi = 0.8
 pnetYWp = 0.8
 year    = options.year
 histos=[]
-triggerCorr = Correction('triggerCorrection',"TIMBER/Framework/src/EffLoader.cc",constructor=['"TIMBER/TIMBER/data/TriggerEffs/TriggerEffs.root"','"triggEff_{0}"'.format(year)],corrtype='weight')
-a.AddCorrection(triggerCorr, evalArgs=['mjjHY'])
+if("data" in options.process.lower()):
+    isData=True
+else:
+    isData=False
+
+if not isData:
+    triggerCorr = Correction('triggerCorrection',"TIMBER/Framework/src/EffLoader.cc",constructor=['"TIMBER/TIMBER/data/TriggerEffs/TriggerEffs.root"','"triggEff_{0}"'.format(year)],corrtype='weight')
+    a.AddCorrection(triggerCorr, evalArgs=['mjjHY'])
 a.MakeWeightCols()
 
 a.Define("VRpass","pnetH>{0} && pnetH<{1} && pnetY>{2}".format(pnetHLo,pnetHHi,pnetYWp))#validation region
