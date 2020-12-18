@@ -1,8 +1,0 @@
-{
-  "ttbar": {
-    "maxEvents": -1,
-    "dataset": "/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/coli-NanoTuples-30Apr2020_RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_v14-v2-6f7c69ffdbb83072d4913e5f3cf0008f/USER",
-    "xsec": 377.96,
-    "color": 4
-  }
-}
