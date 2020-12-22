@@ -8,10 +8,10 @@ from TIMBER.Analyzer import *
 
 def dropColumns(columnList,isData):
     if(isData):
-      HLTfile = open("/afs/cern.ch/work/m/mrogulji/X_YH_4b/HLTsToKeep.txt","r")
+      HLTfile = open("/afs/cern.ch/user/d/devdatta/afswork/CMSREL/Analysis/X_YH_4b/X_YH_4b/HLTsToKeep.txt","r")
       goodHLTs = HLTfile.read().splitlines()                                              
                                                                                
-    with open("/afs/cern.ch/work/m/mrogulji/X_YH_4b/columnBlackList.txt","r") as f:                                 
+    with open("/afs/cern.ch/user/d/devdatta/afswork/CMSREL/Analysis/X_YH_4b/X_YH_4b/columnBlackList.txt","r") as f:                                 
       badColumns = f.read().splitlines()                                       
                                                                                
     for c in columnList:
