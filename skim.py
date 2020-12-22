@@ -8,10 +8,10 @@ from TIMBER.Analyzer import *
 
 def dropColumns(columnList,isData):
     if(isData):
-      HLTfile = open("/afs/cern.ch/user/d/devdatta/afswork/CMSREL/Analysis/X_YH_4b/X_YH_4b/HLTsToKeep.txt","r")
+      HLTfile = open("HLTsToKeep.txt","r")
       goodHLTs = HLTfile.read().splitlines()                                              
                                                                                
-    with open("/afs/cern.ch/user/d/devdatta/afswork/CMSREL/Analysis/X_YH_4b/X_YH_4b/columnBlackList.txt","r") as f:                                 
+    with open("columnBlackList.txt","r") as f:                                 
       badColumns = f.read().splitlines()                                       
                                                                                
     for c in columnList:
@@ -38,6 +38,10 @@ parser.add_option('-o', '--output', metavar='OFILE', type='string', action='stor
                 default   =   'output.root',
                 dest      =   'output',
                 help      =   'Output file name.')
+parser.add_option('--maxEvents', metavar='MAXEVENTS', type=int, action='store',
+                default   =   -1,
+                dest      =   'maxEvents',
+                help      =   'Max events to process.')
 
 (options, args) = parser.parse_args()
 start_time = time.time()
@@ -53,16 +57,15 @@ else:
     isData=False
     print("Running on MC")
 
-# print(a.GetActiveNode().DataFrame.Count().GetValue())
-# small_rdf = a.GetActiveNode().DataFrame.Range(1000) # makes an RDF with only the first nentries considered
-# small_node = Node('small',small_rdf) # makes a node out of the dataframe
-# a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
+if(options.maxEvents>0):
+  small_rdf = a.GetActiveNode().DataFrame.Range(options.maxEvents) # makes an RDF with only the first nentries considered
+  small_node = Node('small',small_rdf) # makes a node out of the dataframe
+  a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
 
 nTotal = a.GetActiveNode().DataFrame.Count().GetValue()
 a.Define("SkimFlag","skimFlag(nFatJet,FatJet_eta,FatJet_pt,FatJet_msoftdrop,nJet,Jet_eta,Jet_pt,nElectron,Electron_cutBased,nMuon,Muon_looseId,Muon_pfIsoId,Muon_miniIsoId)")
 a.Cut("SkimFlagCut","SkimFlag>0")
 nSkim = a.GetActiveNode().DataFrame.Count().GetValue()
-print(nSkim,nTotal,nSkim/nTotal)
 
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"

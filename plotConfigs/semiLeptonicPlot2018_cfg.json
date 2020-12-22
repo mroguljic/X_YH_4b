@@ -1,0 +1,31 @@
+{
+  "ST": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/2018/scaled/ST18.root",
+    "color":"turquoise",
+    "label": "ST",
+    "order": 3
+  },
+  "ttbar": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/2018/scaled/ttbar18.root",
+    "xsec": 0.01,
+    "color":"firebrick",
+    "label": "tt+jets",
+    "order": 2
+  },
+  "WJets": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/2018/scaled/WJets18.root",
+    "xsec": 0.01,
+    "color":"limegreen",
+    "label": "WJets",
+    "order": 0
+  },
+  "data_obs": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/2018/scaled/SingleMuon18.root",
+    "xsec": 0.01,
+    "color":"limegreen",
+    "label": "SingleMuon18",
+    "order": 0
+  }
+}
+
+

@@ -1,0 +1,23 @@
+{
+  "QCD": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/2016/lumiScaled/QCD_normalized.root",
+    "xsec": 40145.00,
+    "color":2,
+    "label": "Multijet"
+
+  },
+  "ttbar": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/2016/lumiScaled/ttbar_normalized.root",
+    "xsec": 831.76,
+    "color":3,
+    "label": "ttbar"
+  },
+  "data_obs":{
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/2016/lumiScaled/data_obs.root",
+    "xsec": 1,
+    "color":1,
+    "label": "2016 data"
+  }
+}
+
+

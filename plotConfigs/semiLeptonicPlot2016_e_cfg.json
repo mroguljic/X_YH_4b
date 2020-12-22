@@ -1,0 +1,31 @@
+{
+  "ST": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/electron/2016/scaled/ST16.root",
+    "color":"turquoise",
+    "label": "ST",
+    "order": 3
+  },
+  "ttbar": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/electron/2016/scaled/ttbar16.root",
+    "xsec": 0.01,
+    "color":"firebrick",
+    "label": "tt+jets",
+    "order": 2
+  },
+  "WJets": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/electron/2016/scaled/WJets16.root",
+    "xsec": 0.01,
+    "color":"limegreen",
+    "label": "WJets",
+    "order": 0
+  },
+  "qcd": {
+    "file": "/afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/electron/2016/scaled/QCD16.root",
+    "xsec": 0.01,
+    "color":"black",
+    "label": "QCD multijet",
+    "order": 0
+  }
+}
+
+

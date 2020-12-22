@@ -1,0 +1,34 @@
+{
+  "X800_Y60": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/X800_Y60_normalized.root",
+    "xsec": 0.01,
+    "color":6,
+    "label": "MX,MY = 800, 60 GeV"
+  },
+  "X800_Y100": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/X800_Y100_normalized.root",
+    "xsec": 0.01,
+    "color":1,
+    "label": "MX,MY = 800, 100 GeV"
+  },
+  "X800_Y150": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/X800_Y150_normalized.root",
+    "xsec": 0.01,
+    "color":2,
+    "label": "MX,MY = 800,150 GeV"
+  },
+  "X800_Y200": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/X800_Y200_normalized.root",
+    "xsec": 0.01,
+    "color":3,
+    "label": "MX,MY = 800, 200 GeV"
+  },
+  "X800_Y400": {
+    "file": "/afs/cern.ch/user/m/mrogulji/X_YH_4b/results/histograms/lumiScaled/X800_Y400_normalized.root",
+    "xsec": 0.01,
+    "color":4,
+    "label": "MX,MY = 800, 400 GeV"
+  }
+}
+
+
