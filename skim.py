@@ -1,5 +1,5 @@
 import ROOT
-import time, os
+import time, os, re
 from optparse import OptionParser
 from collections import OrderedDict
 
@@ -56,6 +56,13 @@ if(runNumber["run"][0]>10000):
 else:
     isData=False
     print("Running on MC")
+
+if re.match('X\d+_Y\d+', options.output):
+    MY = options.output.split("_")[1]
+    MY = MY.replace('Y','')
+    MY = MY.replace('.root','')
+    print("Running for MY {0}".format(MY))
+    a.Cut("MY_cut","GenModel_YMass_{0}==1".format(MY))
 
 if(options.maxEvents>0):
   small_rdf = a.GetActiveNode().DataFrame.Range(options.maxEvents) # makes an RDF with only the first nentries considered

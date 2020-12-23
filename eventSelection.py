@@ -8,6 +8,25 @@ from TIMBER.Tools.Common import *
 from TIMBER.Analyzer import *
 import sys
 
+def getNProc(inputFile):
+    nProc        = 0
+    if ".root" in inputFile:
+        tempFile = ROOT.TFile.Open(inputFile)
+        skimInfo = tempFile.Get("skimInfo")
+        nProc    = skimInfo.GetBinContent(1)
+        tempFile.Close()
+        return nProc
+    elif ".txt" in inputFile: 
+        txt_file     = open(inputFile,"r")
+        for l in txt_file.readlines():
+            thisfile = l.strip()
+            if 'root://' not in thisfile and thisfile.startswith('/store/'): thisfile='root://cms-xrd-global.cern.ch/'+thisfile
+            tempFile = ROOT.TFile.Open(thisfile)
+            skimInfo = tempFile.Get("skimInfo")
+            nProc    += skimInfo.GetBinContent(1)
+            tempFile.Close()
+    return nProc
+
 parser = OptionParser()
 
 parser.add_option('-i', '--input', metavar='IFILE', type='string', action='store',
@@ -24,10 +43,6 @@ parser.add_option('-p', '--process', metavar='PROCESS', type='string', action='s
                 help      =   'Process in the given MC file')
 parser.add_option('-s', '--sig', action="store_true",dest="isSignal",default=False)
 parser.add_option('-b', '--bkg', action="store_false",dest="isSignal",default=False)
-parser.add_option('-m', '--massY', metavar='GenY mass (if MC signal)', type=int, action='store',
-                default   =   200,
-                dest      =   'massY',
-                help      =   'Mass of the Y')
 parser.add_option('-y', '--year', metavar='year', type='string', action='store',
                 default   =   '2016',
                 dest      =   'year',
@@ -46,6 +61,9 @@ CompileCpp("TIMBER/Framework/helperFunctions.cc")
 CompileCpp("TIMBER/Framework/TTstitching.cc") 
 
 
+
+
+
 a = analyzer(options.input)
 runNumber = a.DataFrame.Range(1).AsNumpy(["run"])#just checking the first run number to see if data or MC
 if(runNumber["run"][0]>10000):
@@ -55,6 +73,14 @@ else:
     isData=False
     print("Running on MC")
 histos      = []
+
+if not isData:
+    nProc = getNProc(options.input)
+else:
+#a lot of data skims had problem with skimInfo hist, when we redo skims, data will get nProc saved too
+    nProc = 0
+
+
 # small_rdf = a.GetActiveNode().DataFrame.Range(1000) # makes an RDF with only the first nentries considered
 # small_node = Node('small',small_rdf) # makes a node out of the dataframe
 # a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
@@ -74,8 +100,10 @@ else:
 a.Cut("skimCut","SkimFlag==2 || SkimFlag==3")
 
 if(options.isSignal):
-    YMass = options.massY
+    YMass = options.process.split("_")[1]
+    YMass = YMass.replace("Y","")
     a.Cut("YMass","GenModel_YMass_{0}==1".format(YMass))
+
 
 nSkimmed = a.GetActiveNode().DataFrame.Count().GetValue()
 
@@ -84,7 +112,7 @@ MetFiltersString = a.GetFlagString(MetFilters)
 
 baselineTrigger="HLT_PFJet260"
 if(options.year=="2016"):
-    if("DataB" in options.process):
+    if("JetHT2016B" in options.process):
         triggerList = ["HLT_AK8DiPFJet280_200_TrimMass30","HLT_PFHT650_WideJetMJJ900DEtaJJ1p5","HLT_AK8PFHT650_TrimR0p1PT0p03Mass50",
 "HLT_AK8PFHT700_TrimR0p1PT0p03Mass50","HLT_PFHT800","HLT_PFHT900","HLT_AK8PFJet360_TrimMass30","HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20"]
     else:
@@ -98,9 +126,9 @@ elif(options.year=="2018"):
    triggerList=["HLT_PFHT1050","HLT_AK8PFJet400_TrimMass30","HLT_AK8PFJet420_TrimMass30","HLT_AK8PFHT800_TrimMass50",
 "HLT_PFJet500","HLT_AK8PFJet500"]
 
-triggersStringAll = a.GetTriggerString(triggerList)    
 beforeTrigCheckpoint = a.GetActiveNode()
 if(isData):
+    triggersStringAll = a.GetTriggerString(triggerList)    
     a.Cut("MET",MetFiltersString)
     a.Cut("Triggers",triggersStringAll)
     #Only applying trigger to data, will apply trigger turn-on to MC
@@ -328,6 +356,9 @@ if(isData):
     #return to event selection
     a.SetActiveNode(checkpoint)
 snapshotColumns = ["pnetH","pnetY","mjjHY","mjY","mjH"]
+if not isData:
+    snapshotColumns = ["pnetH","pnetY","mjjHY","mjY","mjH","FatJet_hadronFlavour"]
+
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
 a.GetActiveNode().DataFrame.Snapshot("Events",options.output,snapshotColumns,opts)
@@ -344,13 +375,15 @@ if not isData:
     histos.append(h_recoJetMassY)
     histos.append(h_recoJetMassH)
 
-cutFlowVars = [0,nSkimmed,nTrig,nEta,npT,nDeltaEta,nMJJ,nHiggs]
-cutFlowLabels = ["nProc","Skimmed","Trigger","Eta","pT","Delta Eta","MJJ","Higgs mass"]
-nCutFlowVars = len(cutFlowVars)
-hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowVars,0.5,nCutFlowVars+0.5)
+cutFlowVars = [nProc,nSkimmed,nTrig,nEta,npT,nDeltaEta,nMJJ,nHiggs]
+cutFlowLabels = ["nProc","Skimmed","Trigger","Eta","pT","Delta Eta","MJJ","Higgs mass","SR_TT","SR_LL","VR_P","VR_F"]#tagging labels will be filled out in template making
+nCutFlowlabels = len(cutFlowLabels)
+hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowlabels,0.5,nCutFlowlabels+0.5)
+for i,label in enumerate(cutFlowLabels):
+    hCutFlow.GetXaxis().SetBinLabel(i+1, label)
+
 for i,var in enumerate(cutFlowVars):
     hCutFlow.AddBinContent(i+1,var)
-    hCutFlow.GetXaxis().SetBinLabel(i+1, cutFlowLabels[i])
 
 histos.append(hCutFlow)
 
