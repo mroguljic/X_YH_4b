@@ -47,7 +47,10 @@ parser.add_option('-y', '--year', metavar='year', type='string', action='store',
                 default   =   '2016',
                 dest      =   'year',
                 help      =   'Dataset year')
-
+parser.add_option('--var', metavar='variation', type='string', action='store',
+                default   =   "nom",
+                dest      =   'variation',
+                help      =   'jmrUp/Down, jmsUp/Down, jesUp/Down, jerUp/Down')
 
 (options, args) = parser.parse_args()
 start_time = time.time()
@@ -60,9 +63,20 @@ CompileCpp("TIMBER/Framework/taggerOrdering.cc")
 CompileCpp("TIMBER/Framework/helperFunctions.cc") 
 CompileCpp("TIMBER/Framework/TTstitching.cc") 
 
-
-
-
+varName = options.variation
+if(varName=="nom"):
+    ptVar  = "FatJet_pt_nom"
+    mSDVar = "FatJet_msoftdrop_nom"
+elif("jm" in varName):#jmr,jms
+    mSDVar = "FatJet_msoftdrop_{0}".format(varName)
+    ptVar  = "FatJet_pt_nom"
+elif("je" in varName):#jes,jer
+    varName = varName.replace("jes","jesTotal")#jesDown/Up is store as jesTotalDown/Up
+    mSDVar = "FatJet_msoftdrop_nom"
+    ptVar  = "FatJet_pt_{0}".format(varName)
+else:
+    print("Not recognizing shape uncertainty {0}, exiting".format(varName))        
+    sys.exit()
 
 a = analyzer(options.input)
 runNumber = a.DataFrame.Range(1).AsNumpy(["run"])#just checking the first run number to see if data or MC
@@ -101,7 +115,7 @@ a.Cut("skimCut","SkimFlag==2 || SkimFlag==3")
 
 if(options.isSignal):
     YMass = options.process.split("_")[1]
-    YMass = YMass.replace("Y","")
+    YMass = YMass.replace("MY","")
     a.Cut("YMass","GenModel_YMass_{0}==1".format(YMass))
 
 
@@ -134,7 +148,7 @@ if(isData):
     #Only applying trigger to data, will apply trigger turn-on to MC
 nTrig = a.GetActiveNode().DataFrame.Count().GetValue()
 
-if("ttbar" in options.process):
+if("TTbar" in options.process):
     a.Define("ttHTFlag","highHTFlag(nGenPart,GenPart_pdgId,GenPart_pt,GenPart_phi,GenPart_eta,GenPart_mass,nGenJetAK8,GenJetAK8_pt,GenJetAK8_phi,GenJetAK8_eta,GenJetAK8_mass)")
     if("HT" in options.process):
         a.Cut("ttHTCut","ttHTFlag==1")
@@ -146,13 +160,6 @@ if("ttbar" in options.process):
 #Jet(s) definition
 a.Cut("nFatJet","nFatJet>1")
 a.Cut("Eta","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
-nEta = a.GetActiveNode().DataFrame.Count().GetValue()
-if(options.year=="2016"):
-    a.Cut("pT","FatJet_pt[0]>350 && FatJet_pt[1]>350")
-else:
-    a.Cut("pT","FatJet_pt[0]>450 && FatJet_pt[1]>450")
-npT = a.GetActiveNode().DataFrame.Count().GetValue()
-
 evtColumns = VarGroup("Event columns")
 evtColumns.Add("HT_2p4","calculateHT(nJet,Jet_eta,Jet_pt,30.0,2.4)")
 evtColumns.Add("HT_5p0","calculateHT(nJet,Jet_eta,Jet_pt,30.0,5.0)")
@@ -160,11 +167,23 @@ evtColumns.Add("nAK4_2p4","nAK4(nJet,Jet_eta,Jet_pt,30.0,2.4)")
 evtColumns.Add("nAK4_5p0","nAK4(nJet,Jet_eta,Jet_pt,30.0,5.0)")
 evtColumns.Add("n_bAK4","n_bAK4(nJet,Jet_eta,Jet_phi,Jet_pt,Jet_btagDeepB,{0},nFatJet,FatJet_eta,FatJet_phi)".format(deepJetM))
 evtColumns.Add("n_nonbAK4","n_nonbAK4(nJet,Jet_eta,Jet_phi,Jet_pt,Jet_btagDeepB,{0},nFatJet,FatJet_eta,FatJet_phi)".format(deepJetL))
-evtColumns.Add("FatJet_pt0","FatJet_pt[0]")
-evtColumns.Add("FatJet_pt1","FatJet_pt[1]")
+evtColumns.Add("FatJet_pt0","{0}[0]".format(ptVar))
+evtColumns.Add("FatJet_pt1","{0}[1]".format(ptVar))
 evtColumns.Add("FatJet_eta0","FatJet_eta[0]")
 evtColumns.Add("FatJet_eta1","FatJet_eta[1]")
+evtColumns.Add("mSD0","{0}[0]".format(mSDVar))
+evtColumns.Add("mSD1","{0}[1]".format(mSDVar))
 a.Apply([evtColumns])
+
+
+nEta = a.GetActiveNode().DataFrame.Count().GetValue()
+if(options.year=="2016"):
+    a.Cut("pT","FatJet_pt0>350 && FatJet_pt1>350")
+else:
+    a.Cut("pT","FatJet_pt0>450 && FatJet_pt1>450")
+npT = a.GetActiveNode().DataFrame.Count().GetValue()
+
+
 
 h_HT_2p4 = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT_2p4_jetSel'.format(options.process),';AK4 HT, pT>30GeV and |eta|<2.4;Events/10 GeV;',300,0,3000),"HT_2p4")
 h_HT_5p0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT_5p0_jetSel'.format(options.process),';AK4 HT, pT>30GeV and |eta|<5.0;Events/10 GeV;',300,0,3000),"HT_5p0")
@@ -188,10 +207,8 @@ histos.append(h_eta1)
 #need to define variables which we want in n-1 histograms
 nm1Columns = VarGroup("NminusOne Columns")
 nm1Columns.Add("DeltaEta","abs(FatJet_eta[0] - FatJet_eta[1])")
-nm1Columns.Add("mSD0","FatJet_msoftdrop[0]")
-nm1Columns.Add("mSD1","FatJet_msoftdrop[1]")
-nm1Columns.Add('LeadingVector', 'analyzer::TLvector(FatJet_pt[0],FatJet_eta[0],FatJet_phi[0],FatJet_msoftdrop[0])')
-nm1Columns.Add('SubleadingVector',  'analyzer::TLvector(FatJet_pt[1],FatJet_eta[1],FatJet_phi[1],FatJet_msoftdrop[1])')
+nm1Columns.Add('LeadingVector', 'analyzer::TLvector(FatJet_pt0,FatJet_eta[0],FatJet_phi[0],mSD0)')
+nm1Columns.Add('SubleadingVector',  'analyzer::TLvector(FatJet_pt1,FatJet_eta[1],FatJet_phi[1],mSD1)')
 nm1Columns.Add('mjjHY',     'analyzer::invariantMass(LeadingVector,SubleadingVector)') 
 
 a.Apply([nm1Columns])
@@ -256,7 +273,7 @@ histos.append(h_nPV_vs_mSD0)
 histos.append(h_nPV_vs_mSD1)
 
 idxColumns = VarGroup("idxColumns")
-idxColumns.Add("idxH","higgsMassMatchingAlt(FatJet_msoftdrop[0],FatJet_msoftdrop[1])")
+idxColumns.Add("idxH","higgsMassMatchingAlt(mSD0,mSD1)")
 idxColumns.Add("idxY","1-idxH")
 idxCuts   = CutGroup("idxCuts")
 idxCuts.Add("Higgs-tagged cut","idxH>=0")
@@ -316,10 +333,11 @@ if(isData):
     #need to change names to create nodes with different names than already existing
     a.Cut("nFatJet_ForTrigger","nFatJet>1")
     a.Cut("Eta_ForTrigger","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
+    a.Apply([evtColumns])
     if(options.year=="2016"):
-        a.Cut("pT_ForTrigger","FatJet_pt[0]>350 && FatJet_pt[1]>350")
+        a.Cut("pT_ForTrigger","FatJet_pt0>350 && FatJet_pt1>350")
     else:
-        a.Cut("pT_ForTrigger","FatJet_pt[0]>450 && FatJet_pt[1]>450")
+        a.Cut("pT_ForTrigger","FatJet_pt0>450 && FatJet_pt1>450")
     nJets = a.GetActiveNode().DataFrame.Count().GetValue()
 
     evtColumns.name = "Event Columns For Trigger"
@@ -328,7 +346,7 @@ if(isData):
     candidateColumns.name = "candidateColumns For Trigger"
     idxColumns.name = "idxColumns For Trigger"
     idxCuts.name = "idxCuts For Trigger"
-    a.Apply([evtColumns,nm1Columns,nm1Cuts,idxColumns,idxCuts,candidateColumns])
+    a.Apply([nm1Columns,nm1Cuts,idxColumns,idxCuts,candidateColumns])
 
     triggersStringAll = a.GetTriggerString(triggerList)  
     h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
@@ -357,7 +375,7 @@ if(isData):
     a.SetActiveNode(checkpoint)
 snapshotColumns = ["pnetH","pnetY","mjjHY","mjY","mjH"]
 if not isData:
-    snapshotColumns = ["pnetH","pnetY","mjjHY","mjY","mjH","FatJet_hadronFlavour"]
+    snapshotColumns = ["pnetH","pnetY","mjjHY","mjY","mjH","nFatJet","FatJet_hadronFlavour"]
 
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
