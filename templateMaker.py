@@ -12,7 +12,7 @@ parser = OptionParser()
 parser.add_option('-i', '--input', metavar='IFILE', type='string', action='store',
                 default   =   '',
                 dest      =   'input',
-                help      =   'A root file or text file with multiple root file locations to analyze')
+                help      =   'A root file to analyze')
 parser.add_option('-o', '--output', metavar='OFILE', type='string', action='store',
                 default   =   'output.root',
                 dest      =   'output',
@@ -25,7 +25,18 @@ parser.add_option('-p', '--process', metavar='PROCESS', type='string', action='s
                 default   =   'X1600_Y100',
                 dest      =   'process',
                 help      =   'Process in the given file')
+parser.add_option('-v','--var', metavar='variation', type='string', action='store',
+                default   =   "nom",
+                dest      =   'variation',
+                help      =   'jmrUp/Down, jmsUp/Down, jesUp/Down, jerUp/Down')
+parser.add_option('-m', metavar='mode', type='string', action='store',
+                default   =   "RECREATE",
+                dest      =   'mode',
+                help      =   'RECREATE or UPDATE outputfile')
 
+
+
+variation = options.variation
 (options, args) = parser.parse_args()
 a = analyzer(options.input)
 pnetHLo = 0.0
@@ -92,27 +103,29 @@ nAT = a.GetActiveNode().DataFrame.Count().GetValue()
 if(isData):
     nTT = 0
     nLL = 0
-#include histos from evt sel in the template file
-in_f = ROOT.TFile(options.input)
-for key in in_f.GetListOfKeys():
-    h = key.ReadObj()
-    hName = h.GetName()
-    if(hName=="Events"):
-        continue
-    h.SetDirectory(0)
-    if("cutflow" in hName.lower()):
-        h.SetBinContent(h.GetNbinsX(),nVRF)
-        h.SetBinContent(h.GetNbinsX()-1,nVRP)
-        h.SetBinContent(h.GetNbinsX()-2,nLL)
-        h.SetBinContent(h.GetNbinsX()-3,nTT)
-        h.GetXaxis().SetBinLabel(h.GetNbinsX(),"VR_F")
-        h.GetXaxis().SetBinLabel(h.GetNbinsX()-1,"VR_P")
-        h.GetXaxis().SetBinLabel(h.GetNbinsX()-2,"SR_LL")
-        h.GetXaxis().SetBinLabel(h.GetNbinsX()-3,"SR_TT")
-    histos.append(h)
+#include histos from evt sel in the template file for nominal template
+if(options.variation=="nom")
+    in_f = ROOT.TFile(options.input)
+    for key in in_f.GetListOfKeys():
+        h = key.ReadObj()
+        hName = h.GetName()
+        if(hName=="Events"):
+            continue
+        h.SetDirectory(0)
+        if("cutflow" in hName.lower()):
+            h.SetBinContent(h.GetNbinsX(),nVRF)
+            h.SetBinContent(h.GetNbinsX()-1,nVRP)
+            h.SetBinContent(h.GetNbinsX()-2,nLL)
+            h.SetBinContent(h.GetNbinsX()-3,nTT)
+            h.GetXaxis().SetBinLabel(h.GetNbinsX(),"VR_F")
+            h.GetXaxis().SetBinLabel(h.GetNbinsX()-1,"VR_P")
+            h.GetXaxis().SetBinLabel(h.GetNbinsX()-2,"SR_LL")
+            h.GetXaxis().SetBinLabel(h.GetNbinsX()-3,"SR_TT")
+        histos.append(h)
 
-out_f = ROOT.TFile(options.output,"RECREATE")
+out_f = ROOT.TFile(options.output,options.mode)
 out_f.cd()
 for h in histos:
+    h.SetName(h.GetName()+options.variation)
     h.Write()
 out_f.Close()
