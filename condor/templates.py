@@ -28,9 +28,9 @@ queue
 
 selection_condor = """universe              = vanilla
 executable            = EXEC
-output                = OUTPUT/output_$(Cluster)_$(Process).out
-error                 = OUTPUT/output_$(Cluster)_$(Process).err
-log                   = OUTPUT/output_$(Cluster)_$(Process).log
+output                = OUTPUT/output_$(Process).out
+error                 = OUTPUT/output_$(Process).err
+log                   = OUTPUT/output_$(Process).log
 +JobFlavour           = "QUEUE"
 Arguments = "$(args)"
 use_x509userproxy = true
@@ -40,7 +40,7 @@ queue
 
 selection_template='''#!/bin/bash
 
-cd /afs/cern.ch/user/d/devdatta/afswork/CMSREL/Analysis/X_YH_4b/CMSSW_11_1_5/
+cd /afs/cern.ch/work/m/mrogulji/X_YH_4b/CMSSW_11_1_5/
 eval `scramv1 runtime -sh`
 cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
 source timber-env/bin/activate
@@ -69,9 +69,9 @@ rm ${@: -1}
 
 skim_condor = """universe              = vanilla
 executable            = EXEC
-output                = OUTPUT/output_$(Cluster)_$(Process).out
-error                 = OUTPUT/output_$(Cluster)_$(Process).err
-log                   = OUTPUT/output_$(Cluster)_$(Process).log
+output                = OUTPUT/output_$(Process).out
+error                 = OUTPUT/output_$(Process).err
+log                   = OUTPUT/output_$(Process).log
 +JobFlavour           = "QUEUE"
 Arguments = "$(args)"
 transfer_input_files = tarball.tgz
@@ -82,9 +82,9 @@ queue
 
 semileptonic_condor = """universe              = vanilla
 executable            = EXEC
-output                = OUTPUT/output_$(Cluster)_$(Process).out
-error                 = OUTPUT/output_$(Cluster)_$(Process).err
-log                   = OUTPUT/output_$(Cluster)_$(Process).log
+output                = OUTPUT/output_$(Process).out
+error                 = OUTPUT/output_$(Process).err
+log                   = OUTPUT/output_$(Process).log
 +JobFlavour           = "QUEUE"
 Arguments = "$(args)"
 use_x509userproxy = true
