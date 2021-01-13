@@ -379,6 +379,7 @@ if not isData:
 
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
+opts.fLazy = False
 a.GetActiveNode().DataFrame.Snapshot("Events",options.output,snapshotColumns,opts)
 
 if not isData:
