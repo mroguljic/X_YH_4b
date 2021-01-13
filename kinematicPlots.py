@@ -1,3 +1,6 @@
+import matplotlib
+matplotlib.use('Agg')
+
 import ROOT as r
 from optparse import OptionParser
 from time import sleep
@@ -7,6 +10,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import mplhep as hep
 from root_numpy import hist2array
+
+
 
 def plotVarSeparated(data,cut,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=True,luminosity="35.9"):
     histos = []
@@ -477,28 +482,40 @@ def getmJY_h(h,rebin):
     hist, edges = hist2array(h,return_edges=True)
     return hist,edges[0]
 
-def plotMJY(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRange=[],sigXSec=0.01):
+def plotMJY(data,outFile,region,rebin=1,xTitle="",yTitle="",yRange=[],xRange=[],luminosity="35.9",log=False,firstybin=1,lastybin=-1,stack=True,text=""):
     histosSig = []
     labelsSig = []
     histosBkg = []
     labelsBkg = []
     colorsBkg = []
     colorsSig = []
+    ymin = 0
+    ymax = 0
     for sample, sample_cfg in data.items():
         tempFile = r.TFile.Open(sample_cfg["file"])
-        hTemp = tempFile.Get("{0}_mjY_{1}_{2}".format(sample,tagger,region))
+        tag = sample_cfg["tag"]
+        h2d = tempFile.Get("{0}_mJY_mJJ_{1}".format(tag,region))
+        #h2d = tempFile.Get("mJJ_mJY_{0}_{1}".format(region,tag))
+        if(ymin==0):
+            ymin = h2d.GetYaxis().GetBinLowEdge(firstybin)
+            if(lastybin==-1):
+                lastybin=h2d.GetNbinsY()
+            ymax = h2d.GetYaxis().GetBinUpEdge(lastybin)
         if("X" in sample):
-            h,edges = getmJY_h(hTemp,rebin)
-            #signal is normalized to 10fb in .root file
-            h = h*(sigXSec/0.01)
-            histosSig.append([h,edges])
+            hInvMass = h2d.ProjectionX("{0}_mJY_{1}".format(tag,region),firstybin,lastybin)#avoid underflow
+            hInvMass.Rebin(rebin)
+            hist, edges = hist2array(hInvMass,return_edges=True)
+
+            histosSig.append([hist,edges[0]])
             labelsSig.append(sample_cfg["label"])
             colorsSig.append(sample_cfg["color"])
         elif("data_obs" in sample):
             continue   
         else:
-            h,edges = getmJY_h(hTemp,rebin)
-            histosBkg.append([h,edges])
+            hInvMass = h2d.ProjectionX("{0}_mJY_{1}".format(tag,region),firstybin,lastybin)#avoid underflow
+            hInvMass.Rebin(rebin)
+            hist, edges = hist2array(hInvMass,return_edges=True)
+            histosBkg.append([hist,edges[0]])
             labelsBkg.append(sample_cfg["label"])
             if(sample_cfg["label"]=="ttbar"):
                 labelsBkg[-1]=r"t$\bar{t}$"#json restrictions workaround
@@ -513,10 +530,12 @@ def plotMJY(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         stackHistosBkg.append(h[0])
         stackEdgesBkg.append(h[1])
 
-    hep.histplot(stackHistosBkg,stackEdgesBkg[0],stack=True,ax=ax,label = labelsBkg,facecolor=colorsBkg, histtype="fill",edgecolor='black')
+    hep.histplot(stackHistosBkg,stackEdgesBkg[0],stack=stack,ax=ax,label = labelsBkg,facecolor=colorsBkg, histtype="fill",edgecolor='black')
+    #hep.histplot(stackHistosBkg,stackEdgesBkg[0],stack=stack,ax=ax,label = labelsBkg,color=colorsBkg)
     for i,h in enumerate(histosSig):
         hep.histplot(h[0],h[1],stack=False,ax=ax,label = labelsSig[i],zorder=2,linewidth=3,color=colorsSig[i])
-    plt.yscale("log")
+    if(log):
+        plt.yscale("log")
     ax.legend()
     #ax.set_xlabel(xTitle)
     #ax.set_ylabel(yTitle)
@@ -526,38 +545,56 @@ def plotMJY(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         ax.set_ylim(yRange)
     if(xRange):
         ax.set_xlim(xRange)
-    hep.cms.lumitext(text='39.5 $fb^{-1} (13 TeV)$', ax=None, fontname=None, fontsize=None)
+
+    lumiText = luminosity + " $fb^{-1} (13 TeV)$"    
+    hep.cms.lumitext(text=lumiText, ax=None, fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
-    plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 pb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
-    plt.legend(loc=(0.02,0.5),ncol=2)#loc = 'best'
+    plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 10 fb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
+    MJJrangeText = str(ymin) + "$<M_{JJ}$<" + str(ymax)
+    plt.text(0.28, 0.65, MJJrangeText, horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
+    if(text):
+        plt.text(0.28, 0.55, text, horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
+    plt.legend(loc=(0.5,0.6),ncol=1)#loc = 'best'
     print("Saving {0}".format(outFile))
     plt.savefig(outFile)
     plt.savefig(outFile.replace("pdf","png"))
-
+    
     plt.clf()
 
-def plotMJJ(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRange=[],sigXSec=0.01):
+def plotMJJ(data,outFile,region,rebin=1,xTitle="",yTitle="",yRange=[],xRange=[],luminosity="35.9",log=False,firstxbin=1,lastxbin=-1,stack=True,text=""):
     histosSig = []
     labelsSig = []
     histosBkg = []
     labelsBkg = []
     colorsBkg = []
     colorsSig = []
+    xmin = 0
+    xmax = 0
     for sample, sample_cfg in data.items():
         tempFile = r.TFile.Open(sample_cfg["file"])
-        h3d = tempFile.Get("{0}_mjY_mjH_mjjHY_{1}_{2}".format(sample,tagger,region))
+        tag = sample_cfg["tag"]
+        h2d = tempFile.Get("{0}_mJY_mJJ_{1}".format(tag,region))
+        #h2d = tempFile.Get("mJJ_mJY_{0}_{1}".format(region,tag))
+        if(xmin==0):
+            xmin = h2d.GetXaxis().GetBinLowEdge(firstxbin)
+            if(lastxbin==-1):
+                lastxbin=h2d.GetNbinsX()
+            xmax = h2d.GetXaxis().GetBinUpEdge(lastxbin)
         if("X" in sample):
-            h,edges = getInvMass_h(h3d,rebin)
-            #signal is normalized to 10fb in .root file
-            h = h*(sigXSec/0.01)
-            histosSig.append([h,edges])
+            hInvMass = h2d.ProjectionY("{0}_mJJ_{1}".format(tag,region),firstxbin,lastxbin)#avoid underflow
+            hInvMass.Rebin(rebin)
+            hist, edges = hist2array(hInvMass,return_edges=True)
+
+            histosSig.append([hist,edges[0]])
             labelsSig.append(sample_cfg["label"])
             colorsSig.append(sample_cfg["color"])
         elif("data_obs" in sample):
             continue   
         else:
-            h,edges = getInvMass_h(h3d,rebin)
-            histosBkg.append([h,edges])
+            hInvMass = h2d.ProjectionY("{0}_mJJ_{1}".format(tag,region),firstxbin,lastxbin)#avoid underflow
+            hInvMass.Rebin(rebin)
+            hist, edges = hist2array(hInvMass,return_edges=True)
+            histosBkg.append([hist,edges[0]])
             labelsBkg.append(sample_cfg["label"])
             if(sample_cfg["label"]=="ttbar"):
                 labelsBkg[-1]=r"t$\bar{t}$"#json restrictions workaround
@@ -572,10 +609,12 @@ def plotMJJ(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         stackHistosBkg.append(h[0])
         stackEdgesBkg.append(h[1])
 
-    hep.histplot(stackHistosBkg,stackEdgesBkg[0],stack=True,ax=ax,label = labelsBkg,facecolor=colorsBkg, histtype="fill",edgecolor='black')
+    hep.histplot(stackHistosBkg,stackEdgesBkg[0],stack=stack,ax=ax,label = labelsBkg,facecolor=colorsBkg, histtype="fill",edgecolor='black')
+    #hep.histplot(stackHistosBkg,stackEdgesBkg[0],stack=stack,ax=ax,label = labelsBkg,color=colorsBkg)
     for i,h in enumerate(histosSig):
         hep.histplot(h[0],h[1],stack=False,ax=ax,label = labelsSig[i],zorder=2,linewidth=3,color=colorsSig[i])
-    plt.yscale("log")
+    if(log):
+        plt.yscale("log")
     ax.legend()
     #ax.set_xlabel(xTitle)
     #ax.set_ylabel(yTitle)
@@ -585,10 +624,16 @@ def plotMJJ(data,outFile,tagger,region,rebin=1,xTitle="",yTitle="",yRange=[],xRa
         ax.set_ylim(yRange)
     if(xRange):
         ax.set_xlim(xRange)
-    hep.cms.lumitext(text='39.5 $fb^{-1} (13 TeV)$', ax=None, fontname=None, fontsize=None)
+
+    lumiText = luminosity + " $fb^{-1} (13 TeV)$"    
+    hep.cms.lumitext(text=lumiText, ax=None, fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
-    plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 pb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
-    plt.legend(loc=(0.02,0.5),ncol=2)#loc = 'best'
+    plt.text(0.28, 0.85, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 10 fb", horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
+    MJYrangeText = str(xmin) + "$<M_{JY}$<" + str(xmax)
+    plt.text(0.28, 0.65, MJYrangeText, horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
+    if(text):
+        plt.text(0.28, 0.55, text, horizontalalignment='center',verticalalignment='center',transform=ax.transAxes, fontsize=18)
+    plt.legend(loc=(0.5,0.6),ncol=1)#loc = 'best'
     print("Saving {0}".format(outFile))
     plt.savefig(outFile)
     plt.savefig(outFile.replace("pdf","png"))
@@ -777,9 +822,28 @@ if __name__ == '__main__':
         # plotVarStackMC(data,"fail_VR_mJJ","{0}/kinematic/mJJ_VR_fail.pdf".format(odir),xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e8],log=True,rebinX=1,luminosity=luminosity)
         # plotVarStackMC(data,"pass_VR_mJJ","{0}/kinematic/mJJ_VR_pass.pdf".format(odir),xTitle="Dijet invariant mass [GeV]",yTitle="Events/100 GeV",xRange=[750,2050],yRange=[1,10e6],log=True,rebinX=1,luminosity=luminosity)
 
-        plotVarStackMC(data,"fail_SR_mJY","{0}/kinematic/mJY_SR_fail.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e6],log=True,rebinX=2,luminosity=luminosity)
-        plotVarStackMC(data,"pass_SR_mJY","{0}/kinematic/mJY_SR_pass.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e4],log=True,rebinX=2,luminosity=luminosity)
-        plotVarStackMC(data,"fail_VR_mJY","{0}/kinematic/mJY_VR_fail.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e8],log=True,rebinX=2,luminosity=luminosity)
-        plotVarStackMC(data,"pass_VR_mJY","{0}/kinematic/mJY_VR_pass.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e6],log=True,rebinX=2,luminosity=luminosity)
-        cutFlowWithData(data,"{0}/cutflows/total_cutflow.pdf".format(odir),xTitle="",yTitle="Events",xRange=[0.5,12.5],yRange=[None,10e18],log=True,sigXSec=1.0,luminosity=luminosity)
+        # plotVarStackMC(data,"fail_SR_mJY","{0}/kinematic/mJY_SR_fail.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e6],log=True,rebinX=2,luminosity=luminosity)
+        # plotVarStackMC(data,"pass_SR_mJY","{0}/kinematic/mJY_SR_pass.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e4],log=True,rebinX=2,luminosity=luminosity)
+        # plotVarStackMC(data,"fail_VR_mJY","{0}/kinematic/mJY_VR_fail.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e8],log=True,rebinX=2,luminosity=luminosity)
+        # plotVarStackMC(data,"pass_VR_mJY","{0}/kinematic/mJY_VR_pass.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e6],log=True,rebinX=2,luminosity=luminosity)
+        # cutFlowWithData(data,"{0}/cutflows/total_cutflow.pdf".format(odir),xTitle="",yTitle="Events",xRange=[0.5,12.5],yRange=[None,10e18],log=True,sigXSec=1.0,luminosity=luminosity)
 
+        plotMJJ(data,"{0}_MJJ_TT_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,text="{0}, TT region, WP 0.9".format(year))
+        plotMJY(data,"{0}_MJY_TT_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,text="{0}, TT region, WP 0.9".format(year))
+        plotMJJ(data,"{0}_MJJ_LL_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,text="{0}, LL region, WP 0.9".format(year))
+        plotMJY(data,"{0}_MJY_LL_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,text="{0}, LL region, WP 0.9".format(year))
+
+        plotMJJ(data,"{0}_MJJ_TT_SR_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,firstxbin=1,lastxbin=4,text="{0}, TT region, WP 0.9".format(year))
+        plotMJY(data,"{0}_MJY_TT_SR_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,firstybin=4,lastybin=8,text="{0}, TT region, WP 0.9".format(year))
+        plotMJJ(data,"{0}_MJJ_LL_SR_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,firstxbin=1,lastxbin=4,text="{0}, LL region, WP 0.9".format(year))
+        plotMJY(data,"{0}_MJY_LL_SR_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,firstybin=4,lastybin=8,text="{0}, LL region, WP 0.9".format(year))
+
+        plotMJJ(data,"{0}_MJJ_TT_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,text="{0}, TT region, WP 0.9".format(year))
+        plotMJY(data,"{0}_MJY_TT_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,text="{0}, TT region, WP 0.9".format(year))
+        plotMJJ(data,"{0}_MJJ_LL_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,text="{0}, LL region, WP 0.9".format(year))
+        plotMJY(data,"{0}_MJY_LL_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,text="{0}, LL region, WP 0.9".format(year))
+
+        plotMJJ(data,"{0}_MJJ_TT_SR_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,firstxbin=1,lastxbin=4,text="{0}, TT region, WP 0.9".format(year))
+        plotMJY(data,"{0}_MJY_TT_SR_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,firstybin=4,lastybin=8,text="{0}, TT region, WP 0.9".format(year))
+        plotMJJ(data,"{0}_MJJ_LL_SR_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,firstxbin=1,lastxbin=4,text="{0}, LL region, WP 0.9".format(year))
+        plotMJY(data,"{0}_MJY_LL_SR_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,firstybin=4,lastybin=8,text="{0}, LL region, WP 0.9".format(year))
