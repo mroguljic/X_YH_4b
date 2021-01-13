@@ -13,7 +13,7 @@ def split_jobs(files, njobs):
 
 def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nFiles=1):
     for sample, sample_cfg in config.items():
-      if re.match('^X', sample):
+      if re.match('^MX', sample):
         proctype = 'sig'
       elif re.match('^Data', sample):
         proctype = 'data'
@@ -45,15 +45,19 @@ def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nF
 
       #Create file with arguments to the python script
       argsFile = open(os.path.join(sampleJobs_dir, 'input', 'args_{}.txt'.format(sample)), 'w')
-      if(proctype=="sig"):
-        ymass = "-m {0}".format(sample_cfg["YMass"])
-      else:
-        ymass = ''
       for n, l  in enumerate(list(job_list)):
         inputPath = os.path.join(sampleJobs_dir, 'input', 'input_{}.txt'.format(n))
-        outputPath = os.path.join(sampleOut_dir,'{0}_{1}.root'.format(sample,n))
+        outputPath = os.path.join(sampleOut_dir,'{0}_{1}_VAR.root'.format(sample,n))
         open(inputPath, 'w').writelines("{}\n".format(root_file) for root_file in l)
-        argsFile.write("-i {0} -o {1} --{2} -p {3} {4} -y {5}\n".format(inputPath,outputPath,proctype,sample,ymass,year))
+        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var nom\n".format(inputPath,outputPath.replace("VAR","nom"),proctype,sample,year))
+        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jesDown\n".format(inputPath,outputPath.replace("VAR","jesDown"),proctype,sample,year))
+        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jesUp\n".format(inputPath,outputPath.replace("VAR","jesUp"),proctype,sample,year))
+        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jerDown\n".format(inputPath,outputPath.replace("VAR","jerDown"),proctype,sample,year))
+        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jerUp\n".format(inputPath,outputPath.replace("VAR","jerUp"),proctype,sample,year))
+        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jmsDown\n".format(inputPath,outputPath.replace("VAR","jmsDown"),proctype,sample,year))
+        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jmsUp\n".format(inputPath,outputPath.replace("VAR","jmsUp"),proctype,sample,year))
+        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jmrDown\n".format(inputPath,outputPath.replace("VAR","jmrDown"),proctype,sample,year))
+        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jmrUp\n".format(inputPath,outputPath.replace("VAR","jmrUp"),proctype,sample,year))
       #Submit
       print("condor_submit {0}".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}.condor'.format(sample))))
       if dry==False:
@@ -67,7 +71,7 @@ def main():
   from argparse import ArgumentParser
   parser = ArgumentParser(description="Do -h to see usage")
 
-  parser.add_argument('-v', '--verbose', action='store_true')
+  parser.add_argument('-v', '--var', dest="var", action='store', default='nom', help="nom, jesDown/Up, jerDown/Up, jmsDown/Up, jmrDown/Up", metavar="VARIATION")
   parser.add_argument('-c', '--config', help='Job config file in JSON format')
   parser.add_argument('-y', '--year', help='Dataset year',default="2016")
   parser.add_argument('-d', '--dry', action='store_true', help='Dry run (Do not submit jobs)')
