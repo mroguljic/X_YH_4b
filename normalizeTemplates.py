@@ -13,7 +13,7 @@ def normalizeProcess(process,year,inFile,outFile):
     config = json.load(json_file)
     xsec = config[year][process]["xsec"]
     luminosity = config[year]["lumi"]
-    nProc = f.Get("{0}_cutflow".format(process)).GetBinContent(1)
+    nProc = f.Get("{0}_cutflow_nom".format(process)).GetBinContent(1)
     print(nProc,xsec*luminosity)
     nLumi    = xsec*luminosity
     scaling  = nLumi/nProc
@@ -99,7 +99,8 @@ def scaleEvtSelTemplates():
         for Y in MY:
             if((X>(Y+125.0))):
                 signalPoints.append("MX{0}_MY{1}".format(X,Y))
-    srProcesses16 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","ttbar","ttbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
+
+    srProcesses16 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
     ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
     srProcesses17 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","ttbar","ttbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
     ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
@@ -110,30 +111,33 @@ def scaleEvtSelTemplates():
     srProcesses17=srProcesses17+signalPoints
     srProcesses18=srProcesses18+signalPoints
 
-    for year in ['2016','2017','2018']:
+    for year in ['2016']:#,'2017','2018']:
         print(year)
-        nonScaledDir = "results/templates/WP_0.8_0.9/{0}/nonScaled/".format(year)
-        lumiScaledDir = "results/templates/WP_0.8_0.9/{0}/scaled/".format(year)
+        nonScaledDir = "results/templates/WP_0.88_0.95/{0}/nonScaled/".format(year)
+        lumiScaledDir = "results/templates/WP_0.88_0.95/{0}/scaled/".format(year)
         if(year=='2016'):
             processes = srProcesses16
         elif(year=='2017'):
             processes = srProcesses17
         elif(year=='2018'):
-            processes = srProcesses18     
+            processes = srProcesses18 
         for proc in processes:
             nonScaledFile = "{0}/{1}.root".format(nonScaledDir,proc)
             if(os.path.isfile(nonScaledFile)):
-                normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
+                try:
+                    normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
+                except:
+                    print("Couldn't normalize {0}".format(proc))
             else:
                 print("{0} does not exist, skipping!".format(nonScaledFile))
         
-        QCDsamples = ["QCD500.root","QCD700.root","QCD1000.root","QCD1500.root","QCD2000.root"]
+        QCDsamples = ["QCD700.root","QCD1000.root","QCD1500.root","QCD2000.root"]
         QCDsamples = [lumiScaledDir+f for f in QCDsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
         mergeSamples(QCDsamples,"{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"QCD\d+_","QCD_")
 
-        ttSamples = ["ttbar.root","ttbarHT.root"]
+        ttSamples = ["TTbar.root","TTbarHT.root"]
         ttSamples = [lumiScaledDir+f for f in ttSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"ttbarHT|ttbar","TTbar")
+        mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarHT|TTbar","TTbar")
 
         STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root"]
         STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
@@ -149,14 +153,14 @@ def scaleEvtSelTemplates():
         pseudoSamples = ["{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:])]
         mergeSamples(pseudoSamples,"{0}/pseudo{1}.root".format(lumiScaledDir,year[-2:]),"QCD|TTbar","data_obs")
 
-    templatesDir = "results/templates/WP_0.8_0.9/"
-    runIIDir="{0}/FullRunII/".format(templatesDir)
-    os.system("hadd -f {0}/ttbarRunII.root {1}/2016/scaled/TTbar16.root {1}/2017/scaled/TTbar17.root {1}/2018/scaled/TTbar18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/QCDRunII.root {1}/2016/scaled/QCD16.root {1}/2017/scaled/QCD17.root {1}/2018/scaled/QCD18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/VJetsRunII.root {1}/2016/scaled/VJets16.root {1}/2017/scaled/VJets17.root {1}/2018/scaled/VJets18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/STRunII.root {1}/2016/scaled/ST16.root {1}/2017/scaled/ST17.root {1}/2018/scaled/ST18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/JetHTRunII.root {1}/2016/scaled/JetHT16.root {1}/2017/scaled/JetHT17.root {1}/2018/scaled/JetHT18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/pseudoRunII.root {1}/2016/scaled/pseudo16.root {1}/2017/scaled/pseudo17.root {1}/2018/scaled/pseudo18.root".format(runIIDir,templatesDir))
+    # templatesDir = "results/templates/WP_0.8_0.9/"
+    # runIIDir="{0}/FullRunII/".format(templatesDir)
+    # os.system("hadd -f {0}/ttbarRunII.root {1}/2016/scaled/TTbar16.root {1}/2017/scaled/TTbar17.root {1}/2018/scaled/TTbar18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/QCDRunII.root {1}/2016/scaled/QCD16.root {1}/2017/scaled/QCD17.root {1}/2018/scaled/QCD18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/VJetsRunII.root {1}/2016/scaled/VJets16.root {1}/2017/scaled/VJets17.root {1}/2018/scaled/VJets18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/STRunII.root {1}/2016/scaled/ST16.root {1}/2017/scaled/ST17.root {1}/2018/scaled/ST18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/JetHTRunII.root {1}/2016/scaled/JetHT16.root {1}/2017/scaled/JetHT17.root {1}/2018/scaled/JetHT18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/pseudoRunII.root {1}/2016/scaled/pseudo16.root {1}/2017/scaled/pseudo17.root {1}/2018/scaled/pseudo18.root".format(runIIDir,templatesDir))
 
 def scaleEvtSelHistos():
     #Scales and merges histograms coming from event selection
