@@ -7,11 +7,13 @@ year = sys.argv[1]
 evtSelDir = "results/eventSelection/{0}".format(year)
 templateDir = "results/templates/WP_0.8_0.9/{0}".format(year)
 samples = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT"]#add signals
+#sigSamples = ["MX1600_Y100","MX"]#add signals
 variations = ["nom","jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"]
 for process in samples:
     for variation in variations:
         inputFile = "{0}/{1}_{2}.root".format(evtSelDir,process,variation)
         outputFile = os.path.join(templateDir,"nonScaled/",process)
+        outputFile = outputFile+".root"
         Path(templateDir+"/nonScaled").mkdir(parents=True, exist_ok=True)
         Path(templateDir+"/scaled").mkdir(parents=True, exist_ok=True)
         if(variation=="nom"):
