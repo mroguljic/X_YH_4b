@@ -43,6 +43,7 @@ parser.add_option('-p', '--process', metavar='PROCESS', type='string', action='s
                 help      =   'Process in the given MC file')
 parser.add_option('-s', '--sig', action="store_true",dest="isSignal",default=False)
 parser.add_option('-b', '--bkg', action="store_false",dest="isSignal",default=False)
+parser.add_option('-d', '--data', action="store_true",dest="isData",default=False)#not used, data deduced from tree
 parser.add_option('-y', '--year', metavar='year', type='string', action='store',
                 default   =   '2016',
                 dest      =   'year',
@@ -71,9 +72,8 @@ elif("jm" in varName):#jmr,jms
     mSDVar = "FatJet_msoftdrop_{0}".format(varName)
     ptVar  = "FatJet_pt_nom"
 elif("je" in varName):#jes,jer
-    varName = varName.replace("jes","jesTotal")#jesDown/Up is store as jesTotalDown/Up
     mSDVar = "FatJet_msoftdrop_nom"
-    ptVar  = "FatJet_pt_{0}".format(varName)
+    ptVar  = "FatJet_pt_{0}".format(varName.replace("jes","jesTotal"))
 else:
     print("Not recognizing shape uncertainty {0}, exiting".format(varName))        
     sys.exit()
@@ -124,7 +124,6 @@ nSkimmed = a.GetActiveNode().DataFrame.Count().GetValue()
 MetFilters = ["Flag_BadPFMuonFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_HBHENoiseIsoFilter","Flag_HBHENoiseFilter","Flag_globalSuperTightHalo2016Filter","Flag_goodVertices"]
 MetFiltersString = a.GetFlagString(MetFilters)
 
-baselineTrigger="HLT_PFJet260"
 if(options.year=="2016"):
     if("JetHT2016B" in options.process):
         triggerList = ["HLT_AK8DiPFJet280_200_TrimMass30","HLT_PFHT650_WideJetMJJ900DEtaJJ1p5","HLT_AK8PFHT650_TrimR0p1PT0p03Mass50",
@@ -159,7 +158,11 @@ if("TTbar" in options.process):
 
 #Jet(s) definition
 a.Cut("nFatJet","nFatJet>1")
-a.Cut("Eta","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
+if(options.year=="2016"):
+    a.Cut("Eta","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
+else:
+    a.Cut("Eta","abs(FatJet_eta[0])<2.5 && abs(FatJet_eta[1])<2.5")
+a.Cut("ID","FatJet_jetId[0]>1 && FatJet_jetId[1]>1")#bit 1 is loose, bit 2 is tight
 evtColumns = VarGroup("Event columns")
 evtColumns.Add("HT_2p4","calculateHT(nJet,Jet_eta,Jet_pt,30.0,2.4)")
 evtColumns.Add("HT_5p0","calculateHT(nJet,Jet_eta,Jet_pt,30.0,5.0)")
@@ -205,23 +208,23 @@ histos.append(h_eta0)
 histos.append(h_eta1)
 
 #need to define variables which we want in n-1 histograms
-nm1Columns = VarGroup("NminusOne Columns")
-nm1Columns.Add("DeltaEta","abs(FatJet_eta[0] - FatJet_eta[1])")
-nm1Columns.Add('LeadingVector', 'analyzer::TLvector(FatJet_pt0,FatJet_eta[0],FatJet_phi[0],mSD0)')
-nm1Columns.Add('SubleadingVector',  'analyzer::TLvector(FatJet_pt1,FatJet_eta[1],FatJet_phi[1],mSD1)')
-nm1Columns.Add('mjjHY',     'analyzer::invariantMass(LeadingVector,SubleadingVector)') 
+dijetColumns = VarGroup("dijet Columns")
+dijetColumns.Add("DeltaEta","abs(FatJet_eta[0] - FatJet_eta[1])")
+dijetColumns.Add('LeadingVector', 'analyzer::TLvector(FatJet_pt0,FatJet_eta[0],FatJet_phi[0],mSD0)')
+dijetColumns.Add('SubleadingVector',  'analyzer::TLvector(FatJet_pt1,FatJet_eta[1],FatJet_phi[1],mSD1)')
+dijetColumns.Add('MJJ',     'analyzer::invariantMass(LeadingVector,SubleadingVector)') 
 
-a.Apply([nm1Columns])
+a.Apply([dijetColumns])
 
 nm1Cuts = CutGroup('Preselection')
 nm1Cuts.Add("DeltaEta_cut","DeltaEta < 1.3")
-nm1Cuts.Add("mjjHY_cut","mjjHY > 700")
+nm1Cuts.Add("MJJ_cut","MJJ > 700")
 
 nminusOneNodes = a.Nminus1(nm1Cuts) # NOTE: Returns the nodes with N-1 selections
 nminusOneHists = HistGroup('nminus1Hists') # NOTE: HistGroup used to batch operate on histograms
 
-nMinusOneLimits = {"DeltaEta":[0.,5.0,100],"mjjHY":[0.,3000.,30]}#[xMin,xMax,nBins]
-
+nMinusOneLimits = {"DeltaEta":[0.,5.0,100],"MJJ":[0.,3000.,30]}#[xMin,xMax,nBins]
+beforeNM1checkpoint = a.GetActiveNode()
 # Add hists to group and write out at the end
 for nkey in nminusOneNodes.keys():
     #print(nkey)
@@ -230,9 +233,9 @@ for nkey in nminusOneNodes.keys():
     hist = nminusOneNodes[nkey].DataFrame.Histo1D(("{0}_nm1_{1}".format(options.process,var),"nMinusOne {0}".format(var),nMinusOneLimits[var][2],nMinusOneLimits[var][0],nMinusOneLimits[var][1]),var)
     nminusOneHists.Add(var,hist)
 
-
-nDeltaEta = nminusOneNodes["mjjHY_cut"].DataFrame.Count().GetValue()#in n-1, all cuts except the current are not applied
-a.SetActiveNode(nminusOneNodes["full"])
+#Not applying delta eta, since it will be used to define CD regions in ABCD method
+a.SetActiveNode(beforeNM1checkpoint)
+a.Cut("MJJ_cut","MJJ>700")
 nMJJ = a.GetActiveNode().DataFrame.Count().GetValue()
 
 h_HT_2p4 = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT_2p4_presel'.format(options.process),';AK4 HT, pT>30GeV and |eta|<2.4;Events/10 GeV;',300,0,3000),"HT_2p4")
@@ -280,15 +283,13 @@ idxCuts.Add("Higgs-tagged cut","idxH>=0")
 a.Apply([idxColumns])
 a.Apply([idxCuts])
 nHiggs = a.GetActiveNode().DataFrame.Count().GetValue()
-pnet_T = 0.90
-pnet_L = 0.80
 
 candidateColumns  = VarGroup("candidateColumns")
 candidateColumns.Add('ptjH','FatJet_pt[idxH]')
 candidateColumns.Add('ptjY','FatJet_pt[idxY]')
-candidateColumns.Add('mjY','FatJet_msoftdrop[idxY]')
-candidateColumns.Add('mjH','FatJet_msoftdrop[idxH]')
-candidateColumns.Add('mjjHY_halfReduced','mjjHY - mjH + 125')
+candidateColumns.Add('MJY','FatJet_msoftdrop[idxY]')
+candidateColumns.Add('MJH','FatJet_msoftdrop[idxH]')
+candidateColumns.Add('MJJ_halfReduced','MJJ - MJH + 125')
 candidateColumns.Add("pnetH","FatJet_ParticleNetMD_probXbb[idxH]")
 candidateColumns.Add("pnetY","FatJet_ParticleNetMD_probXbb[idxY]")
 
@@ -311,14 +312,14 @@ if not isData:
 
 h_ptjY = a.GetActiveNode().DataFrame.Histo1D(('{0}_ptjY'.format(options.process),'FatJetY pt;pT_Y [GeV];Events/10 GeV;',300,0,3000),'ptjY')
 h_ptjH = a.GetActiveNode().DataFrame.Histo1D(('{0}_ptjH'.format(options.process),'FatJetY pt;pT_H [GeV];Events/10 GeV;',300,0,3000),'ptjH')
-h_mjY = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjY'.format(options.process),'FatJetY mSD;mSD_Y [GeV];Events/10 GeV;',60,30,630),'mjY')
-h_mjH = a.GetActiveNode().DataFrame.Histo1D(('{0}_mjH'.format(options.process),'FatJetH mSD;mSD_H [GeV];Events/10 GeV;',60,30,630),'mjH')
+h_MJY = a.GetActiveNode().DataFrame.Histo1D(('{0}_MJY'.format(options.process),'FatJetY mSD;mSD_Y [GeV];Events/10 GeV;',60,30,630),'MJY')
+h_MJH = a.GetActiveNode().DataFrame.Histo1D(('{0}_MJH'.format(options.process),'FatJetH mSD;mSD_H [GeV];Events/10 GeV;',60,30,630),'MJH')
 h_idxY = a.GetActiveNode().DataFrame.Histo1D(('{0}_idxY'.format(options.process),'idxY',5,-1,4),'idxY')
 h_idxH = a.GetActiveNode().DataFrame.Histo1D(('{0}_idxH'.format(options.process),'idxH',5,-1,4),'idxH')
 histos.append(h_ptjY)
 histos.append(h_ptjH)
-histos.append(h_mjY)
-histos.append(h_mjH)
+histos.append(h_MJY)
+histos.append(h_MJH)
 histos.append(h_idxY)
 histos.append(h_idxH)
 
@@ -326,6 +327,7 @@ checkpoint  = a.GetActiveNode()
 #-----Trigger study part------
 #Separated from the rest of the cut tree
 if(isData):
+    baselineTrigger="HLT_PFJet260"
     a.SetActiveNode(beforeTrigCheckpoint)
     a.Cut("Baseline",baselineTrigger)
     if(isData):
@@ -341,21 +343,21 @@ if(isData):
     nJets = a.GetActiveNode().DataFrame.Count().GetValue()
 
     evtColumns.name = "Event Columns For Trigger"
-    nm1Columns.name = "NminusOne Columns For Trigger"
+    dijetColumns.name = "NminusOne Columns For Trigger"
     nm1Cuts.name = "Preselection For Trigger"
     candidateColumns.name = "candidateColumns For Trigger"
     idxColumns.name = "idxColumns For Trigger"
     idxCuts.name = "idxCuts For Trigger"
-    a.Apply([nm1Columns,nm1Cuts,idxColumns,idxCuts,candidateColumns])
+    a.Apply([dijetColumns,nm1Cuts,idxColumns,idxCuts,candidateColumns])
 
     triggersStringAll = a.GetTriggerString(triggerList)  
-    h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
+    h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'MJJ','MJY')
     h_pT0noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT0noTriggers'.format(options.process),';Leading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt0")
     h_pT1noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT1noTriggers'.format(options.process),';Subleading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt1")
     h_HT2p4noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT2p4noTriggers'.format(options.process),';HT [GeV]; Events/10 GeV;',200,0,2000),"HT_2p4")
     h_HT5p0noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT5p0noTriggers'.format(options.process),';HT, eta<5.0 [GeV]; Events/10 GeV;',200,0,2000),"HT_5p0")
     a.Cut("triggers_all",triggersStringAll)
-    h_triggersAll = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersAll'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'mjjHY','mjY')
+    h_triggersAll = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersAll'.format(options.process),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,750,3250,30,30,330),'MJJ','MJY')
     h_pT0triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT0triggersAll'.format(options.process),';Leading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt0")
     h_pT1triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT1triggersAll'.format(options.process),';Subleading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt1")
     h_HT2p4triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT2p4triggersAll'.format(options.process),';HT [GeV]; Events/10 GeV;',200,0,2000),"HT_2p4")
@@ -373,29 +375,32 @@ if(isData):
 
     #return to event selection
     a.SetActiveNode(checkpoint)
-snapshotColumns = ["pnetH","pnetY","mjjHY","mjY","mjH"]
+
+outputFile = options.output.replace(".root","_{0}.root".format(varName))
+
+snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta"]
 if not isData:
-    snapshotColumns = ["pnetH","pnetY","mjjHY","mjY","mjH","nFatJet","FatJet_hadronFlavour"]
+    snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta","nFatJet","FatJet_hadronFlavour"]
 
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
 opts.fLazy = False
-a.GetActiveNode().DataFrame.Snapshot("Events",options.output,snapshotColumns,opts)
+a.GetActiveNode().DataFrame.Snapshot("Events",outputFile,snapshotColumns,opts)
 
 if not isData:
     a.SetActiveNode(checkpoint)
     a.Cut("genJetIdx","idx_GenJetH>=0 && idx_GenJetY>=0")
     h_genJetMassH = a.GetActiveNode().DataFrame.Histo1D(('{0}_genJetM_H'.format(options.process),'GenJetH softdrop mass;Gen jet H mSD [GeV];Events/10 GeV;',60,30,630),'GenJetH_mass')
     h_genJetMassY = a.GetActiveNode().DataFrame.Histo1D(('{0}_genJetM_Y'.format(options.process),'GenJetY softdrop mass;Gen jet Y mSD [GeV];Events/10 GeV;',60,30,630),'GenJetY_mass')
-    h_recoJetMassY = a.GetActiveNode().DataFrame.Histo1D(('{0}_recoJetM_Y'.format(options.process),'RecoJetY softdrop mass;Reco jet H mSD [GeV];Events/10 GeV;',60,30,630),'mjY')
-    h_recoJetMassH = a.GetActiveNode().DataFrame.Histo1D(('{0}_recoJetM_H'.format(options.process),'RecoJetH softdrop massReco jet Y mSD [GeV];Events/10 GeV;',60,30,630),'mjH')
+    h_recoJetMassY = a.GetActiveNode().DataFrame.Histo1D(('{0}_recoJetM_Y'.format(options.process),'RecoJetY softdrop mass;Reco jet H mSD [GeV];Events/10 GeV;',60,30,630),'MJY')
+    h_recoJetMassH = a.GetActiveNode().DataFrame.Histo1D(('{0}_recoJetM_H'.format(options.process),'RecoJetH softdrop massReco jet Y mSD [GeV];Events/10 GeV;',60,30,630),'MJH')
     histos.append(h_genJetMassY)
     histos.append(h_genJetMassH)
     histos.append(h_recoJetMassY)
     histos.append(h_recoJetMassH)
 
-cutFlowVars = [nProc,nSkimmed,nTrig,nEta,npT,nDeltaEta,nMJJ,nHiggs]
-cutFlowLabels = ["nProc","Skimmed","Trigger","Eta","pT","Delta Eta","MJJ","Higgs mass","SR_TT","SR_LL","VR_P","VR_F"]#tagging labels will be filled out in template making
+cutFlowVars = [nProc,nSkimmed,nTrig,nEta,npT,nMJJ,nHiggs]
+cutFlowLabels = ["nProc","Skimmed","Trigger","Eta","pT","MJJ","Higgs mass","DeltaEta","SR_TT","SR_LL","SR_AT","VR_P","VR_F"]#tagging labels will be filled out in template making
 nCutFlowlabels = len(cutFlowLabels)
 hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowlabels,0.5,nCutFlowlabels+0.5)
 for i,label in enumerate(cutFlowLabels):
@@ -407,7 +412,7 @@ for i,var in enumerate(cutFlowVars):
 histos.append(hCutFlow)
 
 
-out_f = ROOT.TFile(options.output,"UPDATE")
+out_f = ROOT.TFile(outputFile,"UPDATE")
 out_f.cd()
 for h in histos:
     h.Write()
