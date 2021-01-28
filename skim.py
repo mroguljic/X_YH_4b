@@ -57,13 +57,6 @@ else:
     isData=False
     print("Running on MC")
 
-if re.match('X\d+_Y\d+', options.output):
-    MY = options.output.split("_")[1]
-    MY = MY.replace('Y','')
-    MY = MY.replace('.root','')
-    print("Running for MY {0}".format(MY))
-    a.Cut("MY_cut","GenModel_YMass_{0}==1".format(MY))
-
 if(options.maxEvents>0):
   small_rdf = a.GetActiveNode().DataFrame.Range(options.maxEvents) # makes an RDF with only the first nentries considered
   small_node = Node('small',small_rdf) # makes a node out of the dataframe
@@ -76,6 +69,7 @@ nSkim = a.GetActiveNode().DataFrame.Count().GetValue()
 
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
+opts.fLazy = False
 goodcols = [str(c) for c in dropColumns(a.DataFrame.GetColumnNames(),isData)] 
 a.GetActiveNode().DataFrame.Snapshot("Events",options.output,goodcols,opts)
 
