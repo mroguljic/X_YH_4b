@@ -63,95 +63,178 @@ if not isData:
     a.AddCorrection(triggerCorr, evalArgs={'xval':'MJJ','yval':0,'zval':0})
 a.MakeWeightCols()
 
-a.Define("VRpass","pnetH>{0} && pnetH<{1} && pnetY>{1}".format(pnetHLo,pnetL))#validation region
+a.Define("VRpassT","pnetH>{0} && pnetH<{1} && pnetY>{1}".format(pnetHLo,pnetT))#validation region
+a.Define("VRpassL","pnetH>{0} && pnetH<{1} && pnetY>{1} && pnetY<{2}".format(pnetHLo,pnetL,pnetT))#validation region
 a.Define("VRfail","pnetH>{0} && pnetH<{1} && pnetY<{1}".format(pnetHLo,pnetL))#validation region
 a.Define("TT","pnetH>{0} && pnetY>{0}".format(pnetT))#signal region
 a.Define("LL","pnetH>{0} && pnetY>{0} && !(TT)".format(pnetL))#signal region
 a.Define("AT","pnetH>{0} && pnetY<{0}".format(pnetL))#anti-tag region
+a.Define("ATT","pnetH>{0} && pnetY<{1}".format(pnetT,pnetL))#anti-tag tight region
 
 preDeltaEta = a.GetActiveNode()
-
+#Delta Eta signal region
 a.Cut("DeltaEtaSR","DeltaEta<1.3")
-nDeltaEta = a.GetActiveNode().DataFrame.Count().GetValue()
-checkpoint = a.GetActiveNode()
+nDeltaEta        = a.GetActiveNode().DataFrame.Count().GetValue()
+preMJY  = a.GetActiveNode()
+a.Cut("MJY_SR","MJY>60")
 
-a.Cut("VRpassCut","VRpass==1")
-h2DVRpass  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_VRP'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJVRpass  = a.DataFrame.Histo1D(('{0}_mJY_VRP'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJVRpass = a.DataFrame.Histo1D(('{0}_mJJ_VRP'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DVRpass,hMJVRpass,hMJJVRpass])
+checkpoint       = a.GetActiveNode()
+a.Cut("VRpassTCut","VRpassT==1")
+h2DVRT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_VRT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRT)
 nVRP = a.GetActiveNode().DataFrame.Count().GetValue()
+
+a.SetActiveNode(checkpoint)
+a.Cut("VRpassLCut","VRpassL==1")
+h2DVRL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_VRL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRL)
 
 a.SetActiveNode(checkpoint)
 a.Cut("VRfailCut","VRfail==1")
 h2DVRfail  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_VRF'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJVRfail  = a.DataFrame.Histo1D(('{0}_mJY_VRF'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJVRfail = a.DataFrame.Histo1D(('{0}_mJJ_VRF'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DVRfail,hMJVRfail,hMJJVRfail])
+histos.append(h2DVRfail)
 nVRF = a.GetActiveNode().DataFrame.Count().GetValue()
 
 a.SetActiveNode(checkpoint)
 a.Cut("TTcut","TT==1")
 h2DTT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_TT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJTT  = a.DataFrame.Histo1D(('{0}_mJY_TT'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJTT = a.DataFrame.Histo1D(('{0}_mJJ_TT'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DTT,hMJTT,hMJJTT])
+histos.append(h2DTT)
 nTT = a.GetActiveNode().DataFrame.Count().GetValue()
 
 a.SetActiveNode(checkpoint)
 a.Cut("LLcut","LL==1")
 h2DLL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_LL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJLL  = a.DataFrame.Histo1D(('{0}_mJY_LL'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJLL = a.DataFrame.Histo1D(('{0}_mJJ_LL'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DLL,hMJLL,hMJJLL])
+histos.append(h2DLL)
 nLL = a.GetActiveNode().DataFrame.Count().GetValue()
 
 a.SetActiveNode(checkpoint)
 a.Cut("ATcut","AT==1")
 h2DAT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJAT  = a.DataFrame.Histo1D(('{0}_mJY_AT'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJAT = a.DataFrame.Histo1D(('{0}_mJJ_AT'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DAT,hMJAT,hMJJAT])
+histos.append(h2DAT)
 nAT = a.GetActiveNode().DataFrame.Count().GetValue()
+
+a.SetActiveNode(checkpoint)
+a.Cut("ATTcut","ATT==1")
+h2DATT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ATT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DATT)
+
+#MJY<60 GeV sideband
+a.SetActiveNode(preMJY)
+a.Cut("MJY_MSB_DeltaEta","MJY<60 && MJY>30")
+checkpoint       = a.GetActiveNode()
+a.Cut("VRpassTCut_MSB","VRpassT==1")
+h2DVRT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_MSB_VRT'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRT)
+
+a.SetActiveNode(checkpoint)
+a.Cut("VRpassLCut_MSB","VRpassL==1")
+h2DVRL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_MSB_VRL'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRL)
+
+a.SetActiveNode(checkpoint)
+a.Cut("VRfailCut_MSB","VRfail==1")
+h2DVRfail  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_MSB_VRF'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRfail)
+
+a.SetActiveNode(checkpoint)
+a.Cut("TTcut_MSB","TT==1")
+h2DTT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_MSB_TT'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DTT)
+
+a.SetActiveNode(checkpoint)
+a.Cut("LLcut_MSB","LL==1")
+h2DLL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_MSB_LL'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DLL)
+
+a.SetActiveNode(checkpoint)
+a.Cut("ATcut_MSB","AT==1")
+h2DAT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_MSB_AT'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DAT)
+
+a.SetActiveNode(checkpoint)
+a.Cut("ATTcut_MSB","ATT==1")
+h2DATT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_MSB_ATT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DATT)
 
 
 a.SetActiveNode(preDeltaEta)
-a.Cut("DeltaEtaSB","DeltaEta>1.5")#Delta eta sideband
+#Delta eta sideband
+a.Cut("DeltaEtaSB","DeltaEta>1.5")
+preMJY  = a.GetActiveNode()
+a.Cut("MJY_ESB","MJY>60")
 checkpoint = a.GetActiveNode()
 
-a.Cut("VRpassCut_SB","VRpass==1")
-h2DVRpass  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_SB_VRP'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJVRpass  = a.DataFrame.Histo1D(('{0}_mJY_SB_VRP'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJVRpass = a.DataFrame.Histo1D(('{0}_mJJ_SB_VRP'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DVRpass,hMJVRpass,hMJJVRpass])
+a.Cut("VRpassCutT_ESB","VRpassT==1")
+h2DVRT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_VRT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRT)
 
 a.SetActiveNode(checkpoint)
-a.Cut("VRfailCut_SB","VRfail==1")
-h2DVRfail  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_SB_VRF'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJVRfail  = a.DataFrame.Histo1D(('{0}_mJY_SB_VRF'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJVRfail = a.DataFrame.Histo1D(('{0}_mJJ_SB_VRF'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DVRfail,hMJVRfail,hMJJVRfail])
+a.Cut("VRpassCutL_ESB","VRpassL==1")
+h2DVRL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_VRL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRL)
 
 a.SetActiveNode(checkpoint)
-a.Cut("TTcut_SB","TT==1")
-h2DTT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_SB_TT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJTT  = a.DataFrame.Histo1D(('{0}_mJY_SB_TT'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJTT = a.DataFrame.Histo1D(('{0}_mJJ_SB_TT'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DTT,hMJTT,hMJJTT])
+a.Cut("VRfailCut_ESB","VRfail==1")
+h2DVRfail  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_VRF'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRfail)
 
 a.SetActiveNode(checkpoint)
-a.Cut("LLcut_SB","LL==1")
-h2DLL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_SB_LL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJLL  = a.DataFrame.Histo1D(('{0}_mJY_SB_LL'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJLL = a.DataFrame.Histo1D(('{0}_mJJ_SB_LL'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DLL,hMJLL,hMJJLL])
+a.Cut("TTcut_ESB","TT==1")
+h2DTT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_TT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DTT)
 
 a.SetActiveNode(checkpoint)
-a.Cut("ATcut_SB","AT==1")
-h2DAT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_SB_AT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
-hMJAT  = a.DataFrame.Histo1D(('{0}_mJY_SB_AT'.format(options.process),';mJY [GeV];;',15,60,360),"MJY","weight__nominal")
-hMJJAT = a.DataFrame.Histo1D(('{0}_mJJ_SB_AT'.format(options.process),';mJJ [GeV];;',22,800.,3000.),"MJJ","weight__nominal")
-histos.extend([h2DAT,hMJAT,hMJJAT])
+a.Cut("LLcut_ESB","LL==1")
+h2DLL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_LL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DLL)
+
+a.SetActiveNode(checkpoint)
+a.Cut("ATcut_ESB","AT==1")
+h2DAT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_AT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DAT)
+
+a.SetActiveNode(checkpoint)
+a.Cut("ATTcut_ESB","ATT==1")
+h2DATT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_ATT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DATT)
+
+a.SetActiveNode(preMJY)
+a.Cut("MJY_DeltaEta","MJY<60 && MJY>30")
+checkpoint = a.GetActiveNode()
+
+a.Cut("VRpassCutT_ESB_MSB","VRpassT==1")
+h2DVRT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_MSB_VRT'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRT)
+
+a.SetActiveNode(checkpoint)
+a.Cut("VRpassCutL_ESB_MSB","VRpassL==1")
+h2DVRL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_MSB_VRL'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRL)
+
+a.SetActiveNode(checkpoint)
+a.Cut("VRfailCut_ESB_MSB","VRfail==1")
+h2DVRfail  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_MSB_VRF'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DVRfail)
+
+a.SetActiveNode(checkpoint)
+a.Cut("TTcut_ESB_MSB","TT==1")
+h2DTT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_MSB_TT'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DTT)
+
+a.SetActiveNode(checkpoint)
+a.Cut("LLcut_ESB_MSB","LL==1")
+h2DLL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_MSB_LL'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DLL)
+
+a.SetActiveNode(checkpoint)
+a.Cut("ATcut_ESB_MSB","AT==1")
+h2DAT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_MSB_AT'.format(options.process),';mJY [GeV];mJJ [GeV];',3,30,60,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DAT)
+
+a.SetActiveNode(checkpoint)
+a.Cut("ATTcut_ESB_MSB","ATT==1")
+h2DATT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_ESB_MSB_ATT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","weight__nominal")
+histos.append(h2DATT)
 
 if(isData):
     nTT = 0
@@ -186,3 +269,5 @@ for h in histos:
     h.SetName(h.GetName()+"_"+options.variation)
     h.Write()
 out_f.Close()
+
+#a.PrintNodeTree('test.ps')
