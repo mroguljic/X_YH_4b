@@ -11,6 +11,23 @@ setTDRStyle()
 r.gROOT.SetBatch()
 r.gStyle.SetPaintTextFormat(".2f")
 
+
+def rebin2DHisto(hToRebin,hModel,name):
+    hRes = hModel.Clone(name)
+    hRes.Reset()
+    xaxis = hToRebin.GetXaxis()
+    yaxis = hToRebin.GetYaxis()
+    xaxis_re = hRes.GetXaxis()
+    yaxis_re = hRes.GetYaxis()
+    for i in range(1,hToRebin.GetNbinsX()+1):
+        for j in range(1,hToRebin.GetNbinsY()+1):
+            x = xaxis.GetBinCenter(i)
+            y = yaxis.GetBinCenter(j)
+            value = hToRebin.GetBinContent(i,j)
+            hRes.Fill(x,y,value)
+    hRes.SetDirectory(0)
+    return hRes
+
 def get2DTrigEff(hPass,hTot,outputFile,RebinX=1,RebinY=1,xTitle="",yTitle="",xLimits=[],yLimits=[],label=""):
     print(label)
     h1 = hPass.Clone()
@@ -18,10 +35,18 @@ def get2DTrigEff(hPass,hTot,outputFile,RebinX=1,RebinY=1,xTitle="",yTitle="",xLi
     h2 = hTot.Clone()
     h2.SetDirectory(0)
 
-    h1.RebinX(RebinX)
-    h1.RebinY(RebinY)
-    h2.RebinX(RebinX)
-    h2.RebinY(RebinY)
+    nBinsX = int((xLimits[1]-xLimits[0])/100)
+    print(nBinsX)
+    customMJYbins = np.array([30.,50.,70.,90.,110.,130.,150.,170.,190.,250.,330.],dtype='float64')
+    h2Model = r.TH2F("h2Model","h2Model",nBinsX,xLimits[0],xLimits[1],len(customMJYbins)-1,customMJYbins)
+
+    h1 = rebin2DHisto(h1,h2Model,"rebinnedPass")
+    h2 = rebin2DHisto(h2,h2Model,"rebinnedFail")
+
+    # h1.RebinX(RebinX)
+    # h1.RebinY(RebinY)
+    # h2.RebinX(RebinX)
+    # h2.RebinY(RebinY)
     eff = r.TEfficiency(h1,h2)
     eff.SetTitle(";{0};{1}".format(xTitle,yTitle))
     c = r.TCanvas("a","a",1500,1500)
@@ -29,6 +54,7 @@ def get2DTrigEff(hPass,hTot,outputFile,RebinX=1,RebinY=1,xTitle="",yTitle="",xLi
     eff.Draw("col text 45")
     r.gPad.Update()
     g = eff.GetPaintedHistogram()
+    g.GetYaxis().SetTitleOffset(1.25)
     if(xLimits):
         g.GetXaxis().SetRangeUser(xLimits[0],xLimits[1])
     if(yLimits):
@@ -47,6 +73,7 @@ def get2DTrigEff(hPass,hTot,outputFile,RebinX=1,RebinY=1,xTitle="",yTitle="",xLi
     r.gPad.Update()
     if(outputFile):
         c.SaveAs(outputFile)
+        c.SaveAs(outputFile.replace("pdf","png"))
     c.Close()
     return eff
 
@@ -79,6 +106,7 @@ def getTrigEff(hPass,hTot,outputFile="",RebinX=1,xTitle="",yTitle="",color=0,xLi
     r.gPad.Update()
     if(outputFile):
         c.SaveAs(outputFile)
+        c.SaveAs(outputFile.replace("pdf","png"))
     return eff
 
 
@@ -105,6 +133,7 @@ def plotTrigEffs(efficiencies,labels,outputFile,xLimits=[],yLimits=[],legHeader=
         legend.AddEntry(eff,labels[i],"L")
     legend.Draw()
     c.SaveAs(outputFile)
+    c.SaveAs(outputFile.replace("pdf","png"))
 
 parser = OptionParser()
 parser.add_option('-j', '--json', metavar='IFILE', type='string', action='store',
@@ -118,8 +147,8 @@ parser.add_option('-y', '--year', metavar='IFILE', type='string', action='store'
 (options, args) = parser.parse_args()
 year = options.year
 
-effs_mJJ  = []
-effs_mJY  = []
+effs_MJJ  = []
+effs_MJY  = []
 effs_pT0  = []
 effs_pT1  = []
 effs_HT   = []
@@ -129,38 +158,38 @@ with open(options.json) as json_file:
     for sample, sample_cfg in data.items():
         f = r.TFile.Open(sample_cfg["file"])
         labels.append(sample_cfg["label"])
-        h2D_Tot             = f.Get("{0}_noTriggers".format(sample))
+        h2D_Tot             = f.Get("{0}_noTriggers_incl_nom".format(sample))
         h2D_Tot.SetDirectory(0)
-        h_mJJ_Tot           = h2D_Tot.ProjectionX("mJJ_tot_{0}".format(sample),1)#excluding underflow bin!
-        h_mJY_Tot           = h2D_Tot.ProjectionY("mJY_tot_{0}".format(sample),1)
+        h_MJJ_Tot           = h2D_Tot.ProjectionX("MJJ_tot_{0}".format(sample),1)#excluding underflow bin!
+        h_MJY_Tot           = h2D_Tot.ProjectionY("MJY_tot_{0}".format(sample),1)
 
-        h2D_AllTrigers      = f.Get("{0}_triggersAll".format(sample))
+        h2D_AllTrigers      = f.Get("{0}_triggersAll_incl_nom".format(sample))
         h2D_AllTrigers.SetDirectory(0)
 
-        h_mJJ_AllTrigers    = h2D_AllTrigers.ProjectionX("mJJ_all_{0}".format(sample),1)
-        h_mJY_AllTrigers    = h2D_AllTrigers.ProjectionY("mJY_all_{0}".format(sample),1)
+        h_MJJ_AllTrigers    = h2D_AllTrigers.ProjectionX("MJJ_all_{0}".format(sample),1)
+        h_MJY_AllTrigers    = h2D_AllTrigers.ProjectionY("MJY_all_{0}".format(sample),1)
 
-        get2DTrigEff(h2D_AllTrigers,h2D_Tot,"results/plots/{0}/trigger/{1}_mJJ_mJ_allTrigger.pdf".format(year,sample),RebinX=10,RebinY=2,xTitle="m_{JJ} [GeV]",yTitle="m_{JY} [GeV]",xLimits=[750,1500],yLimits=[30,330],label=sample_cfg["label"])
+        get2DTrigEff(h2D_AllTrigers,h2D_Tot,"results/plots/{0}/trigger/{1}_MJJ_mJ_allTrigger_incl.pdf".format(year,sample),RebinX=10,RebinY=2,xTitle="M_{JJ} [GeV]",yTitle="M_{JY} [GeV]",xLimits=[700,1500],yLimits=[30,330],label=sample_cfg["label"])
 
-        eff_mJJ = getTrigEff(h_mJJ_AllTrigers,h_mJJ_Tot,"".format(sample),RebinX=10,xTitle="m_{JJ}[GeV]",yTitle="Efficiency",color=sample_cfg["color"])
-        effs_mJJ.append(eff_mJJ)
-        eff_mJY = getTrigEff(h_mJY_AllTrigers,h_mJY_Tot,"".format(sample),RebinX=2,xTitle="m_{JY}[GeV]",yTitle="Efficiency",color=sample_cfg["color"])
-        effs_mJY.append(eff_mJY)
+        eff_MJJ = getTrigEff(h_MJJ_AllTrigers,h_MJJ_Tot,"".format(sample),RebinX=10,xTitle="M_{JJ}[GeV]",yTitle="Efficiency",color=sample_cfg["color"])
+        effs_MJJ.append(eff_MJJ)
+        eff_MJY = getTrigEff(h_MJY_AllTrigers,h_MJY_Tot,"".format(sample),RebinX=2,xTitle="M_{JY}[GeV]",yTitle="Efficiency",color=sample_cfg["color"])
+        effs_MJY.append(eff_MJY)
         g = r.TFile.Open("TriggerEffs.root","UPDATE")
         g.cd()
-        eff_mJJ.SetName("triggEff_{0}".format(year))
-        eff_mJJ.Write()
+        eff_MJJ.SetName("triggEff_{0}".format(year))
+        eff_MJJ.Write()
         g.Close()
 
-        hpT0Tot = f.Get("{0}_pT0noTriggers".format(sample))
-        hpT0Pass = f.Get("{0}_pT0triggersAll".format(sample))
-        hpT1Tot = f.Get("{0}_pT1noTriggers".format(sample))
-        hpT1Pass = f.Get("{0}_pT1triggersAll".format(sample))
-        hHTTot = f.Get("{0}_HT2p4noTriggers".format(sample))
-        hHTPass = f.Get("{0}_HT2p4triggersAll".format(sample))
+        hpT0Tot = f.Get("{0}_pT0noTriggers_incl_nom".format(sample))
+        hpT0Pass = f.Get("{0}_pT0triggersAll_incl_nom".format(sample))
+        hpT1Tot = f.Get("{0}_pT1noTriggers_incl_nom".format(sample))
+        hpT1Pass = f.Get("{0}_pT1triggersAll_incl_nom".format(sample))
+        hHTTot = f.Get("{0}_HT2p4noTriggers_incl_nom".format(sample))
+        hHTPass = f.Get("{0}_HT2p4triggersAll_incl_nom".format(sample))
 
-        if("data" in sample):
-            printEffs=True
+        if("JetHT" in sample):
+            printEffs=False
         else:
             printEffs=False
 
@@ -172,8 +201,14 @@ with open(options.json) as json_file:
         effs_HT.append(eff_HT)
         f.Close()
 
-plotTrigEffs(effs_mJJ,labels,"results/plots/{0}/trigger/all_mJJ.pdf".format(year),xLimits=[750,1500],yLimits=[0.5,1.1],legHeader="30 GeV < m_{JY} < 330 GeV")
-plotTrigEffs(effs_mJY,labels,"results/plots/{0}/trigger/all_mJY.pdf".format(year),xLimits=[30,330],yLimits=[0.5,1.1],legHeader="750 GeV < m_{JJ} < 1500 GeV")
-plotTrigEffs(effs_pT0,labels,"results/plots/{0}/trigger/all_pT0.pdf".format(year),xLimits=[300,1000],yLimits=[0.5,1.1])
-plotTrigEffs(effs_pT1,labels,"results/plots/{0}/trigger/all_pT1.pdf".format(year),xLimits=[300,1000],yLimits=[0.5,1.1])
-plotTrigEffs(effs_HT,labels, "results/plots/{0}/trigger/all_HT.pdf".format(year),xLimits=[700,1400],yLimits=[0.5,1.1])
+# plotTrigEffs(effs_MJJ,labels,"results/plots/{0}/trigger/all_MJJ.pdf".format(year),xLimits=[750,1500],yLimits=[0.5,1.1],legHeader="30 GeV < m_{JY} < 330 GeV")
+# plotTrigEffs(effs_MJY,labels,"results/plots/{0}/trigger/all_MJY.pdf".format(year),xLimits=[30,330],yLimits=[0.5,1.1],legHeader="750 GeV < m_{JJ} < 1500 GeV")
+# plotTrigEffs(effs_pT0,labels,"results/plots/{0}/trigger/all_pT0.pdf".format(year),xLimits=[300,1000],yLimits=[0.5,1.1])
+# plotTrigEffs(effs_pT1,labels,"results/plots/{0}/trigger/all_pT1.pdf".format(year),xLimits=[300,1000],yLimits=[0.5,1.1])
+# plotTrigEffs(effs_HT,labels, "results/plots/{0}/trigger/all_HT.pdf".format(year),xLimits=[700,1400],yLimits=[0.5,1.1])
+
+plotTrigEffs(effs_MJJ,labels,"results/plots/{0}/trigger/all_MJJ_incl.pdf".format(year),xLimits=[700,1500],yLimits=[0.5,1.1],legHeader="30 GeV < m_{JY} < 330 GeV")
+plotTrigEffs(effs_MJY,labels,"results/plots/{0}/trigger/all_MJY_incl.pdf".format(year),xLimits=[30,330],yLimits=[0.5,1.1],legHeader="750 GeV < m_{JJ} < 1500 GeV")
+plotTrigEffs(effs_pT0,labels,"results/plots/{0}/trigger/all_pT0_incl.pdf".format(year),xLimits=[300,1000],yLimits=[0.5,1.1])
+plotTrigEffs(effs_pT1,labels,"results/plots/{0}/trigger/all_pT1_incl.pdf".format(year),xLimits=[300,1000],yLimits=[0.5,1.1])
+plotTrigEffs(effs_HT,labels, "results/plots/{0}/trigger/all_HT_incl.pdf".format(year),xLimits=[700,1400],yLimits=[0.5,1.1])

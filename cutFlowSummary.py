@@ -32,7 +32,7 @@ with open(options.json) as json_file:
             
 
         f = r.TFile.Open(sample_cfg["file"])
-        h = f.Get("{0}_cutflow".format(sample))
+        h = f.Get("{0}_cutflow_nom".format(sample))
         # if(sample=="ttbar"):
         #     h = f.Get("TTbar_cutflow")
         nBin = h.GetNbinsX()
@@ -44,7 +44,10 @@ with open(options.json) as json_file:
             if(labelFlag==False):
                 labels.append(h.GetXaxis().GetBinLabel(i))
             nCut = h.GetBinContent(i)
-            latexRow = latexRow +" {0:.2f} &".format(nCut)
+            if(nCut>10000):
+                latexRow = latexRow +" {0:1.2e} &".format(nCut)
+            else:   
+                latexRow = latexRow +" {0:.2f} &".format(nCut)
             totalBkgRow.append(nCut)
 
         if(labelFlag==False):
@@ -59,11 +62,14 @@ with open(options.json) as json_file:
                 totalBkg=totalBkgRow
             else:
                 totalBkg = np.add(totalBkg,totalBkgRow)
-        #a = latexRow.split(" & ")
-        #print("{0}".format(a[0],a[-3],a[-4]))
+        # a = latexRow.split(" & ")
+        # print("{0} {1} {2}".format(a[0],a[-4],a[-5]))
 
 latexTotalBkg = "Total bkg "
 for val in totalBkg:
-    latexTotalBkg += "& {0:.2f} ".format(val)
+    if(val>10000):
+        latexTotalBkg += "& {0:1.2e} ".format(val)
+    else:
+        latexTotalBkg += "& {0:.2f} ".format(val)
 print(latexTotalBkg+"\\\\")
 
