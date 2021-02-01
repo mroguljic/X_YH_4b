@@ -5,6 +5,37 @@ import re
 import os
 
 
+def normalizeProcessSemilep(process,year,inFile,outFile):
+    h_dict = {}
+    f = r.TFile.Open(inFile)
+    print(process,inFile)
+    json_file = open("skimInfo.json")
+    config = json.load(json_file)
+    if("MX" in process):
+        xsec = 0.01
+    else:
+        xsec = config[year][process]["xsec"]
+    luminosity = config[year]["lumi"]
+    nProc = config[year][process]["nProc"]
+    print(nProc,xsec*luminosity)
+    nLumi    = xsec*luminosity
+    scaling  = nLumi/nProc
+    print("Scale: {0:.4f}".format(scaling))
+    for key in f.GetListOfKeys():
+        h = key.ReadObj()
+        hName = h.GetName()
+        h.Scale(scaling)
+        h.SetDirectory(0)
+        h_dict[hName] = h
+    f.Close()
+
+    f = r.TFile(outFile,"recreate")
+    f.cd()
+    for key in h_dict:
+        histo = h_dict[key]
+        histo.Write()
+    f.Close()
+
 def normalizeProcess(process,year,inFile,outFile):
     h_dict = {}
     f = r.TFile.Open(inFile)
@@ -65,7 +96,7 @@ def mergeSamples(inFiles,outFile,regexMatch,regexReplace):
 
 def scaleMuonTemplates():
     semilepProcesses16 = ["ttbar","ttbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_sChannel","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600"]
-    semilepProcesses17 = ["ttbar","ttbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_s_top","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600"]
+    semilepProcesses17 = ["ttbar","ttbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_s_top","ST_s_antitop","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600"]
     semilepProcesses18 = ["ttbar","ttbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_s_top","ST_s_antitop","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600"]
 
     for year in ['2016','2017','2018']:
@@ -80,7 +111,7 @@ def scaleMuonTemplates():
         elif(year=='2018'):
             processes = semilepProcesses18     
         for proc in processes:
-            normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
+            normalizeProcessSemilep(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
         year=year[-2:]#2018->18
         os.system("hadd -f {0}/ttbar{1}.root {0}/ttbar.root {0}/ttbarSemi.root".format(lumiScaledDir,year))
         os.system("hadd -f {0}/ST{1}.root {0}/ST_*root".format(lumiScaledDir,year))
@@ -115,11 +146,10 @@ def scaleEvtSelTemplates():
     srProcesses18=srProcesses18+signalPoints
 
     srProcesses16=signalPoints
-    #for year in ['2016','2017','2018']:
-    for year in ['2016']:
+    for year in ['2016','2017','2018']:
         print(year)
-        nonScaledDir = "results/templates/UL/WP_0.8_0.95/{0}/nonScaled/".format(year)
-        lumiScaledDir = "results/templates/UL/WP_0.8_0.95/{0}/scaled/".format(year)
+        nonScaledDir = "results/templates/WP_0.8_0.95/{0}/nonScaled/".format(year)
+        lumiScaledDir = "results/templates/WP_0.8_0.95/{0}/scaled/".format(year)
         if(year=='2016'):
             processes = srProcesses16
         elif(year=='2017'):
@@ -136,99 +166,44 @@ def scaleEvtSelTemplates():
             else:
                 print("{0} does not exist, skipping!".format(nonScaledFile))
         
-        # QCDsamples = ["QCD700.root","QCD1000.root","QCD1500.root","QCD2000.root"]
-        # QCDsamples = [lumiScaledDir+f for f in QCDsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        # mergeSamples(QCDsamples,"{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"QCD\d+_","QCD_")
-
-        # ttSamples = ["TTbar.root","TTbarHT.root"]
-        # ttSamples = [lumiScaledDir+f for f in ttSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        # mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarHT|TTbar","TTbar")
-
-        # STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root"]
-        # STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        # mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),".+top_","ST_")
-
-        # VJetsSamples = ["WJets400.root","WJets600.root","WJets800.root","ZJets400.root","ZJets600.root","ZJets800.root"]
-        # VJetsSamples = [lumiScaledDir+f for f in VJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        # mergeSamples(VJetsSamples,"{0}/VJets{1}.root".format(lumiScaledDir,year[-2:]),"[A-Z]Jets\d+_","VJets_")
-
-        # JetHTSamples = [nonScaledDir+f for f in os.listdir(nonScaledDir) if (os.path.isfile(os.path.join(nonScaledDir, f)) and "JetHT" in f)]#We are not lumi scaling data!
-        # mergeSamples(JetHTSamples,"{0}/JetHT{1}.root".format(lumiScaledDir,year[-2:]),"JetHT201[0-9][A-Z]_","JetHT_")
-
-        # pseudoSamples = ["{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:])]
-        # mergeSamples(pseudoSamples,"{0}/pseudo{1}.root".format(lumiScaledDir,year[-2:]),"QCD|TTbar","data_obs")
-
-    # templatesDir = "results/templates/WP_0.8_0.9/"
-    # runIIDir="{0}/FullRunII/".format(templatesDir)
-    # os.system("hadd -f {0}/ttbarRunII.root {1}/2016/scaled/TTbar16.root {1}/2017/scaled/TTbar17.root {1}/2018/scaled/TTbar18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/QCDRunII.root {1}/2016/scaled/QCD16.root {1}/2017/scaled/QCD17.root {1}/2018/scaled/QCD18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/VJetsRunII.root {1}/2016/scaled/VJets16.root {1}/2017/scaled/VJets17.root {1}/2018/scaled/VJets18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/STRunII.root {1}/2016/scaled/ST16.root {1}/2017/scaled/ST17.root {1}/2018/scaled/ST18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/JetHTRunII.root {1}/2016/scaled/JetHT16.root {1}/2017/scaled/JetHT17.root {1}/2018/scaled/JetHT18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/pseudoRunII.root {1}/2016/scaled/pseudo16.root {1}/2017/scaled/pseudo17.root {1}/2018/scaled/pseudo18.root".format(runIIDir,templatesDir))
-
-def scaleEvtSelHistos():
-    #Scales and merges histograms coming from event selection
-    srProcesses16 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","ttbar","ttbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
-    ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH","X1600_Y125"]
-    srProcesses17 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","ttbar","ttbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
-    ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
-    srProcesses18 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","ttbar","ttbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
-    ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
-
-    for year in ['2016','2017','2018']:
-        print(year)
-        nonScaledDir = "results/histograms/{0}/nonScaled/".format(year)
-        lumiScaledDir = "results/histograms/{0}/lumiScaled/".format(year)
-        if(year=='2016'):
-            processes = srProcesses16
-        elif(year=='2017'):
-            processes = srProcesses17
-        elif(year=='2018'):
-            processes = srProcesses18     
-        for proc in processes:
-            normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
-
-        QCDsamples = ["QCD500.root","QCD700.root","QCD1000.root","QCD1500.root","QCD2000.root"]
-        QCDsamples = [lumiScaledDir+s for s in QCDsamples]
+        QCDsamples = ["QCD700.root","QCD1000.root","QCD1500.root","QCD2000.root"]
+        QCDsamples = [lumiScaledDir+f for f in QCDsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
         mergeSamples(QCDsamples,"{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"QCD\d+_","QCD_")
 
-        ttSamples = ["ttbar.root","ttbarHT.root"]
-        ttSamples = [lumiScaledDir+s for s in ttSamples]
-        mergeSamples(ttSamples,"{0}/ttbar{1}.root".format(lumiScaledDir,year[-2:]),"ttbar[a-zA-Z]+_","ttbar_")
+        ttSamples = ["TTbar.root","TTbarHT.root"]
+        ttSamples = [lumiScaledDir+f for f in ttSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarHT|TTbar","TTbar")
 
         STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root"]
-        STsamples = [lumiScaledDir+s for s in STsamples]
+        STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
         mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),".+top_","ST_")
 
         VJetsSamples = ["WJets400.root","WJets600.root","WJets800.root","ZJets400.root","ZJets600.root","ZJets800.root"]
-        VJetsSamples = [lumiScaledDir+s for s in VJetsSamples]
-        mergeSamples(VJetsSamples,"{0}/VJets{1}.root".format(lumiScaledDir,year[-2:]),"[A-Z]Jets","VJets")
+        VJetsSamples = [lumiScaledDir+f for f in VJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(VJetsSamples,"{0}/VJets{1}.root".format(lumiScaledDir,year[-2:]),"[A-Z]Jets\d+_","VJets_")
 
-        os.system("hadd -f {0}/JetHT{1}.root {2}/JetHT*root".format(lumiScaledDir,year,nonScaledDir))
+        VHSamples = ["WminusH.root","WplusH.root","ZH.root"]
+        VHSamples = [lumiScaledDir+f for f in VHSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(VHSamples,"{0}/VH{1}.root".format(lumiScaledDir,year[-2:]),"[a-zA-Z]+H_","VH_")
+
+        JetHTSamples = [nonScaledDir+f for f in os.listdir(nonScaledDir) if (os.path.isfile(os.path.join(nonScaledDir, f)) and "JetHT" in f)]#We are not lumi scaling data!
+        mergeSamples(JetHTSamples,"{0}/JetHT{1}.root".format(lumiScaledDir,year[-2:]),"JetHT201[0-9][A-Z]_","JetHT_")
+
+        pseudoSamples = ["{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:])]
+        mergeSamples(pseudoSamples,"{0}/pseudo{1}.root".format(lumiScaledDir,year[-2:]),"QCD|TTbar","data_obs")
+
+    templatesDir = "results/templates/WP_0.8_0.95/"
+    runIIDir="{0}/FullRunII/".format(templatesDir)
+    os.system("hadd -f {0}/ttbarRunII.root {1}/2016/scaled/TTbar16.root {1}/2017/scaled/TTbar17.root {1}/2018/scaled/TTbar18.root".format(runIIDir,templatesDir))
+    os.system("hadd -f {0}/QCDRunII.root {1}/2016/scaled/QCD16.root {1}/2017/scaled/QCD17.root {1}/2018/scaled/QCD18.root".format(runIIDir,templatesDir))
+    os.system("hadd -f {0}/VJetsRunII.root {1}/2016/scaled/VJets16.root {1}/2017/scaled/VJets17.root {1}/2018/scaled/VJets18.root".format(runIIDir,templatesDir))
+    os.system("hadd -f {0}/STRunII.root {1}/2016/scaled/ST16.root {1}/2017/scaled/ST17.root {1}/2018/scaled/ST18.root".format(runIIDir,templatesDir))
+    os.system("hadd -f {0}/JetHTRunII.root {1}/2016/scaled/JetHT16.root {1}/2017/scaled/JetHT17.root {1}/2018/scaled/JetHT18.root".format(runIIDir,templatesDir))
+    os.system("hadd -f {0}/pseudoRunII.root {1}/2016/scaled/pseudo16.root {1}/2017/scaled/pseudo17.root {1}/2018/scaled/pseudo18.root".format(runIIDir,templatesDir))
+
+
 
 if __name__ == '__main__':
 
-    # semilepProcesses = ["QCD1000","QCD1500","QCD2000","ttbar","ttbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_sChannel",
-    # "WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600"]
-    # for proc in semilepProcesses:
-    #     print(proc)
-    #     normalizeProcess(proc,"2016","results/templates_semiLeptonic/electron/2016/nonScaled/{0}.root".format(proc),"results/templates_semiLeptonic/electron/2016/scaled/{0}.root".format(proc))
-
-    #scaleEvtSelHistos()
-    #scaleMuonTemplates()
-    scaleEvtSelTemplates()
-
-
-    # normalizeProcess("ttbar","2016","ttbar2016Incl_template.root","ttbar2016InclScaled.root")
-    # normalizeProcess("ttbar","2017","ttbar2017Incl_template.root","ttbar2017InclScaled.root")
-    # normalizeProcess("ttbar","2018","ttbar2018Incl_template.root","ttbar2018InclScaled.root")
-    # pseudoSamples16=["results/templates/WP_0.8_0.9/2016/scaled/QCD16.root","results/templates/WP_0.8_0.9/2016/scaled/ttbar2016InclOnly.root"]
-    # pseudoSamples17=["results/templates/WP_0.8_0.9/2017/scaled/QCD17.root","results/templates/WP_0.8_0.9/2017/scaled/ttbar2017InclOnly.root"]
-    # pseudoSamples18=["results/templates/WP_0.8_0.9/2018/scaled/QCD18.root","results/templates/WP_0.8_0.9/2018/scaled/ttbar2018InclOnly.root"]
-    # mergeSamples(["ttbar2016InclScaled.root"],"results/templates/WP_0.8_0.9/2016/scaled/ttbar2016InclOnly.root","ttbar","TTbar")
-    # mergeSamples(["ttbar2017InclScaled.root"],"results/templates/WP_0.8_0.9/2017/scaled/ttbar2017InclOnly.root","ttbar","TTbar")
-    # mergeSamples(["ttbar2018InclScaled.root"],"results/templates/WP_0.8_0.9/2018/scaled/ttbar2018InclOnly.root","ttbar","TTbar")
-    # mergeSamples(pseudoSamples16,"results/templates/WP_0.8_0.9/2016/scaled/pseudo16_ttbarIncl.root","QCD|TTbar|ttbar","data_obs")
-    # mergeSamples(pseudoSamples17,"results/templates/WP_0.8_0.9/2017/scaled/pseudo17_ttbarIncl.root","QCD|TTbar|ttbar","data_obs")
-    # mergeSamples(pseudoSamples18,"results/templates/WP_0.8_0.9/2018/scaled/pseudo18_ttbarIncl.root","QCD|TTbar|ttbar","data_obs")
+    scaleMuonTemplates()
+    #scaleEvtSelTemplates()
