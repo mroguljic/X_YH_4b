@@ -8,6 +8,25 @@ from collections import OrderedDict
 from TIMBER.Tools.Common import *
 from TIMBER.Analyzer import *
 
+def getNProc(inputFile):
+    nProc        = 0
+    if ".root" in inputFile:
+        tempFile = ROOT.TFile.Open(inputFile)
+        skimInfo = tempFile.Get("skimInfo")
+        nProc    = skimInfo.GetBinContent(1)
+        tempFile.Close()
+        return nProc
+    elif ".txt" in inputFile: 
+        txt_file     = open(inputFile,"r")
+        for l in txt_file.readlines():
+            thisfile = l.strip()
+            if 'root://' not in thisfile and thisfile.startswith('/store/'): thisfile='root://cms-xrd-global.cern.ch/'+thisfile
+            tempFile = ROOT.TFile.Open(thisfile)
+            skimInfo = tempFile.Get("skimInfo")
+            nProc    += skimInfo.GetBinContent(1)
+            tempFile.Close()
+    return nProc
+
 parser = OptionParser()
 
 parser.add_option('-i', '--input', metavar='IFILE', type='string', action='store',
@@ -30,15 +49,22 @@ parser.add_option('-y', '--year', metavar='year', type='string', action='store',
                 default   =   '2016',
                 dest      =   'year',
                 help      =   'Dataset year')
+parser.add_option('--var', metavar='variation', type='string', action='store',
+                default   =   "nom",
+                dest      =   'variation',
+                help      =   'nom sfUp/Down, jesUp/Down, jerUp/Down')
 
 (options, args) = parser.parse_args()
 start_time = time.time()
-
+variation = options.variation
 
 CompileCpp("TIMBER/Framework/common.cc") 
 CompileCpp("TIMBER/Framework/deltaRMatching.cc") 
 CompileCpp("TIMBER/Framework/SemileptonicFunctions.cc") 
-
+CompileCpp("TIMBER/Framework/src/JMSUncShifter.cc") 
+CompileCpp("JMSUncShifter jmsShifter = JMSUncShifter();") 
+CompileCpp("TIMBER/Framework/src/JMRUncSmearer.cc") 
+CompileCpp("JMRUncSmearer jmrSmearer = JMRUncSmearer();") 
 
 a = analyzer(options.input)
 runNumber = a.DataFrame.Range(1).AsNumpy(["run"])#just checking the first run number to see if data or MC
@@ -48,6 +74,20 @@ if(runNumber["run"][0]>10000):
 else:
     isData=False
     print("Running on MC")
+
+nProc = 0
+if not isData:
+    CompileCpp('TIMBER/Framework/src/AK4Btag_SF.cc')
+    CompileCpp('AK4Btag_SF ak4SF = AK4Btag_SF({0}, "DeepJet", "reshaping");'.format(options.year[2:]))
+    nProc = getNProc(options.input)
+
+if("je" in variation):#jes,jer
+    ptVar  = "Jet_pt_{0}".format(variation.replace("jes","jesTotal"))
+else:
+    ptVar  = "Jet_pt_nom"
+
+if(isData):
+    ptVar = "Jet_pt"
 
 histos      = []
 
@@ -84,6 +124,21 @@ if(isData):
     print("Skipping triggers, since skims don't have them!")
 nTrigger = a.DataFrame.Count().GetValue() 
 
+
+if(variation == "sfDown"):
+    sfVar = 1
+elif(variation=="sfUp"):
+    sfVar = 2
+else:
+    sfVar = 0 
+
+if(isData):
+    a.Define("btagDisc",'Jet_btagDeepB') 
+else:
+    a.Define("btagDisc",'ak4SF.evalCollection(nJet,{0}, Jet_eta, Jet_hadronFlavour,Jet_btagDeepB,{1})'.format(ptVar,sfVar)) 
+
+
+
 a.Define("lIdx","tightLeptonIdx(nElectron,Electron_cutBased,nMuon,Muon_tightId,Muon_pfIsoId,{0})".format(lGeneration))
 a.Cut("lIdxCut","lIdx>-1")#There is a tight lepton
 nTightLepton = a.DataFrame.Count().GetValue()
@@ -95,21 +150,21 @@ a.Cut("lPtCut","lPt>40")
 nlPt = a.DataFrame.Count().GetValue()
 a.Cut("lEtaCut","abs(lEta)<2.4")
 nlEta = a.DataFrame.Count().GetValue()
-a.Define("goodJetIdxs","goodAK4JetIdxs(nJet, Jet_pt, Jet_eta, Jet_phi, Jet_jetId, lPhi, lEta)")
+a.Define("goodJetIdxs","goodAK4JetIdxs(nJet, {0}, Jet_eta, Jet_phi, Jet_jetId, lPhi, lEta)".format(ptVar))
 a.Cut("goodJetIdxsCut","goodJetIdxs.size()>0")
 nGoodJets = a.DataFrame.Count().GetValue()
-a.Define("leadingJetPt","Jet_pt[goodJetIdxs[0]]")
+a.Define("leadingJetPt","{0}[goodJetIdxs[0]]".format(ptVar))
 a.Define("leadingJetIdx","goodJetIdxs[0]")
 a.Define("dRmin","deltaRClosestJet(goodJetIdxs,Jet_eta,Jet_phi,lEta,lPhi)")
 
 a.Cut("leadingJetPtCut","leadingJetPt>200")
 nJetPt = a.DataFrame.Count().GetValue()
-a.Cut("leadingJetBTagCut","Jet_btagDeepB[goodJetIdxs[0]]>{0}".format(deepJetM))
+a.Cut("leadingJetBTagCut","btagDisc[goodJetIdxs[0]]>{0}".format(deepJetM))
 nJetBTag = a.DataFrame.Count().GetValue()
-a.Define("nbAk4","nbAK4(Jet_btagDeepB, goodJetIdxs, {0})".format(deepJetM))
+a.Define("nbAk4","nbAK4(btagDisc, goodJetIdxs, {0})".format(deepJetM))
 a.Cut("nbAk4Cut","nbAk4>1")
 n2Ak4bJets = a.DataFrame.Count().GetValue()
-a.Define("HT","HTgoodJets(Jet_pt, goodJetIdxs)")
+a.Define("HT","HTgoodJets({0}, goodJetIdxs)".format(ptVar))
 a.Cut("HTCut","HT>500")
 nHT = a.DataFrame.Count().GetValue()
 a.Cut("METcut","MET_pt>60")
@@ -119,117 +174,47 @@ a.Cut("STcut","ST>500")
 nST = a.DataFrame.Count().GetValue()
 a.Cut("dRcut","dRmin<1.5")
 nDR = a.DataFrame.Count().GetValue()
-a.Define("probeJetIdx","probeAK8JetIdx(nFatJet,FatJet_pt,FatJet_msoftdrop,FatJet_phi,FatJet_eta,FatJet_jetId,lPhi,lEta)")
+a.Define("probeJetIdx","probeAK8JetIdx(nFatJet,Fat{0},FatJet_msoftdrop,FatJet_phi,FatJet_eta,FatJet_jetId,lPhi,lEta)".format(ptVar))
 a.Cut("probeJetIdxCut","probeJetIdx>-1")
 nProbeJet = a.DataFrame.Count().GetValue()
-a.Define("probeJetMass","FatJet_msoftdrop[probeJetIdx]")
-a.Define("probeJetPt","FatJet_pt[probeJetIdx]")
-a.Define("probeJetPNet","FatJet_ParticleNetMD_probXbb[probeJetIdx]")
-
-if not isData:
-    #Jet content classification
-    a.Define("nBH","FatJet_nBHadrons[probeJetIdx]")
-    a.Define("nCH","FatJet_nCHadrons[probeJetIdx]")
-    #Classification with n hadrons
-    a.Define("n2plusB","nBH>1")
-    a.Define("n1B1plusC","nBH==1 && nCH>0")
-    a.Define("n1B0C","nBH==1 && nCH==0")
-    a.Define("n0B1plusC","nBH==0 && nCH>0")
-    a.Define("n0B0C","nBH==0 && nCH==0")
-    a.Define("partonCategory","classifyProbeJet(probeJetIdx, FatJet_phi, FatJet_eta, nGenPart, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
-
-    checkpoint  = a.GetActiveNode()#checkpoint before applying jet classifications
-    confMatrixHistos = []
-    a.Cut("n2plusBCut","n2plusB")
-    n2plusB = a.GetActiveNode().DataFrame.Count().GetValue()
-    confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_2BHConf'.format(options.process),'',4,0,4),'partonCategory'))
-
-    a.SetActiveNode(checkpoint)
-    a.Cut("n1B1plusCCut","n1B1plusC")
-    n1B1plusC = a.GetActiveNode().DataFrame.Count().GetValue()
-    confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_1B1pCHConf'.format(options.process),'',4,0,4),'partonCategory'))
-
-    a.SetActiveNode(checkpoint)
-    a.Cut("n1B0CCut","n1B0C")
-    n1B0C = a.GetActiveNode().DataFrame.Count().GetValue()
-    confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_1B1pCHConf'.format(options.process),'',4,0,4),'partonCategory'))
-
-    a.SetActiveNode(checkpoint)
-    a.Cut("n0B1plusCCut","n0B1plusC")
-    n0B1plusC = a.GetActiveNode().DataFrame.Count().GetValue()
-    confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_0B1pCHConf'.format(options.process),'',4,0,4),'partonCategory'))
-
-    a.SetActiveNode(checkpoint)
-    a.Cut("n0B0CCut","n0B0C")
-    n0B0C = a.GetActiveNode().DataFrame.Count().GetValue()
-    confMatrixHistos.append(a.GetActiveNode().DataFrame.Histo1D(('{0}_0B0CHConf'.format(options.process),'',4,0,4),'partonCategory'))
-
-
-    hadronCats  = ["2b+","1b1+c","1b0c","0b1+c","0b0c"]
-    partonCats  = ["unmatched","qq","bq","bqq"]
-    hadronCatsN = [n2plusB,n1B1plusC,n1B0C,n0B1plusC,n0B0C]
-    nHadronCats = len(hadronCats)
-
-    h2_confusionMatrix = ROOT.TH2F("{0}_confusionMatrix".format(options.process),"",5,0,5,4,0,4)
-    for i,h in enumerate(confMatrixHistos):
-        for j in range(0,4):
-            h2_confusionMatrix.SetBinContent(i+1,j+1,h.GetBinContent(j+1))#+1 to avoid underflow bins
-
-    for i,cat in enumerate(hadronCats):
-        h2_confusionMatrix.GetXaxis().SetBinLabel(i+1, hadronCats[i])
-    for i,cat in enumerate(partonCats):
-        h2_confusionMatrix.GetYaxis().SetBinLabel(i+1, partonCats[i])
-
-    histos.append(h2_confusionMatrix)
-
-    h_hadronCat = ROOT.TH1F('{0}_hadronCategory'.format(options.process),';Jet category;;',nHadronCats,0.5,nHadronCats+0.5)
-    for i,N in enumerate(hadronCatsN):
-        h_hadronCat.AddBinContent(i+1,N)
-        h_hadronCat.GetXaxis().SetBinLabel(i+1, hadronCats[i])
-    histos.append(h_hadronCat)
-
-
-    #Classification with partons
-    a.SetActiveNode(checkpoint)
-    checkpoint  = a.GetActiveNode()#checkpoint before applying jet classifications
-    h_partonCat = a.GetActiveNode().DataFrame.Histo1D(('{0}_partonCategory'.format(options.process),';Jet category;;',4,0,4),'partonCategory')
-    for i,cat in enumerate(partonCats):
-        h_partonCat.GetXaxis().SetBinLabel(i+1, partonCats[i])
-    histos.append(h_partonCat)
-
-    a.Cut("qqCut","partonCategory==1")
-    h_mSDqq = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSDqq'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
-    histos.append(h_mSDqq)
-
-    a.SetActiveNode(checkpoint)
-    a.Cut("bqCut","partonCategory==2")
-    h_mSDbq = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSDbq'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
-    histos.append(h_mSDbq)
-
-    a.SetActiveNode(checkpoint)
-    a.Cut("bqqCut","partonCategory==3")
-    h_mSDbqq = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSDbqq'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
-    histos.append(h_mSDbqq)
-
-    a.SetActiveNode(checkpoint)
-    a.Cut("otherCut","partonCategory==0")
-    h_mSDother = a.GetActiveNode().DataFrame.Histo1D(('{0}_mSDunmatched'.format(options.process),';Softdrop mass;;',60,0,300),'probeJetMass')
-    histos.append(h_mSDother)
-    a.SetActiveNode(checkpoint)
-
-cutFlowVars = [0,nSkimmed,nTrigger,nTightLepton,nlPt,nJetPt,nJetBTag,n2Ak4bJets,nHT,nMET,nST,nDR,nProbeJet]
-cutFlowLabels = ["nProc","Skimmed","Trigger","Tight lepton","Lepton pT > 40 GeV","Leading Ak4 pT > 200 GeV","Leading jet b-tag","Two medium b jets","HT>500","MET>60","ST>500","dR(l, closest jet)<1.5","ProbeJet found"]
-nCutFlowVars = len(cutFlowVars)
-hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowVars,0.5,nCutFlowVars+0.5)
-for i,var in enumerate(cutFlowVars):
-	hCutFlow.AddBinContent(i+1,var)
-	hCutFlow.GetXaxis().SetBinLabel(i+1, cutFlowLabels[i])
-histos.append(hCutFlow)
 
 if(isData):
-    snapshotColumns = ["lPt","MET_pt","HT","ST","probeJetMass","probeJetPt","probeJetPNet"]
+    a.Define("probeJetMass_nom",'FatJet_msoftdrop[probeJetIdx]')
 else:
-    snapshotColumns = ["lPt","MET_pt","HT","ST","probeJetMass","probeJetPt","probeJetPNet","partonCategory"]
+    a.Define("scaledProbeJetNom",'jmsShifter.shiftMsd(FatJet_msoftdrop[probeJetIdx],"{0}",0)'.format(options.year))
+    a.Define("scaledProbeJetUp",'jmsShifter.shiftMsd(FatJet_msoftdrop[probeJetIdx],"{0}",2)'.format(options.year))
+    a.Define("scaledProbeJetDown",'jmsShifter.shiftMsd(FatJet_msoftdrop[probeJetIdx],"{0}",1)'.format(options.year))
+    smearStringNom = "scaledProbeJetNom,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],1"
+    smearStringJMSUp = "scaledProbeJetUp,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],1"
+    smearStringJMSDown = "scaledProbeJetDown,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],1"
+    smearStringJMRUp = "scaledProbeJetNom,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],2"
+    smearStringJMRDown = "scaledProbeJetNom,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],0"
+
+    a.Define("probeJetMass_nom",'jmrSmearer.smearMsd({0})'.format((smearStringNom)))
+    a.Define("probeJetMass_jmsUp",'jmrSmearer.smearMsd({0})'.format((smearStringJMSUp)))
+    a.Define("probeJetMass_jmsDown",'jmrSmearer.smearMsd({0})'.format((smearStringJMSDown)))
+    a.Define("probeJetMass_jmrDown",'jmrSmearer.smearMsd({0})'.format((smearStringJMRDown)))
+    a.Define("probeJetMass_jmrUp",'jmrSmearer.smearMsd({0})'.format((smearStringJMRUp)))
+
+    a.Define("probeJetPt","Fat{0}[probeJetIdx]".format(ptVar))
+    a.Define("probeJetPNet","FatJet_ParticleNetMD_probXbb[probeJetIdx]")
+    a.Define("partonCategory","classifyProbeJet(probeJetIdx, FatJet_phi, FatJet_eta, nGenPart, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
+
+
+if(options.variation=="nom"):
+    cutFlowVars = [nProc,nSkimmed,nTrigger,nTightLepton,nlPt,nJetPt,nJetBTag,n2Ak4bJets,nHT,nMET,nST,nDR,nProbeJet]
+    cutFlowLabels = ["nProc","Skimmed","Trigger","Tight lepton","Lepton pT > 40 GeV","Leading Ak4 pT > 200 GeV","Leading jet b-tag","Two medium b jets","HT>500","MET>60","ST>500","dR(l, closest jet)<1.5","ProbeJet found"]
+    nCutFlowVars = len(cutFlowVars)
+    hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowVars,0.5,nCutFlowVars+0.5)
+    for i,var in enumerate(cutFlowVars):
+    	hCutFlow.AddBinContent(i+1,var)
+    	hCutFlow.GetXaxis().SetBinLabel(i+1, cutFlowLabels[i])
+    histos.append(hCutFlow)
+
+if(isData):
+    snapshotColumns = ["lPt","lEta","MET_pt","HT","ST","probeJetMass_nom","probeJetPt","probeJetPNet"]
+else:
+    snapshotColumns = ["lPt","lEta","MET_pt","HT","ST","probeJetMass_nom","probeJetMass_jmsDown","probeJetMass_jmsUp","probeJetMass_jmrDown","probeJetMass_jmrUp","probeJetPt","probeJetPNet","partonCategory"]
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
 a.GetActiveNode().DataFrame.Snapshot("Events",options.output,snapshotColumns,opts)
