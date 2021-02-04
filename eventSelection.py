@@ -63,16 +63,18 @@ CompileCpp("TIMBER/Framework/deltaRMatching.cc")
 CompileCpp("TIMBER/Framework/taggerOrdering.cc") 
 CompileCpp("TIMBER/Framework/helperFunctions.cc") 
 CompileCpp("TIMBER/Framework/TTstitching.cc") 
+CompileCpp("TIMBER/Framework/src/JMSUncShifter.cc") 
+CompileCpp("JMSUncShifter jmsShifter = JMSUncShifter();") 
+CompileCpp("TIMBER/Framework/src/JMRUncSmearer.cc") 
+CompileCpp("JMRUncSmearer jmrSmearer = JMRUncSmearer();") 
+
 
 varName = options.variation
 if(varName=="nom"):
     ptVar  = "FatJet_pt_nom"
-    mSDVar = "FatJet_msoftdrop_nom"
 elif("jm" in varName):#jmr,jms
-    mSDVar = "FatJet_msoftdrop_{0}".format(varName)
     ptVar  = "FatJet_pt_nom"
 elif("je" in varName):#jes,jer
-    mSDVar = "FatJet_msoftdrop_nom"
     ptVar  = "FatJet_pt_{0}".format(varName.replace("jes","jesTotal"))
 else:
     print("Not recognizing shape uncertainty {0}, exiting".format(varName))        
@@ -113,6 +115,11 @@ else:
 
 a.Cut("skimCut","SkimFlag==2 || SkimFlag==3")
 
+if(options.isSignal):
+    YMass = options.process.split("_")[1]
+    YMass = YMass.replace("MY","")
+    a.Cut("YMass","GenModel_YMass_{0}==1".format(YMass))
+
 
 nSkimmed = a.GetActiveNode().DataFrame.Count().GetValue()
 
@@ -146,7 +153,7 @@ if("TTbar" in options.process):
     a.Define("ttHTFlag","highHTFlag(nGenPart,GenPart_pdgId,GenPart_pt,GenPart_phi,GenPart_eta,GenPart_mass,nGenJetAK8,GenJetAK8_pt,GenJetAK8_phi,GenJetAK8_eta,GenJetAK8_mass)")
     if("HT" in options.process):
         a.Cut("ttHTCut","ttHTFlag==1")
-    elif(options.process=="ttbar"):
+    elif(options.process.lower()=="ttbar"):
        a.Cut("ttHTCut","ttHTFlag==0") 
     else:
         print("Not applying HT cut to: {0}".format(options.process))
@@ -158,6 +165,29 @@ if(options.year=="2016"):
 else:
     a.Cut("Eta","abs(FatJet_eta[0])<2.5 && abs(FatJet_eta[1])<2.5")
 a.Cut("ID","FatJet_jetId[0]>1 && FatJet_jetId[1]>1")#bit 1 is loose, bit 2 is tight
+
+if(varName=="jmsUp"):
+    msdShift = 2
+elif(varName=="jmsDown"):
+    msdShift = 1
+else:
+    msdShift = 0
+
+if(varName=="jmrUp"):
+    msdSmear = 2
+elif(varName=="jmrDown"):
+    msdSmear = 0
+else:
+    msdSmear = 1
+
+smearString1 = "scaledMSD[0],{0}[0],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[0],{1}".format(ptVar,msdSmear)
+smearString2 = "scaledMSD[1],{0}[1],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[1],{1}".format(ptVar,msdSmear)
+a.Define("scaledMSD",'RVec<float> {jmsShifter.shiftMsd(FatJet_msoftdrop[0],"%s",%i),jmsShifter.shiftMsd(FatJet_msoftdrop[1],"%s",%i)}' %(options.year, msdShift, options.year,msdShift))
+a.Define("correctedMSD",'RVec<float> {jmrSmearer.smearMsd(%s),jmrSmearer.smearMsd(%s)}'%(smearString1,smearString2))
+
+
+
+
 evtColumns = VarGroup("Event columns")
 evtColumns.Add("HT_2p4","calculateHT(nJet,Jet_eta,Jet_pt,30.0,2.4)")
 evtColumns.Add("HT_5p0","calculateHT(nJet,Jet_eta,Jet_pt,30.0,5.0)")
@@ -169,8 +199,9 @@ evtColumns.Add("FatJet_pt0","{0}[0]".format(ptVar))
 evtColumns.Add("FatJet_pt1","{0}[1]".format(ptVar))
 evtColumns.Add("FatJet_eta0","FatJet_eta[0]")
 evtColumns.Add("FatJet_eta1","FatJet_eta[1]")
-evtColumns.Add("mSD0","{0}[0]".format(mSDVar))
-evtColumns.Add("mSD1","{0}[1]".format(mSDVar))
+evtColumns.Add("mSD0","correctedMSD[0]")
+evtColumns.Add("mSD1","correctedMSD[1]")
+
 a.Apply([evtColumns])
 
 
@@ -251,8 +282,8 @@ histos.append(h_pt0)
 histos.append(h_pt1)
 histos.append(h_eta0)
 histos.append(h_eta1)
-a.Define("pnet0","FatJet_particleNetMD_Xbb[0]/(FatJet_particleNetMD_Xbb[0]+FatJet_particleNetMD_QCD[0])")
-a.Define("pnet1","FatJet_particleNetMD_Xbb[1]/(FatJet_particleNetMD_Xbb[1]+FatJet_particleNetMD_QCD[1])")
+a.Define("pnet0","FatJet_ParticleNetMD_probXbb[0]")
+a.Define("pnet1","FatJet_ParticleNetMD_probXbb[1]")
 a.Define("pnetLow","particleNetLow(pnet0,pnet1)")
 a.Define("pnetHigh","particleNetHigh(pnet0,pnet1)")
 h_nm1_pnet0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet0'.format(options.process),';Leading jet ParticleNet score;Events/0.01;',1000,0,1),"pnet0")
@@ -280,13 +311,13 @@ a.Apply([idxCuts])
 nHiggs = a.GetActiveNode().DataFrame.Count().GetValue()
 
 candidateColumns  = VarGroup("candidateColumns")
-candidateColumns.Add('ptjH','FatJet_pt[idxH]')
-candidateColumns.Add('ptjY','FatJet_pt[idxY]')
-candidateColumns.Add('MJY','FatJet_msoftdrop[idxY]')
-candidateColumns.Add('MJH','FatJet_msoftdrop[idxH]')
+candidateColumns.Add('ptjH','{0}[idxH]'.format(ptVar))
+candidateColumns.Add('ptjY','{0}[idxY]'.format(ptVar))
+candidateColumns.Add('MJY','correctedMSD[idxY]')
+candidateColumns.Add('MJH','correctedMSD[idxH]')
 candidateColumns.Add('MJJ_halfReduced','MJJ - MJH + 125')
-candidateColumns.Add("pnetH","FatJet_particleNetMD_Xbb[idxH]/(FatJet_particleNetMD_Xbb[idxH]+FatJet_particleNetMD_QCD[idxH])")
-candidateColumns.Add("pnetY","FatJet_particleNetMD_Xbb[idxY]/(FatJet_particleNetMD_Xbb[idxY]+FatJet_particleNetMD_QCD[idxY])")
+candidateColumns.Add("pnetH","FatJet_ParticleNetMD_probXbb[idxH]")
+candidateColumns.Add("pnetY","FatJet_ParticleNetMD_probXbb[idxY]")
 
 
 
@@ -382,7 +413,7 @@ outputFile = options.output.replace(".root","_{0}.root".format(varName))
 
 snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta"]
 if not isData:
-    snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta","nFatJet","FatJet_hadronFlavour"]
+    snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta","nFatJet","FatJet_hadronFlavour","ptjH","ptjY"]
 
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
