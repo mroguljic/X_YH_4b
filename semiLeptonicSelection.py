@@ -38,7 +38,7 @@ parser.add_option('-o', '--output', metavar='OFILE', type='string', action='stor
                 dest      =   'output',
                 help      =   'Output file name.')
 parser.add_option('-p', '--process', metavar='PROCESS', type='string', action='store',
-                default   =   'X1600_Y100',
+                default   =   'ttbarSemi',
                 dest      =   'process',
                 help      =   'Process in the given MC file')
 parser.add_option('-c', '--channel', metavar='CHANNEL', type='string', action='store',
@@ -75,6 +75,11 @@ else:
     isData=False
     print("Running on MC")
 
+if(isData and variation!="nom"):
+    print("Not running systematics on data")
+    sys.exit()
+
+
 nProc = 0
 if not isData:
     CompileCpp('TIMBER/Framework/src/AK4Btag_SF.cc')
@@ -102,7 +107,10 @@ if(options.year=="2018"):
 
 histos=[]
 if(options.channel=="mu"):
-    triggerList = ["HLT_IsoMu24","HLT_IsoMu27"]
+    if(options.year=="2017"):
+        triggerList = ["HLT_IsoMu27"]
+    else:
+        triggerList = ["HLT_IsoMu24"]
     lGeneration = 2
     a.Cut("leptonSkimCut","SkimFlag>7")
 elif(options.channel=="e"):
@@ -211,15 +219,17 @@ if(options.variation=="nom"):
     	hCutFlow.GetXaxis().SetBinLabel(i+1, cutFlowLabels[i])
     histos.append(hCutFlow)
 
+outputFile = options.output.replace(".root","_{0}.root".format(variation))
+
 if(isData):
     snapshotColumns = ["lPt","lEta","MET_pt","HT","ST","probeJetMass_nom","probeJetPt","probeJetPNet"]
 else:
     snapshotColumns = ["lPt","lEta","MET_pt","HT","ST","probeJetMass_nom","probeJetMass_jmsDown","probeJetMass_jmsUp","probeJetMass_jmrDown","probeJetMass_jmrUp","probeJetPt","probeJetPNet","partonCategory"]
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
-a.GetActiveNode().DataFrame.Snapshot("Events",options.output,snapshotColumns,opts)
+a.GetActiveNode().DataFrame.Snapshot("Events",outputFile,snapshotColumns,opts)
 
-out_f = ROOT.TFile(options.output,"UPDATE")
+out_f = ROOT.TFile(outputFile,"UPDATE")
 out_f.cd()
 for h in histos:
     h.Write()

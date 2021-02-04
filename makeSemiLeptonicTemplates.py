@@ -29,6 +29,10 @@ parser.add_option('-y', '--year', metavar='year', type='string', action='store',
                 default   =   '2016',
                 dest      =   'year',
                 help      =   'Dataset year')
+parser.add_option('-m', metavar='mode', type='string', action='store',
+                default   =   "RECREATE",
+                dest      =   'mode',
+                help      =   'RECREATE or UPDATE outputfile')
 
 (options, args) = parser.parse_args()
 #SF and JES/R have their own event trees
@@ -47,7 +51,7 @@ else:
 
 a = analyzer(iFile)
 
-if("data" in options.process):
+if("data" in options.process or "SingleMuon" in options.process):
     isData=True
 else:
     isData=False
@@ -108,12 +112,18 @@ if not isData:
         IdCorr      = Correction('IdSF',"TIMBER/Framework/src/TH2_SF.cc",constructor=['"{0}"'.format(IdFile),'"{0}"'.format(IdName)],corrtype='weight')
         IsoCorr     = Correction('IsoSF',"TIMBER/Framework/src/TH2_SF.cc",constructor=['"{0}"'.format(IsoFile),'"{0}"'.format(IsoName)],corrtype='weight')
         TriggerCorr = Correction('TriggerEff',"TIMBER/Framework/src/TH2_SF.cc",constructor=['"{0}"'.format(TrigFile1),'"{0}"'.format(TrigName1),'"{0}"'.format(TrigFile2),'"{0}"'.format(TrigName2),'{0}'.format(lumiBefore/(lumiBefore+lumiAfter)),'{0}'.format(lumiAfter/(lumiBefore+lumiAfter))],corrtype='weight',mainFunc="evalComb")
-
+    
+    STcorr = Correction('STcorr',"TIMBER/Framework/src/ST_weight.cc",constructor=[ '-0.0002532','1.1789'],corrtype='weight')
+    a.AddCorrection(STcorr,evalArgs={'ST':'ST'})
     a.AddCorrection(IdCorr,evalArgs={'pt':'lPt','eta':'lEta'})
     a.AddCorrection(IsoCorr,evalArgs={'pt':'lPt','eta':'lEta'})
     a.AddCorrection(TriggerCorr,evalArgs={'pt':'lPt','eta':'lEta'})
+    a.MakeWeightCols('noSTCorr',dropList=["STcorr"])
 
+hSTBefore = a.DataFrame.Histo1D(('{0}_STbefore_I'.format(options.process),';ST [GeV];Events/100;',20,0,2000),"ST","weight_noSTCorr__nominal")
+histos.append(hSTBefore)
 a.MakeWeightCols()
+
 weightString = "weight__nominal"
 if(variation=="isoUp"):
     weightString = "IsoSF__up"
@@ -220,7 +230,7 @@ for key in in_f.GetListOfKeys():
         histos.append(h)
 
 
-out_f = ROOT.TFile(options.output,"RECREATE")
+out_f = ROOT.TFile(options.output,options.mode)
 out_f.cd()
 for h in histos:
     h.SetName(h.GetName()+"_"+options.variation)
