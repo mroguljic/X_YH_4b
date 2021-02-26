@@ -5,7 +5,7 @@ import re
 import os
 
 
-def normalizeProcessSemilep(process,year,inFile,outFile):
+def normalizeProcess(process,year,inFile,outFile):
     h_dict = {}
     f = r.TFile.Open(inFile)
     print(process,inFile)
@@ -16,7 +16,7 @@ def normalizeProcessSemilep(process,year,inFile,outFile):
     else:
         xsec = config[year][process]["xsec"]
     luminosity = config[year]["lumi"]
-    nProc = config[year][process]["nProc"]
+    nProc = f.Get("{0}_cutflow_nom".format(process)).GetBinContent(1)
     print(nProc,xsec*luminosity)
     nLumi    = xsec*luminosity
     scaling  = nLumi/nProc
@@ -36,7 +36,8 @@ def normalizeProcessSemilep(process,year,inFile,outFile):
         histo.Write()
     f.Close()
 
-def normalizeProcess(process,year,inFile,outFile):
+def normalizeProcessGenW(process,year,inFile,outFile):
+    #Assumes genW was applied when filling the source histogram
     h_dict = {}
     f = r.TFile.Open(inFile)
     print(process,inFile)
@@ -48,9 +49,10 @@ def normalizeProcess(process,year,inFile,outFile):
         xsec = config[year][process]["xsec"]
     luminosity = config[year]["lumi"]
     nProc = f.Get("{0}_cutflow_nom".format(process)).GetBinContent(1)
+    avgW  = config[year][process]["avgW"]
     print(nProc,xsec*luminosity)
     nLumi    = xsec*luminosity
-    scaling  = nLumi/nProc
+    scaling  = nLumi/(nProc*avgW)
     print("Scale: {0:.4f}".format(scaling))
     for key in f.GetListOfKeys():
         h = key.ReadObj()
@@ -95,9 +97,9 @@ def mergeSamples(inFiles,outFile,regexMatch,regexReplace):
 
 
 def scaleMuonTemplates():
-    semilepProcesses16 = ["ttbar","ttbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_sChannel","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600"]
-    semilepProcesses17 = ["ttbar","ttbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_s_top","ST_s_antitop","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600"]
-    semilepProcesses18 = ["ttbar","ttbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_s_top","ST_s_antitop","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600"]
+    semilepProcesses16 = ["TTbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_sChannel","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600","TTW","TTZ"]
+    semilepProcesses17 = ["TTbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_s_top","ST_s_antitop","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600","TTW","TTZ"]
+    semilepProcesses18 = ["TTbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_s_top","ST_s_antitop","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600","TTW","TTZ"]
 
     for year in ['2016','2017','2018']:
         print(year)
@@ -111,18 +113,37 @@ def scaleMuonTemplates():
         elif(year=='2018'):
             processes = semilepProcesses18     
         for proc in processes:
-            normalizeProcessSemilep(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
+            normalizeProcessGenW(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
+            #normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
         year=year[-2:]#2018->18
-        os.system("hadd -f {0}/ttbar{1}.root {0}/ttbar.root {0}/ttbarSemi.root".format(lumiScaledDir,year))
-        os.system("hadd -f {0}/ST{1}.root {0}/ST_*root".format(lumiScaledDir,year))
-        os.system("hadd -f {0}/WJets{1}.root {0}/WJetsL*root".format(lumiScaledDir,year))
-        os.system("hadd -f {0}/SingleMuon{1}.root {2}/SingleMuon*root".format(lumiScaledDir,year,nonScaledDir))
+
+        ttSamples = ["TTbarSemi.root"]
+        ttSamples = [lumiScaledDir+f for f in ttSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarSemi|TTbar","TTbar")
+
+        STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_s_top","ST_antitop"]
+        if(year=="16"):
+            STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_sChannel"]
+        STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),"ST.+top_|ST.+nel","ST_")
+
+        WJetsSamples = ["WJetsLNu100.root","WJetsLNu250.root","WJetsLNu400.root","WJetsLNu600.root"]
+        WJetsSamples = [lumiScaledDir+f for f in WJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(WJetsSamples,"{0}/WJets{1}.root".format(lumiScaledDir,year[-2:]),"WJets.+\d+_","WJets_")
+
+        TTVSamples = ["TTW.root","TTZ.root"]
+        TTVSamples = [lumiScaledDir+f for f in TTVSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(TTVSamples,"{0}/TTV{1}.root".format(lumiScaledDir,year[-2:]),"TT._","TTV_")
+
+
+        SingleMuonSamples = [nonScaledDir+f for f in os.listdir(nonScaledDir) if (os.path.isfile(os.path.join(nonScaledDir, f)) and "SingleMuon" in f)]#We are not lumi scaling data!
+        mergeSamples(SingleMuonSamples,"{0}/SingleMuon{1}.root".format(lumiScaledDir,year[-2:]),"SingleMuon201[0-9][A-Z]_","data_obs_")
     
-    runIIDir="{0}/FullRunII/".format(muonDir)
-    os.system("hadd -f {0}/ttbarRunII.root {1}/2016/scaled/ttbar16.root {1}/2017/scaled/ttbar17.root {1}/2018/scaled/ttbar18.root".format(runIIDir,muonDir))
-    os.system("hadd -f {0}/STRunII.root {1}/2016/scaled/ST16.root {1}/2017/scaled/ST17.root {1}/2018/scaled/ST18.root".format(runIIDir,muonDir))
-    os.system("hadd -f {0}/WJetsRunII.root {1}/2016/scaled/WJets16.root {1}/2017/scaled/WJets17.root {1}/2018/scaled/WJets18.root".format(runIIDir,muonDir))
-    os.system("hadd -f {0}/SingleMuonRunII.root {1}/2016/scaled/SingleMuon16.root {1}/2017/scaled/SingleMuon17.root {1}/2018/scaled/SingleMuon18.root".format(runIIDir,muonDir))
+    # runIIDir="{0}/FullRunII/".format(muonDir)
+    # os.system("hadd -f {0}/TTbarRunII.root {1}/2016/scaled/TTbar16.root {1}/2017/scaled/TTbar17.root {1}/2018/scaled/TTbar18.root".format(runIIDir,muonDir))
+    # os.system("hadd -f {0}/STRunII.root {1}/2016/scaled/ST16.root {1}/2017/scaled/ST17.root {1}/2018/scaled/ST18.root".format(runIIDir,muonDir))
+    # os.system("hadd -f {0}/WJetsRunII.root {1}/2016/scaled/WJets16.root {1}/2017/scaled/WJets17.root {1}/2018/scaled/WJets18.root".format(runIIDir,muonDir))
+    # os.system("hadd -f {0}/SingleMuonRunII.root {1}/2016/scaled/SingleMuon16.root {1}/2017/scaled/SingleMuon17.root {1}/2018/scaled/SingleMuon18.root".format(runIIDir,muonDir))
 
 
 def scaleEvtSelTemplates():
@@ -145,7 +166,6 @@ def scaleEvtSelTemplates():
     srProcesses17=srProcesses17+signalPoints
     srProcesses18=srProcesses18+signalPoints
 
-    srProcesses16=signalPoints
     for year in ['2016','2017','2018']:
         print(year)
         nonScaledDir = "results/templates/WP_0.8_0.95/{0}/nonScaled/".format(year)
@@ -160,7 +180,10 @@ def scaleEvtSelTemplates():
             nonScaledFile = "{0}/{1}.root".format(nonScaledDir,proc)
             if(os.path.isfile(nonScaledFile)):
                 try:
-                    normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
+                    if("TTbar" in proc):
+                        normalizeProcessGenW(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
+                    else:                        
+                        normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
                 except:
                     print("Couldn't normalize {0}".format(proc))
             else:
@@ -187,7 +210,7 @@ def scaleEvtSelTemplates():
         mergeSamples(VHSamples,"{0}/VH{1}.root".format(lumiScaledDir,year[-2:]),"[a-zA-Z]+H_","VH_")
 
         JetHTSamples = [nonScaledDir+f for f in os.listdir(nonScaledDir) if (os.path.isfile(os.path.join(nonScaledDir, f)) and "JetHT" in f)]#We are not lumi scaling data!
-        mergeSamples(JetHTSamples,"{0}/JetHT{1}.root".format(lumiScaledDir,year[-2:]),"JetHT201[0-9][A-Z]_","JetHT_")
+        mergeSamples(JetHTSamples,"{0}/JetHT{1}.root".format(lumiScaledDir,year[-2:]),"JetHT201[0-9][A-Z]_","data_obs_")
 
         pseudoSamples = ["{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:])]
         mergeSamples(pseudoSamples,"{0}/pseudo{1}.root".format(lumiScaledDir,year[-2:]),"QCD|TTbar","data_obs")
