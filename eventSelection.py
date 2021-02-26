@@ -180,8 +180,8 @@ elif(varName=="jmrDown"):
 else:
     msdSmear = 1
 
-smearString1 = "scaledMSD[0],{0}[0],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[0],{1}".format(ptVar,msdSmear)
-smearString2 = "scaledMSD[1],{0}[1],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[1],{1}".format(ptVar,msdSmear)
+smearString1 = "scaledMSD[0],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[0],{0}".format(msdSmear)
+smearString2 = "scaledMSD[1],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[1],{0}".format(msdSmear)
 a.Define("scaledMSD",'RVec<float> {jmsShifter.shiftMsd(FatJet_msoftdrop[0],"%s",%i),jmsShifter.shiftMsd(FatJet_msoftdrop[1],"%s",%i)}' %(options.year, msdShift, options.year,msdShift))
 a.Define("correctedMSD",'RVec<float> {jmrSmearer.smearMsd(%s),jmrSmearer.smearMsd(%s)}'%(smearString1,smearString2))
 
@@ -413,7 +413,7 @@ outputFile = options.output.replace(".root","_{0}.root".format(varName))
 
 snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta"]
 if not isData:
-    snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta","nFatJet","FatJet_hadronFlavour","ptjH","ptjY"]
+    snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta","nFatJet","FatJet_hadronFlavour","ptjH","ptjY","genWeight"]
 
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
