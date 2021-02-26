@@ -8,6 +8,10 @@ from collections import OrderedDict
 from TIMBER.Tools.Common import *
 from TIMBER.Analyzer import *
 
+
+TIMBERPATH = os.environ["TIMBERPATH"]
+
+
 def getNProc(inputFile):
     nProc        = 0
     if ".root" in inputFile:
@@ -88,11 +92,14 @@ if not isData:
 
 if("je" in variation):#jes,jer
     ptVar  = "Jet_pt_{0}".format(variation.replace("jes","jesTotal"))
+    METVar = "MET_T1_pt_{0}".format(variation.replace("jes","jesTotal"))
 else:
     ptVar  = "Jet_pt_nom"
+    METVar = "MET_T1_pt"
 
 if(isData):
-    ptVar = "Jet_pt"
+    ptVar  = "Jet_pt"
+    METVar = "MET_pt"
 
 histos      = []
 
@@ -107,12 +114,15 @@ if(options.year=="2018"):
 
 histos=[]
 if(options.channel=="mu"):
-    if(options.year=="2017"):
+    if(options.year=="2016"):
+        triggerList = ["HLT_IsoMu24","HLT_IsoTkMu24"]
+    elif(options.year=="2017"):
         triggerList = ["HLT_IsoMu27"]
     else:
         triggerList = ["HLT_IsoMu24"]
     lGeneration = 2
     a.Cut("leptonSkimCut","SkimFlag>7")
+
 elif(options.channel=="e"):
     triggerList = ["HLT_Ele27_WPTight_Gsf","HLT_Ele35_WPTight_Gsf","HLT_Ele32_WPTight_Gsf","HLT_Photon200","HLT_Photon175"]
     lGeneration = 1
@@ -121,17 +131,21 @@ else:
     print("Define lepton channel '-c mu' or '-c e'!")
     sys.exit()
 
+if not isData:
+    nSkimmed = a.DataFrame.Sum("genWeight").GetValue()
+else:
+    nSkimmed = a.DataFrame.Count().GetValue()
 
-nSkimmed = a.DataFrame.Count().GetValue()
 
-#Event selection
 
 if(isData):
     triggerString = a.GetTriggerString(triggerList)
-    #a.Cut("Triggers",triggerString)  
-    print("Skipping triggers, since skims don't have them!")
-nTrigger = a.DataFrame.Count().GetValue() 
+    a.Cut("Triggers",triggerString)  
 
+if not isData:    
+    nTrigger = a.DataFrame.Sum("genWeight").GetValue() 
+else:
+    nTrigger = a.DataFrame.Count().GetValue()
 
 if(variation == "sfDown"):
     sfVar = 1
@@ -145,58 +159,87 @@ if(isData):
 else:
     a.Define("btagDisc",'ak4SF.evalCollection(nJet,{0}, Jet_eta, Jet_hadronFlavour,Jet_btagDeepB,{1})'.format(ptVar,sfVar)) 
 
-
-
 a.Define("lIdx","tightLeptonIdx(nElectron,Electron_cutBased,nMuon,Muon_tightId,Muon_pfIsoId,{0})".format(lGeneration))
 a.Cut("lIdxCut","lIdx>-1")#There is a tight lepton
-nTightLepton = a.DataFrame.Count().GetValue()
+
+if not isData:    
+    nTightLepton = a.DataFrame.Sum("genWeight").GetValue() 
+else:
+    nTightLepton = a.DataFrame.Count().GetValue()
 
 a.Define("lPt","leptonPt(Electron_pt,Muon_pt,lIdx,{0})".format(lGeneration))
 a.Define("lPhi","leptonPhi(Electron_phi,Muon_phi,lIdx,{0})".format(lGeneration))
 a.Define("lEta","leptonEta(Electron_eta,Muon_eta,lIdx,{0})".format(lGeneration))
 a.Cut("lPtCut","lPt>40")
-nlPt = a.DataFrame.Count().GetValue()
-a.Cut("lEtaCut","abs(lEta)<2.4")
-nlEta = a.DataFrame.Count().GetValue()
-a.Define("goodJetIdxs","goodAK4JetIdxs(nJet, {0}, Jet_eta, Jet_phi, Jet_jetId, lPhi, lEta)".format(ptVar))
-a.Cut("goodJetIdxsCut","goodJetIdxs.size()>0")
-nGoodJets = a.DataFrame.Count().GetValue()
-a.Define("leadingJetPt","{0}[goodJetIdxs[0]]".format(ptVar))
-a.Define("leadingJetIdx","goodJetIdxs[0]")
-a.Define("dRmin","deltaRClosestJet(goodJetIdxs,Jet_eta,Jet_phi,lEta,lPhi)")
 
-a.Cut("leadingJetPtCut","leadingJetPt>200")
-nJetPt = a.DataFrame.Count().GetValue()
-a.Cut("leadingJetBTagCut","btagDisc[goodJetIdxs[0]]>{0}".format(deepJetM))
-nJetBTag = a.DataFrame.Count().GetValue()
-a.Define("nbAk4","nbAK4(btagDisc, goodJetIdxs, {0})".format(deepJetM))
-a.Cut("nbAk4Cut","nbAk4>1")
-n2Ak4bJets = a.DataFrame.Count().GetValue()
+if not isData:    
+    nlPt = a.DataFrame.Sum("genWeight").GetValue() 
+else:
+    nlPt = a.DataFrame.Count().GetValue()
+
+a.Cut("lEtaCut","abs(lEta)<2.4")
+a.Cut("METcut","{0}>60".format(METVar))
+
+if not isData:    
+    nMET = a.DataFrame.Sum("genWeight").GetValue() 
+else:
+    nMET = a.DataFrame.Count().GetValue()
+
+
+a.Define("goodJetIdxs","goodAK4JetIdxs(nJet, {0}, Jet_eta, Jet_phi, Jet_jetId, lPhi, lEta)".format(ptVar))#pt>30,|eta|<2.4, dR(lepton,jet)>0.4
+a.Cut("goodJetIdxsCut","goodJetIdxs.size()>0")
+
+a.Define("leptonSideAK4Idx","leptonSideJetIdx(goodJetIdxs,Jet_eta,Jet_phi,btagDisc,{0},{1},lEta,lPhi)".format(deepJetM,ptVar))
+a.Cut("leptonSideAK4Cut","leptonSideAK4Idx>-1")
+a.Define("bJetPt","{0}[leptonSideAK4Idx]".format(ptVar))
+
+if not isData:    
+    nBJetLeptonSide = a.DataFrame.Sum("genWeight").GetValue() 
+else:
+    nBJetLeptonSide = a.DataFrame.Count().GetValue()
+
+
 a.Define("HT","HTgoodJets({0}, goodJetIdxs)".format(ptVar))
 a.Cut("HTCut","HT>500")
-nHT = a.DataFrame.Count().GetValue()
-a.Cut("METcut","MET_pt>60")
-nMET = a.DataFrame.Count().GetValue()
-a.Define("ST","leadingJetPt+MET_pt+lPt")
-a.Cut("STcut","ST>500")
-nST = a.DataFrame.Count().GetValue()
-a.Cut("dRcut","dRmin<1.5")
-nDR = a.DataFrame.Count().GetValue()
+
+if not isData:    
+    nHT = a.DataFrame.Sum("genWeight").GetValue() 
+else:
+    nHT = a.DataFrame.Count().GetValue()
+
+
 a.Define("probeJetIdx","probeAK8JetIdx(nFatJet,Fat{0},FatJet_msoftdrop,FatJet_phi,FatJet_eta,FatJet_jetId,lPhi,lEta)".format(ptVar))
 a.Cut("probeJetIdxCut","probeJetIdx>-1")
-nProbeJet = a.DataFrame.Count().GetValue()
+if not isData:    
+    a.Define("probeJetPt",'FatJet_pt[probeJetIdx]')
+    nProbeJet = a.DataFrame.Sum("genWeight").GetValue() 
+else:
+    a.Define("probeJetPt","Fat{0}[probeJetIdx]".format(ptVar))
+    nProbeJet = a.DataFrame.Count().GetValue()
 
+
+a.Define("ST","bJetPt+{0}+lPt+probeJetPt".format(METVar))
+a.Cut("STcut","ST>500")
+
+if not isData:    
+    nST = a.DataFrame.Sum("genWeight").GetValue() 
+else:
+    nST = a.DataFrame.Count().GetValue()
+
+
+#Define branches to store in output
 if(isData):
     a.Define("probeJetMass_nom",'FatJet_msoftdrop[probeJetIdx]')
+    a.Define("probeJetPNet","FatJet_ParticleNetMD_probXbb[probeJetIdx]")
 else:
     a.Define("scaledProbeJetNom",'jmsShifter.shiftMsd(FatJet_msoftdrop[probeJetIdx],"{0}",0)'.format(options.year))
     a.Define("scaledProbeJetUp",'jmsShifter.shiftMsd(FatJet_msoftdrop[probeJetIdx],"{0}",2)'.format(options.year))
     a.Define("scaledProbeJetDown",'jmsShifter.shiftMsd(FatJet_msoftdrop[probeJetIdx],"{0}",1)'.format(options.year))
-    smearStringNom = "scaledProbeJetNom,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],1"
-    smearStringJMSUp = "scaledProbeJetUp,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],1"
-    smearStringJMSDown = "scaledProbeJetDown,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],1"
-    smearStringJMRUp = "scaledProbeJetNom,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],2"
-    smearStringJMRDown = "scaledProbeJetNom,0.,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],0"
+    smearStringNom = "scaledProbeJetNom,1.0,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],1"
+    smearStringJMSUp = "scaledProbeJetUp,1.0,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],1"
+    smearStringJMSDown = "scaledProbeJetDown,1.0,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],1"
+    smearStringJMRUp = "scaledProbeJetNom,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],2"
+    smearStringJMRDown = "scaledProbeJetNom,1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[probeJetIdx],0"
 
     a.Define("probeJetMass_nom",'jmrSmearer.smearMsd({0})'.format((smearStringNom)))
     a.Define("probeJetMass_jmsUp",'jmrSmearer.smearMsd({0})'.format((smearStringJMSUp)))
@@ -204,14 +247,13 @@ else:
     a.Define("probeJetMass_jmrDown",'jmrSmearer.smearMsd({0})'.format((smearStringJMRDown)))
     a.Define("probeJetMass_jmrUp",'jmrSmearer.smearMsd({0})'.format((smearStringJMRUp)))
 
-    a.Define("probeJetPt","Fat{0}[probeJetIdx]".format(ptVar))
     a.Define("probeJetPNet","FatJet_ParticleNetMD_probXbb[probeJetIdx]")
     a.Define("partonCategory","classifyProbeJet(probeJetIdx, FatJet_phi, FatJet_eta, nGenPart, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
 
 
 if(options.variation=="nom"):
-    cutFlowVars = [nProc,nSkimmed,nTrigger,nTightLepton,nlPt,nJetPt,nJetBTag,n2Ak4bJets,nHT,nMET,nST,nDR,nProbeJet]
-    cutFlowLabels = ["nProc","Skimmed","Trigger","Tight lepton","Lepton pT > 40 GeV","Leading Ak4 pT > 200 GeV","Leading jet b-tag","Two medium b jets","HT>500","MET>60","ST>500","dR(l, closest jet)<1.5","ProbeJet found"]
+    cutFlowVars = [nProc,nSkimmed,nTrigger,nTightLepton,nlPt,nMET,nBJetLeptonSide,nHT,nProbeJet,nST]
+    cutFlowLabels = ["nProc","Skimmed","Trigger","Tight lepton","Lepton pT > 40 GeV","MET>60","Lepton-side b-tagged AK4","HT>500","ProbeJet found","ST>500"]
     nCutFlowVars = len(cutFlowVars)
     hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowVars,0.5,nCutFlowVars+0.5)
     for i,var in enumerate(cutFlowVars):
@@ -224,7 +266,7 @@ outputFile = options.output.replace(".root","_{0}.root".format(variation))
 if(isData):
     snapshotColumns = ["lPt","lEta","MET_pt","HT","ST","probeJetMass_nom","probeJetPt","probeJetPNet"]
 else:
-    snapshotColumns = ["lPt","lEta","MET_pt","HT","ST","probeJetMass_nom","probeJetMass_jmsDown","probeJetMass_jmsUp","probeJetMass_jmrDown","probeJetMass_jmrUp","probeJetPt","probeJetPNet","partonCategory"]
+    snapshotColumns = ["lPt","lEta","MET_pt","HT","ST","probeJetMass_nom","probeJetMass_jmsDown","probeJetMass_jmsUp","probeJetMass_jmrDown","probeJetMass_jmrUp","probeJetPt","probeJetPNet","partonCategory","genWeight"]
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
 a.GetActiveNode().DataFrame.Snapshot("Events",outputFile,snapshotColumns,opts)
