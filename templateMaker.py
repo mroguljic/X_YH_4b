@@ -29,7 +29,7 @@ parser.add_option('-p', '--process', metavar='PROCESS', type='string', action='s
 parser.add_option('-v','--var', metavar='variation', type='string', action='store',
                 default   =   "nom",
                 dest      =   'variation',
-                help      =   'jmrUp/Down, jmsUp/Down, jesUp/Down, jerUp/Down')
+                help      =   'jer, jes, jmr, jms, trigger, pnet (Up/Down)')
 parser.add_option('-m', metavar='mode', type='string', action='store',
                 default   =   "RECREATE",
                 dest      =   'mode',
@@ -69,13 +69,20 @@ else:
 if not isData:
     triggerCorr = Correction('triggerCorrection',"TIMBER/Framework/src/EffLoader.cc",constructor=['"TIMBER/TIMBER/data/TriggerEffs/TriggerEffs.root"','"triggEff_{0}"'.format(year)],corrtype='weight')
     a.AddCorrection(triggerCorr, evalArgs={'xval':'MJJ','yval':0,'zval':0})
+
+if("TTbar" in options.process):
+    genWeight   = Correction('genWeightCorr',"TIMBER/Framework/src/generatorWeight.cc",constructor=[],corrtype='corr')
+    a.AddCorrection(genWeight,evalArgs={'genWeight':'genWeight'})
+
+
 a.MakeWeightCols()
+
 weightString = "weight__nominal"
 if("trig" in variation):
     if(variation=="trigUp"):
-        weightString = "triggerCorrection__up"
+        weightString = "weight__triggerCorrection__up"
     if(variation=="trigDown"):
-        weightString = "triggerCorrection__down"
+        weightString = "weight__triggerCorrection__down"
 
 CompileCpp('TIMBER/Framework/src/btagSFHandler.cc')
 if(variation=="pnetUp"):
@@ -88,15 +95,11 @@ CompileCpp('btagSFHandler btagHandler = btagSFHandler({%f,%f},{0.73,0.53},%s,%i)
 a.Define("TaggerCatH","btagHandler.createTaggingCategories(pnetH)")
 a.Define("TaggerCatY","btagHandler.createTaggingCategories(pnetY)")
 if("MX" in options.process):
-    a.Define("ScaledPnetH","btagHandler.updateTaggingCategories(TaggerCatH,ptjH)")#replaced 450.0 with Pt!
-    a.Define("ScaledPnetY","btagHandler.updateTaggingCategories(TaggerCatY,ptjY)")#replaced 450.0 with Pt!
+    a.Define("ScaledPnetH","btagHandler.updateTaggingCategories(TaggerCatH,ptjH)")
+    a.Define("ScaledPnetY","btagHandler.updateTaggingCategories(TaggerCatY,ptjY)")
 else:
     a.Define("ScaledPnetH","TaggerCatH")
     a.Define("ScaledPnetY","TaggerCatY")
-# hTaggerH   = a.DataFrame.Histo1D(('beforeSF','',3,0,3),"TaggerCatH")
-# hUpdatedH  = a.DataFrame.Histo1D(('afterSF','',3,0,3),"ScaledPnetH")
-# histos.append(hTaggerH)
-# histos.append(hUpdatedH)
 
 a.Define("AL_T","ScaledPnetH==0 && ScaledPnetY==2")#validation region
 a.Define("AL_L","ScaledPnetH==0 && ScaledPnetY==1")
