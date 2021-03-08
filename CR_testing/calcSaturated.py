@@ -9,7 +9,8 @@ def calcSaturated(pred,obs):
 	for i in range(len(pred)):
 		f 	= pred[i]
 		d 	= obs[i]
-		val = f-d+d*np.log(d/f)
+		#val = f-d+d*np.log(d/f)
+		val = (d-f)*(d-f)/(2*f)
 		saturated+=val
 	return 2*saturated
 
