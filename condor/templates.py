@@ -1,20 +1,3 @@
-run_script_template='''#!/bin/bash
-
-cd /afs/cern.ch/user/d/devdatta/afswork/CMSREL/Analysis/X_YH_4b/CMSSW_11_1_5/
-eval `scramv1 runtime -sh`
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
-source timber-env/bin/activate
-
-export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
-
-export RUN_DIR=RUNDIR
-export OUT_DIR=OUTDIR
-cd ${RUN_DIR}
-
-echo "eventSelection.py -i ${RUN_DIR}/input/INPUT -o ${OUT_DIR}/output/output_NJOB.root --PROCTYPE -p SAMPLE -m YMASS -y YEAR"
-python $WORK_DIR/eventSelection.py -i ${RUN_DIR}/input/INPUT -o ${OUT_DIR}/output/output_NJOB.root --PROCTYPE -p SAMPLE -m YMASS -y YEAR
-'''
-
 condor_template = """universe              = vanilla
 executable            = EXEC
 arguments             = $(ClusterID) $(ProcId)
@@ -40,12 +23,12 @@ queue
 
 selection_template='''#!/bin/bash
 
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b/CMSSW_11_1_5/
+cd /afs/cern.ch/work/m/mrogulji/UL_X_YH/CMSSW_11_1_5/
 eval `scramv1 runtime -sh`
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+cd /afs/cern.ch/work/m/mrogulji/UL_X_YH/
 source timber-env/bin/activate
 
-export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
+export WORK_DIR=/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/
 cd JOB_DIR
 
 echo eventSelection.py $*
@@ -62,12 +45,12 @@ python $WORK_DIR/eventSelection.py $* --var jmrUp
 
 selection_template_data='''#!/bin/bash
 
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b/CMSSW_11_1_5/
+cd /afs/cern.ch/work/m/mrogulji/UL_X_YH/CMSSW_11_1_5/
 eval `scramv1 runtime -sh`
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+cd /afs/cern.ch/work/m/mrogulji/UL_X_YH/
 source timber-env/bin/activate
 
-export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
+export WORK_DIR=/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b//
 cd JOB_DIR
 
 echo eventSelection.py $*
@@ -116,12 +99,12 @@ queue
 
 semileptonic_template='''#!/bin/bash
 
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b/CMSSW_11_1_5/src
+cd /afs/cern.ch/work/m/mrogulji/UL_X_YH/CMSSW_11_1_5/src
 eval `scramv1 runtime -sh`
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+cd /afs/cern.ch/work/m/mrogulji/UL_X_YH/
 source timber-env/bin/activate
 
-export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
+export WORK_DIR=/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b//
 cd JOB_DIR
 
 echo semiLeptonicSelection.py $*
@@ -142,12 +125,12 @@ queue
 
 templates_template='''#!/bin/bash
 
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b/CMSSW_11_1_5/src
+cd /afs/cern.ch/work/m/mrogulji/UL_X_YH/CMSSW_11_1_5/src
 eval `scramv1 runtime -sh`
-cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+cd /afs/cern.ch/work/m/mrogulji/UL_X_YH/
 source timber-env/bin/activate
 
-export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
+export WORK_DIR=/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b//
 cd $WORK_DIR
 
 echo templateMaker.py $*

@@ -1,0 +1,29 @@
+{
+
+  "MX1600_MY125": {
+    "file": "results/templates_hadronic/2017/scaled/MX1600_MY125.root",
+    "color":"red",
+    "label": "$M_{X}$=1600 GeV, $M_{Y}$=125 GeV",
+    "order": 0
+  },
+  "TTbar": {
+    "file": "results/templates_hadronic/2017/scaled/TTbar17.root",
+    "color":"magenta",
+    "label": "ttbar",
+    "order": 6
+  },
+  "QCD": {
+    "file": "results/templates_hadronic/2017/scaled/QCD17.root",
+    "color":"gold",
+    "label": "Multijets",
+    "order": 7
+  },
+  "data_obs": {
+    "file": "results/templates_hadronic/2017/scaled/JetHT17.root",
+    "color":"k",
+    "label": "Data",
+    "order": 8
+  }
+}
+
+

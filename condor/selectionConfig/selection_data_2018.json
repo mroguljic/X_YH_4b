@@ -1,0 +1,18 @@
+{
+  "JetHT2018A": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2018/JetHT2018A"
+  },
+  "JetHT2018B": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2018/JetHT2018B"
+  },
+  "JetHT2018C": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2018/JetHT2018C"
+  },
+  "JetHT2018D": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2018/JetHT2018D"
+  }
+}

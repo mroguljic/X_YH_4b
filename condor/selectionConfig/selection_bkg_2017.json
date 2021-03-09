@@ -1,0 +1,42 @@
+{
+  "TTbar": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/TTbar"
+  },
+  "TTbar_pt_incl": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/TTbar"
+  },
+  "TTbarSemi": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/TTbarSemi"
+  },
+  "TTbarSemi_incl": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/TTbarSemi"
+  },
+  "TTbarMtt700": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/TTbarMtt700"
+  },
+  "TTbarMtt1000": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/TTbarMtt1000"
+  },
+  "QCD700": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/QCDHT700"
+  },
+  "QCD1000": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/QCDHT1000"
+  },
+  "QCD1500": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/QCDHT1500"
+  },
+  "QCD2000": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/QCDHT2000"
+  }
+}

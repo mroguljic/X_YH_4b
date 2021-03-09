@@ -986,27 +986,27 @@ if __name__ == '__main__':
         # plotVarStackMC(data,"pass_SR_mJY","{0}/kinematic/mJY_SR_pass.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e4],log=True,rebinX=2,luminosity=luminosity)
         # plotVarStackMC(data,"fail_VR_mJY","{0}/kinematic/mJY_VR_fail.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e8],log=True,rebinX=2,luminosity=luminosity)
         # plotVarStackMC(data,"pass_VR_mJY","{0}/kinematic/mJY_VR_pass.pdf".format(odir),xTitle="Y-jet $m_{SD}$ [GeV]",yTitle="Events/20 GeV",xRange=[30,330],yRange=[1,10e6],log=True,rebinX=2,luminosity=luminosity)
-        # cutFlowWithData(data,"{0}/cutflows/total_cutflow.pdf".format(odir),xTitle="",yTitle="Events",xRange=[0.5,10.5],yRange=[None,10e19],log=True,sigXSec=1.0,luminosity=luminosity)
+        cutFlowWithData(data,"{0}/cutflows/total_cutflow.pdf".format(odir),xTitle="",yTitle="Events",xRange=[0.5,10.5],yRange=[None,10e19],log=True,sigXSec=1.0,luminosity=luminosity)
         #Money plots
-        plotMJJ(data,"{0}_MJJ_TT_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
-        plotMJY(data,"{0}_MJY_TT_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
-        plotMJJ(data,"{0}_MJJ_LL_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
-        plotMJY(data,"{0}_MJY_LL_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
+        # plotMJJ(data,"{0}_MJJ_TT_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
+        # plotMJY(data,"{0}_MJY_TT_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
+        # plotMJJ(data,"{0}_MJJ_LL_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
+        # plotMJY(data,"{0}_MJY_LL_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
 
-        plotMJJ(data,"{0}_MJJ_TT_SR_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,firstxbin=1,lastxbin=4,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
-        plotMJY(data,"{0}_MJY_TT_SR_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,firstybin=6,lastybin=10,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
-        plotMJJ(data,"{0}_MJJ_LL_SR_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,firstxbin=1,lastxbin=4,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
-        plotMJY(data,"{0}_MJY_LL_SR_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,firstybin=6,lastybin=10,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
+        # plotMJJ(data,"{0}_MJJ_TT_SR_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,firstxbin=1,lastxbin=4,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
+        # plotMJY(data,"{0}_MJY_TT_SR_lin.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,firstybin=6,lastybin=10,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
+        # plotMJJ(data,"{0}_MJJ_LL_SR_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[1000,3000],luminosity=luminosity,log=False,firstxbin=1,lastxbin=4,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
+        # plotMJY(data,"{0}_MJY_LL_SR_lin.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[60,360],luminosity=luminosity,log=False,firstybin=6,lastybin=10,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
 
-        plotMJJ(data,"{0}_MJJ_TT_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
-        plotMJY(data,"{0}_MJY_TT_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
-        plotMJJ(data,"{0}_MJJ_LL_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
-        plotMJY(data,"{0}_MJY_LL_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
+        # plotMJJ(data,"{0}_MJJ_TT_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
+        # plotMJY(data,"{0}_MJY_TT_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
+        # plotMJJ(data,"{0}_MJJ_LL_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
+        # plotMJY(data,"{0}_MJY_LL_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
 
-        plotMJJ(data,"{0}_MJJ_TT_SR_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,firstxbin=1,lastxbin=4,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
-        plotMJY(data,"{0}_MJY_TT_SR_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,firstybin=6,lastybin=10,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
-        plotMJJ(data,"{0}_MJJ_LL_SR_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,firstxbin=1,lastxbin=4,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
-        plotMJY(data,"{0}_MJY_LL_SR_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,firstybin=6,lastybin=10,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
+        # plotMJJ(data,"{0}_MJJ_TT_SR_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,firstxbin=1,lastxbin=4,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
+        # plotMJY(data,"{0}_MJY_TT_SR_log.pdf".format(year),"TT",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,firstybin=6,lastybin=10,text="{0}, TT region, WPs = 0.8, 0.95".format(year))
+        # plotMJJ(data,"{0}_MJJ_LL_SR_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JJ}$ [GeV]",yTitle="Events/100 GeV",yRange=[0.01,10e6],xRange=[1000,3000],luminosity=luminosity,log=True,firstxbin=1,lastxbin=4,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
+        # plotMJY(data,"{0}_MJY_LL_SR_log.pdf".format(year),"LL",rebin=1,xTitle="$M_{JY}$ [GeV]",yTitle="Events/20 GeV",yRange=[0.01,10e6],xRange=[60,360],luminosity=luminosity,log=True,firstybin=6,lastybin=10,text="{0}, LL region, WPs = 0.8, 0.95".format(year))
 
         #Variations
         # variations = ["jes","jer","jmr","jms"]
@@ -1016,11 +1016,6 @@ if __name__ == '__main__':
         #         plotShapeUnc(sample_cfg["file"],sample,variation,"TT","results/variations/WP_0.8_0.9/2016/{0}_{1}_TT_MJJ.pdf".format(sample, variation),xTitle="MJJ[GeV]",yTitle="Events/100 GeV",yRange=[1.,1000],xRange=[],log=True,luminosity="35.9",projection="MJJ",text="WPs=[0.8,0.9] TT region")
         #         plotShapeUnc(sample_cfg["file"],sample,variation,"LL","results/variations/WP_0.8_0.9/2016/{0}_{1}_LL_MJY.pdf".format(sample, variation),xTitle="MJY[GeV]",yTitle="Events/20 GeV",yRange=[1.,1000],xRange=[],log=True,luminosity="35.9",projection="MJY",text="WPs=[0.8,0.9] LL region")
         #         plotShapeUnc(sample_cfg["file"],sample,variation,"LL","results/variations/WP_0.8_0.9/2016/{0}_{1}_LL_MJJ.pdf".format(sample, variation),xTitle="MJJ[GeV]",yTitle="Events/100 GeV",yRange=[1.,1000],xRange=[],log=True,luminosity="35.9",projection="MJJ",text="WPs=[0.8,0.9] LL region")
-
-        #ABCD
-        # plotProjectionDataMC(data,"MJJ_ABCD_TT_{0}.png".format(year),xTitle="MJJ[GeV]",yTitle="Events/100 GeV",yRange=[0,None],xRange=[],log=False,rebinX=1,projection="Y",luminosity=luminosity,text="|$\Delta\eta$|>1.5\nWP 0.8 0.9\nTT")
-        # plotProjectionDataMC(data,"MJY_ABCD_TT_{0}.png".format(year),xTitle="MJY[GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[],log=False,rebinX=1,projection="X",luminosity=luminosity,text="|$\Delta\eta$|>1.5\nWP 0.8 0.9\nTT")
-
 
 
 

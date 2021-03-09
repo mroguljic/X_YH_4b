@@ -18,6 +18,8 @@ for sample in samples:
     for argSet in args:
         argArr = argSet.split(" ")
         outputFile = argArr[3]
+        outputFile = outputFile.replace(".root","_nom.root")
+        print(outputFile)
         if(path.exists(outputFile)):
             try:
                 temp = r.TFile.Open(outputFile)

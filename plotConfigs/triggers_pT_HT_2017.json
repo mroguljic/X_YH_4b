@@ -1,6 +1,6 @@
 {
     "data_obs":{
-    "file": "results/histograms/2017/lumiScaled/data_obs_2017.root",
+    "file": "results/templates_hadronic/2017/scaled/JetHT17.root",
     "xsec": 1,
     "color":1,
     "label": "2017 data"

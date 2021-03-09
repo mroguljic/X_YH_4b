@@ -32,15 +32,13 @@ with open(options.json) as json_file:
             
 
         f = r.TFile.Open(sample_cfg["file"])
-        h = f.Get("{0}_cutflow_nom".format(sample))
+        h = f.Get("{0}_cutflow_nom".format(sample_cfg["prefix"]))
         # if(sample=="ttbar"):
         #     h = f.Get("TTbar_cutflow")
         nBin = h.GetNbinsX()
         totalBkgRow = []
         latexRow = sample+" &"
         for i in range(1,nBin+1):
-            if("dak8" in h.GetXaxis().GetBinLabel(i)):
-                continue
             if(labelFlag==False):
                 labels.append(h.GetXaxis().GetBinLabel(i))
             nCut = h.GetBinContent(i)
@@ -56,8 +54,6 @@ with open(options.json) as json_file:
         latexRow = latexRow[:-2]+"\\\\"
         print(latexRow)
         if(datasetType=="bkg"):
-            if(sample=="ttbar"):
-                continue#adding stitched ttbar to total bkg
             if len(totalBkg)==0:
                 totalBkg=totalBkgRow
             else:

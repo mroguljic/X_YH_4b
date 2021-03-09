@@ -13,12 +13,6 @@ def split_jobs(files, njobs):
 
 def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nFiles=1):
     for sample, sample_cfg in config.items():
-      if re.match('^MX', sample):
-        proctype = 'sig'
-      elif re.match('^Data', sample):
-        proctype = 'data'
-      else:
-        proctype = 'bkg'
       
       sampleJobs_dir = os.path.join(jobs_dir,sample)
       sampleOut_dir = os.path.join(out_dir, sample)
@@ -28,7 +22,10 @@ def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nF
       Path(sampleOut_dir).mkdir(parents=True, exist_ok=True)
 
       #Create condor file and sh file
-      exeScript = selection_template.replace("JOB_DIR",sampleJobs_dir)
+      if("JetHT" in sample):
+        exeScript = selection_template_data.replace("JOB_DIR",sampleJobs_dir)
+      else:
+        exeScript = selection_template.replace("JOB_DIR",sampleJobs_dir)
       open(os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), 'w').write(exeScript)
 
       condor_script = re.sub('EXEC',os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), selection_condor)
@@ -47,18 +44,10 @@ def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nF
       argsFile = open(os.path.join(sampleJobs_dir, 'input', 'args_{}.txt'.format(sample)), 'w')
       for n, l  in enumerate(list(job_list)):
         inputPath = os.path.join(sampleJobs_dir, 'input', 'input_{}.txt'.format(n))
-        outputPath = os.path.join(sampleOut_dir,'{0}_{1}_VAR.root'.format(sample,n))
+        outputPath = os.path.join(sampleOut_dir,'{0}_{1}.root'.format(sample,n))
         open(inputPath, 'w').writelines("{}\n".format(root_file) for root_file in l)
-        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var nom\n".format(inputPath,outputPath.replace("VAR","nom"),proctype,sample,year))
-        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jesDown\n".format(inputPath,outputPath.replace("VAR","jesDown"),proctype,sample,year))
-        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jesUp\n".format(inputPath,outputPath.replace("VAR","jesUp"),proctype,sample,year))
-        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jerDown\n".format(inputPath,outputPath.replace("VAR","jerDown"),proctype,sample,year))
-        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jerUp\n".format(inputPath,outputPath.replace("VAR","jerUp"),proctype,sample,year))
-        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jmsDown\n".format(inputPath,outputPath.replace("VAR","jmsDown"),proctype,sample,year))
-        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jmsUp\n".format(inputPath,outputPath.replace("VAR","jmsUp"),proctype,sample,year))
-        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jmrDown\n".format(inputPath,outputPath.replace("VAR","jmrDown"),proctype,sample,year))
-        argsFile.write("-i {0} -o {1} --{2} -p {3} -y {4} --var jmrUp\n".format(inputPath,outputPath.replace("VAR","jmrUp"),proctype,sample,year))
-      #Submit
+        argsFile.write("-i {0} -o {1} -p {2} -y {3}\n".format(inputPath,outputPath,sample,year))
+   #Submit
       print("condor_submit {0}".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}.condor'.format(sample))))
       if dry==False:
         job_output = subprocess.call(["condor_submit", "{0}".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}.condor'.format(sample)))],shell=True)

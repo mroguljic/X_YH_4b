@@ -9,18 +9,17 @@ def normalizeProcess(process,year,inFile,outFile):
     h_dict = {}
     f = r.TFile.Open(inFile)
     print(process,inFile)
-    json_file = open("skimInfo.json")
+    json_file = open("xsecs.json")
     config = json.load(json_file)
     if("MX" in process):
         xsec = 0.01
     else:
-        xsec = config[year][process]["xsec"]
-    luminosity = config[year]["lumi"]
-    nProc = f.Get("{0}_cutflow_nom".format(process)).GetBinContent(1)
-    print(nProc,xsec*luminosity)
-    nLumi    = xsec*luminosity
-    scaling  = nLumi/nProc
-    print("Scale: {0:.4f}".format(scaling))
+        xsec    = config[year][process]["xsec"]
+    luminosity  = config[year]["lumi"]
+    sumGenW     = f.Get("{0}_cutflow_nom".format(process)).GetBinContent(1)
+    nLumi       = xsec*luminosity
+    scaling     = nLumi/sumGenW
+    print("Scale: {0:.6f}".format(scaling))
     for key in f.GetListOfKeys():
         h = key.ReadObj()
         hName = h.GetName()
@@ -155,6 +154,8 @@ def scaleEvtSelTemplates():
             if((X>(Y+125.0))):
                 signalPoints.append("MX{0}_MY{1}".format(X,Y))
 
+    signalPoints = ["MX1600_MY125"]
+
     srProcesses16 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
     ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
     srProcesses17 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
@@ -162,14 +163,20 @@ def scaleEvtSelTemplates():
     srProcesses18 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
     ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
 
+    #Not all UL bkgs are available
+    srProcesses17 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbar_pt_incl","TTbarSemi","TTbarSemi_incl"]
+    srProcesses18 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbar_pt_incl","TTbarSemi","TTbarSemi_incl"]
+
+
     srProcesses16=srProcesses16+signalPoints
     srProcesses17=srProcesses17+signalPoints
     srProcesses18=srProcesses18+signalPoints
 
-    for year in ['2016','2017','2018']:
+    #for year in ['2016','2017','2018']:
+    for year in ['2017','2018']:
         print(year)
-        nonScaledDir = "results/templates/WP_0.8_0.95/{0}/nonScaled/".format(year)
-        lumiScaledDir = "results/templates/WP_0.8_0.95/{0}/scaled/".format(year)
+        nonScaledDir = "results/templates_hadronic/{0}/nonScaled/".format(year)
+        lumiScaledDir = "results/templates_hadronic/{0}/scaled/".format(year)
         if(year=='2016'):
             processes = srProcesses16
         elif(year=='2017'):
@@ -179,11 +186,8 @@ def scaleEvtSelTemplates():
         for proc in processes:
             nonScaledFile = "{0}/{1}.root".format(nonScaledDir,proc)
             if(os.path.isfile(nonScaledFile)):
-                try:
-                    if("TTbar" in proc):
-                        normalizeProcessGenW(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
-                    else:                        
-                        normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
+                try:                 
+                    normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
                 except:
                     print("Couldn't normalize {0}".format(proc))
             else:
@@ -193,40 +197,47 @@ def scaleEvtSelTemplates():
         QCDsamples = [lumiScaledDir+f for f in QCDsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
         mergeSamples(QCDsamples,"{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"QCD\d+_","QCD_")
 
-        ttSamples = ["TTbar.root","TTbarHT.root"]
+        ttSamples = ["TTbar.root","TTbarMtt700.root","TTbarMtt1000.root","TTbarSemi.root"]
         ttSamples = [lumiScaledDir+f for f in ttSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarHT|TTbar","TTbar")
+        mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarSemi|TTbarMtt700|TTbarMtt1000|TTbar","TTbar")
 
-        STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root"]
-        STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),".+top_","ST_")
+        ttinclSamples = ["TTbarSemi_incl.root","TTbar_pt_incl.root"]
+        ttinclSamples = [lumiScaledDir+f for f in ttinclSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(ttinclSamples,"{0}/TTbarIncl{1}.root".format(lumiScaledDir,year[-2:]),"TTbarSemi_incl|TTbar_pt_incl","TTbarIncl")
 
-        VJetsSamples = ["WJets400.root","WJets600.root","WJets800.root","ZJets400.root","ZJets600.root","ZJets800.root"]
-        VJetsSamples = [lumiScaledDir+f for f in VJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(VJetsSamples,"{0}/VJets{1}.root".format(lumiScaledDir,year[-2:]),"[A-Z]Jets\d+_","VJets_")
 
-        VHSamples = ["WminusH.root","WplusH.root","ZH.root"]
-        VHSamples = [lumiScaledDir+f for f in VHSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(VHSamples,"{0}/VH{1}.root".format(lumiScaledDir,year[-2:]),"[a-zA-Z]+H_","VH_")
-
-        JetHTSamples = [nonScaledDir+f for f in os.listdir(nonScaledDir) if (os.path.isfile(os.path.join(nonScaledDir, f)) and "JetHT" in f)]#We are not lumi scaling data!
+        JetHTSamples = [nonScaledDir+f for f in os.listdir(nonScaledDir) if (os.path.isfile(os.path.join(nonScaledDir, f)) and "JetHT" in f)]
         mergeSamples(JetHTSamples,"{0}/JetHT{1}.root".format(lumiScaledDir,year[-2:]),"JetHT201[0-9][A-Z]_","data_obs_")
 
-        pseudoSamples = ["{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:])]
-        mergeSamples(pseudoSamples,"{0}/pseudo{1}.root".format(lumiScaledDir,year[-2:]),"QCD|TTbar","data_obs")
 
-    templatesDir = "results/templates/WP_0.8_0.95/"
-    runIIDir="{0}/FullRunII/".format(templatesDir)
-    os.system("hadd -f {0}/ttbarRunII.root {1}/2016/scaled/TTbar16.root {1}/2017/scaled/TTbar17.root {1}/2018/scaled/TTbar18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/QCDRunII.root {1}/2016/scaled/QCD16.root {1}/2017/scaled/QCD17.root {1}/2018/scaled/QCD18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/VJetsRunII.root {1}/2016/scaled/VJets16.root {1}/2017/scaled/VJets17.root {1}/2018/scaled/VJets18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/STRunII.root {1}/2016/scaled/ST16.root {1}/2017/scaled/ST17.root {1}/2018/scaled/ST18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/JetHTRunII.root {1}/2016/scaled/JetHT16.root {1}/2017/scaled/JetHT17.root {1}/2018/scaled/JetHT18.root".format(runIIDir,templatesDir))
-    os.system("hadd -f {0}/pseudoRunII.root {1}/2016/scaled/pseudo16.root {1}/2017/scaled/pseudo17.root {1}/2018/scaled/pseudo18.root".format(runIIDir,templatesDir))
+        # STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root"]
+        # STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        # mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),".+top_","ST_")
+
+        # VJetsSamples = ["WJets400.root","WJets600.root","WJets800.root","ZJets400.root","ZJets600.root","ZJets800.root"]
+        # VJetsSamples = [lumiScaledDir+f for f in VJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        # mergeSamples(VJetsSamples,"{0}/VJets{1}.root".format(lumiScaledDir,year[-2:]),"[A-Z]Jets\d+_","VJets_")
+
+        # VHSamples = ["WminusH.root","WplusH.root","ZH.root"]
+        # VHSamples = [lumiScaledDir+f for f in VHSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        # mergeSamples(VHSamples,"{0}/VH{1}.root".format(lumiScaledDir,year[-2:]),"[a-zA-Z]+H_","VH_")
+
+
+    #     pseudoSamples = ["{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:])]
+    #     mergeSamples(pseudoSamples,"{0}/pseudo{1}.root".format(lumiScaledDir,year[-2:]),"QCD|TTbar","data_obs")
+
+    # templatesDir = "results/templates/WP_0.8_0.95/"
+    # runIIDir="{0}/FullRunII/".format(templatesDir)
+    # os.system("hadd -f {0}/ttbarRunII.root {1}/2016/scaled/TTbar16.root {1}/2017/scaled/TTbar17.root {1}/2018/scaled/TTbar18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/QCDRunII.root {1}/2016/scaled/QCD16.root {1}/2017/scaled/QCD17.root {1}/2018/scaled/QCD18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/VJetsRunII.root {1}/2016/scaled/VJets16.root {1}/2017/scaled/VJets17.root {1}/2018/scaled/VJets18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/STRunII.root {1}/2016/scaled/ST16.root {1}/2017/scaled/ST17.root {1}/2018/scaled/ST18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/JetHTRunII.root {1}/2016/scaled/JetHT16.root {1}/2017/scaled/JetHT17.root {1}/2018/scaled/JetHT18.root".format(runIIDir,templatesDir))
+    # os.system("hadd -f {0}/pseudoRunII.root {1}/2016/scaled/pseudo16.root {1}/2017/scaled/pseudo17.root {1}/2018/scaled/pseudo18.root".format(runIIDir,templatesDir))
 
 
 
 if __name__ == '__main__':
 
-    scaleMuonTemplates()
-    #scaleEvtSelTemplates()
+    #scaleMuonTemplates()
+    scaleEvtSelTemplates()

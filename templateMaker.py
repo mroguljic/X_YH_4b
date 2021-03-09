@@ -8,6 +8,14 @@ from collections import OrderedDict
 from TIMBER.Tools.Common import *
 from TIMBER.Analyzer import *
 
+def getNweighted(analyzer,isData):
+    if not isData:
+        nWeighted = a.DataFrame.Sum("genWeight").GetValue()
+    else:
+        nWeighted = a.DataFrame.Count().GetValue()
+    return nWeighted
+
+
 parser = OptionParser()
 
 parser.add_option('-i', '--input', metavar='IFILE', type='string', action='store',
@@ -67,12 +75,11 @@ else:
     isData=False
 
 if not isData:
-    triggerCorr = Correction('triggerCorrection',"TIMBER/Framework/src/EffLoader.cc",constructor=['"TIMBER/TIMBER/data/TriggerEffs/TriggerEffs.root"','"triggEff_{0}"'.format(year)],corrtype='weight')
+    triggerCorr = Correction('triggerCorrection',"TIMBER/Framework/src/EffLoader.cc",constructor=['"../TIMBER/TIMBER/data/TriggerEffs/TriggerEffs.root"','"triggEff_{0}"'.format(year)],corrtype='weight')
     a.AddCorrection(triggerCorr, evalArgs={'xval':'MJJ','yval':0,'zval':0})
 
-if("TTbar" in options.process):
-    genWeight   = Correction('genWeightCorr',"TIMBER/Framework/src/generatorWeight.cc",constructor=[],corrtype='corr')
-    a.AddCorrection(genWeight,evalArgs={'genWeight':'genWeight'})
+if isData:
+    a.Define("genWeight","1")
 
 
 a.MakeWeightCols()
@@ -80,9 +87,12 @@ a.MakeWeightCols()
 weightString = "weight__nominal"
 if("trig" in variation):
     if(variation=="trigUp"):
-        weightString = "weight__triggerCorrection__up"
+        weightString = "weight__triggerCorrection_up"
     if(variation=="trigDown"):
-        weightString = "weight__triggerCorrection__down"
+        weightString = "weight__triggerCorrection_down"
+
+a.Define("evtWeight","genWeight*{0}".format(weightString))
+
 
 CompileCpp('TIMBER/Framework/src/btagSFHandler.cc')
 if(variation=="pnetUp"):
@@ -111,47 +121,51 @@ a.Define("T_AL","ScaledPnetH==2 && ScaledPnetY==0")
 
 #Delta Eta cut
 a.Cut("DeltaEtaSR","DeltaEta<1.3")
-nDeltaEta        = a.GetActiveNode().DataFrame.Count().GetValue()
+nDeltaEta  = getNweighted(a,isData)
+if("TTbar" in options.process):
+    hMTT  = a.DataFrame.Histo1D(('{0}_MTT'.format(options.process),';M_{TT} [GeV];;',30,0,3000.),"MTT","evtWeight")
+    histos.append(hMTT)
+
 a.Cut("MJY_SR","MJY>60")
 
-checkpoint       = a.GetActiveNode()
+checkpoint = a.GetActiveNode()
 a.Cut("AL_TCut","AL_T==1")
-h2DAL_T  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_T'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ",weightString)
+h2DAL_T  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_T'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
 histos.append(h2DAL_T)
-nAL_T = a.GetActiveNode().DataFrame.Count().GetValue()
+nAL_T = getNweighted(a,isData)
 
 a.SetActiveNode(checkpoint)
 a.Cut("AL_LCut","AL_L==1")
-h2DAL_L  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_L'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ",weightString)
+h2DAL_L  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_L'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
 histos.append(h2DAL_L)
 
 a.SetActiveNode(checkpoint)
 a.Cut("AL_ALCut","AL_AL==1")
-h2DAL_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ",weightString)
+h2DAL_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
 histos.append(h2DAL_AL)
-nAL_AL = a.GetActiveNode().DataFrame.Count().GetValue()
+nAL_AL = getNweighted(a,isData)
 
 a.SetActiveNode(checkpoint)
 a.Cut("TTcut","TT==1")
-h2DTT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_TT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ",weightString)
+h2DTT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_TT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
 histos.append(h2DTT)
-nTT = a.GetActiveNode().DataFrame.Count().GetValue()
+nTT = getNweighted(a,isData)
 
 a.SetActiveNode(checkpoint)
 a.Cut("LLcut","LL==1")
-h2DLL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_LL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ",weightString)
+h2DLL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_LL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
 histos.append(h2DLL)
-nLL = a.GetActiveNode().DataFrame.Count().GetValue()
+nLL = getNweighted(a,isData)
 
 a.SetActiveNode(checkpoint)
 a.Cut("L_ALcut","L_AL==1")
-h2DL_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_L_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ",weightString)
+h2DL_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_L_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
 histos.append(h2DL_AL)
-nL_AL = a.GetActiveNode().DataFrame.Count().GetValue()
+nL_AL = getNweighted(a,isData)
 
 a.SetActiveNode(checkpoint)
 a.Cut("T_ALcut","T_AL==1")
-h2DT_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_T_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ",weightString)
+h2DT_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_T_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
 histos.append(h2DT_AL)
 
 
@@ -169,18 +183,14 @@ if(options.variation=="nom"):
             continue
         h.SetDirectory(0)
         if("cutflow" in hName.lower()):
-            h.SetBinContent(h.GetNbinsX(),nAL_AL)
-            h.SetBinContent(h.GetNbinsX()-1,nAL_T)
-            h.SetBinContent(h.GetNbinsX()-2,nL_AL)
-            h.SetBinContent(h.GetNbinsX()-3,nLL)
-            h.SetBinContent(h.GetNbinsX()-4,nTT)
-            h.SetBinContent(h.GetNbinsX()-5,nDeltaEta)
-            h.GetXaxis().SetBinLabel(h.GetNbinsX(),"AL_AL")
-            h.GetXaxis().SetBinLabel(h.GetNbinsX()-1,"AL_L")
-            h.GetXaxis().SetBinLabel(h.GetNbinsX()-2,"L_AL")
-            h.GetXaxis().SetBinLabel(h.GetNbinsX()-3,"LL")
-            h.GetXaxis().SetBinLabel(h.GetNbinsX()-4,"TT")
-            h.GetXaxis().SetBinLabel(h.GetNbinsX()-5,"DeltaEta < 1.3")
+            h.SetBinContent(h.GetNbinsX(),nL_AL)
+            h.SetBinContent(h.GetNbinsX()-1,nLL)
+            h.SetBinContent(h.GetNbinsX()-2,nTT)
+            h.SetBinContent(h.GetNbinsX()-3,nDeltaEta)
+            h.GetXaxis().SetBinLabel(h.GetNbinsX(),"L_AL")
+            h.GetXaxis().SetBinLabel(h.GetNbinsX()-1,"LL")
+            h.GetXaxis().SetBinLabel(h.GetNbinsX()-2,"TT")
+            h.GetXaxis().SetBinLabel(h.GetNbinsX()-3,"DeltaEta < 1.3")
         histos.append(h)
 
 out_f = ROOT.TFile(options.output,options.mode)
