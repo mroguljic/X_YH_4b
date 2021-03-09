@@ -1,0 +1,5 @@
+-i /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/JetHT2017B/input/input_0.txt -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/JetHT2017B/JetHT2017B_0.root -p JetHT2017B -y 2017
+-i /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/JetHT2017B/input/input_1.txt -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/JetHT2017B/JetHT2017B_1.root -p JetHT2017B -y 2017
+-i /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/JetHT2017B/input/input_2.txt -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/JetHT2017B/JetHT2017B_2.root -p JetHT2017B -y 2017
+-i /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/JetHT2017B/input/input_3.txt -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/JetHT2017B/JetHT2017B_3.root -p JetHT2017B -y 2017
+-i /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/JetHT2017B/input/input_4.txt -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/JetHT2017B/JetHT2017B_4.root -p JetHT2017B -y 2017

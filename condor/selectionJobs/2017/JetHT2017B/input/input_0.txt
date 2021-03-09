@@ -1,0 +1,10 @@
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/004231B8-FF52-364B-84C7-374EF046443A_pp.root
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/00E6E207-01EC-6042-A3AB-9D6C3997A17C_pp.root
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/039C77DD-6B33-2F4A-B00B-9118CD44ABEF_pp.root
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/06B0FC3F-E5E3-E446-A2BE-7915797E8689_pp.root
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/0AD281E4-6D76-BD4A-B644-9455C7FD8FD1_pp.root
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/1C3A748A-E416-B148-8B82-E19397D7F067_pp.root
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/1EE21B90-E861-7249-8CC1-0DB418592779_pp.root
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/20159487-BE96-C041-A7A3-78D42B2596A9_pp.root
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/269CE0F9-895B-9840-8686-60105FF874A2_pp.root
+/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2017/JetHT2017B/39C7E11D-853E-6F4A-9FAE-7F34F3F6A0CE_pp.root
