@@ -41,7 +41,7 @@ parser.add_option('--var', metavar='variation', type='string', action='store',
 
 (options, args) = parser.parse_args()
 start_time = time.time()
-
+year = options.year
 
 CompileCpp('TIMBER/Framework/massMatching.cc') 
 CompileCpp("TIMBER/Framework/common.cc") 
@@ -67,6 +67,13 @@ else:
     sys.exit()
 
 a = analyzer(options.input)
+
+# nToRun = 10000
+# small_rdf = a.GetActiveNode().DataFrame.Range(nToRun) # makes an RDF with only the first nentries considered
+# small_node = Node('small',small_rdf) # makes a node out of the dataframe
+# a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
+
+
 runNumber = a.DataFrame.Range(1).AsNumpy(["run"])#just checking the first run number to see if data or MC
 if(runNumber["run"][0]>10000):
     isData=True
@@ -83,8 +90,8 @@ nProc = a.genEventSumw
 
 
 if("TTbar" in options.process):
-    a.Define("topIdx","getPartIdx(nGenPart,GenPart_pdgId,6)")
-    a.Define("antitopIdx","getPartIdx(nGenPart,GenPart_pdgId,-6)")
+    a.Define("topIdx","getPartIdx(nGenPart,GenPart_pdgId,GenPart_statusFlags,6)")
+    a.Define("antitopIdx","getPartIdx(nGenPart,GenPart_pdgId,GenPart_statusFlags,-6)")
     a.Cut("twoTops","topIdx>-1 && antitopIdx>-1") #perhaps unnecessary
     a.Define("topVector","analyzer::TLvector(GenPart_pt[topIdx],GenPart_eta[topIdx],GenPart_phi[topIdx],GenPart_mass[topIdx])")
     a.Define("antitopVector","analyzer::TLvector(GenPart_pt[antitopIdx],GenPart_eta[antitopIdx],GenPart_phi[antitopIdx],GenPart_mass[antitopIdx])")
@@ -98,16 +105,13 @@ if("TTbar" in options.process):
     hMTT  = a.DataFrame.Histo1D(('{0}_MTT_skim'.format(options.process),';M_{TT} [GeV];;',30,0,3000.),"MTT","genWeight")
     histos.append(hMTT)
 
-# small_rdf = a.GetActiveNode().DataFrame.Range(1000) # makes an RDF with only the first nentries considered
-# small_node = Node('small',small_rdf) # makes a node out of the dataframe
-# a.SetActiveNode(small_node) # tell analyzer about the node by setting it as the active node
-if(options.year=="2016"):
+if(year=="2016"):
     deepJetM = 0.3093
     deepJetL = 0.0614
-elif(options.year=="2017"):
+elif(year=="2017"):
     deepJetM = 0.3033
     deepJetL = 0.0521 
-elif(options.year=="2018"):
+elif(year=="2018"):
     deepJetM = 0.2770
     deepJetL = 0.0494 
 else:
@@ -119,13 +123,13 @@ nSkimmed = getNweighted(a,isData)
 MetFilters = ["Flag_BadPFMuonFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_HBHENoiseIsoFilter","Flag_HBHENoiseFilter","Flag_globalSuperTightHalo2016Filter","Flag_goodVertices"]
 MetFiltersString = a.GetFlagString(MetFilters)
 
-if(options.year=="2016"):
+if(year=="2016"):
     triggerList = ["HLT_AK8DiPFJet280_200_TrimMass30","HLT_PFHT650_WideJetMJJ900DEtaJJ1p5","HLT_AK8PFHT650_TrimR0p1PT0p03Mass50",
 "HLT_AK8PFHT700_TrimR0p1PT0p03Mass50","HLT_PFHT800","HLT_PFHT900","HLT_AK8PFJet360_TrimMass30","HLT_AK8DiPFJet280_200_TrimMass30_BTagCSV_p20"]
-elif(options.year=="2017"):
+elif(year=="2017"):
     triggerList=["HLT_PFHT1050","HLT_AK8PFJet400_TrimMass30","HLT_AK8PFJet420_TrimMass30","HLT_AK8PFHT800_TrimMass50",
 "HLT_PFJet500","HLT_PFJet320","HLT_AK8PFJet500","HLT_AK8PFJet320"]
-elif(options.year=="2018"):
+elif(year=="2018"):
    triggerList=["HLT_PFHT1050","HLT_AK8PFJet400_TrimMass30","HLT_AK8PFJet420_TrimMass30","HLT_AK8PFHT800_TrimMass50",
 "HLT_PFJet500","HLT_AK8PFJet500"]
 
@@ -140,11 +144,13 @@ nTrig = getNweighted(a,isData)
 
 #Jet(s) definition
 a.Cut("nFatJet","nFatJet>1")
-if(options.year=="2016"):
+if(year=="2016"):
     a.Cut("Eta","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
 else:
     a.Cut("Eta","abs(FatJet_eta[0])<2.5 && abs(FatJet_eta[1])<2.5")
-a.Cut("ID","FatJet_jetId[0]>1 && FatJet_jetId[1]>1")#bit 1 is loose, bit 2 is tight, bit3 is tightlepVeto
+nEta = getNweighted(a,isData)
+a.Cut("ID","FatJet_jetId[0]>3 && FatJet_jetId[1]>3")#bit 1 is loose, bit 2 is tight, bit3 is tightlepVeto
+nJetID = getNweighted(a,isData)
 
 if(varName=="jmsUp"):
     msdShift = 2
@@ -164,9 +170,9 @@ evtColumns = VarGroup("Event columns")
 if isData:
     evtColumns.Add("correctedMSD",'RVec<float> {FatJet_msoftdrop_nom[0],FatJet_msoftdrop_nom[1]}')
 else:
-    smearString1 = "scaledMSD[0],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[0],{0}".format(msdSmear)
-    smearString2 = "scaledMSD[1],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[1],{0}".format(msdSmear)
-    evtColumns.Add("scaledMSD",'RVec<float> {jmsShifter.shiftMsd(FatJet_msoftdrop[0],"%s",%i),jmsShifter.shiftMsd(FatJet_msoftdrop[1],"%s",%i)}' %(options.year, msdShift, options.year,msdShift))
+    smearString1 = "scaledMSD[0],1.1,nGenJetAK8,GenJetAK8_mass,FatJet_genJetAK8Idx[0],{0}".format(msdSmear)
+    smearString2 = "scaledMSD[1],1.1,nGenJetAK8,GenJetAK8_mass,FatJet_genJetAK8Idx[1],{0}".format(msdSmear)
+    evtColumns.Add("scaledMSD",'RVec<float> {jmsShifter.shiftMsd(FatJet_msoftdrop[0],"%s",%i),jmsShifter.shiftMsd(FatJet_msoftdrop[1],"%s",%i)}' %(year, msdShift, year,msdShift))
     evtColumns.Add("correctedMSD",'RVec<float> {jmrSmearer.smearMsd(%s),jmrSmearer.smearMsd(%s)}'%(smearString1,smearString2))
 evtColumns.Add("HT_2p4","calculateHT(nJet,Jet_eta,Jet_pt,30.0,2.4)")
 evtColumns.Add("HT_5p0","calculateHT(nJet,Jet_eta,Jet_pt,30.0,5.0)")
@@ -183,14 +189,21 @@ evtColumns.Add("mSD1","correctedMSD[1]")
 
 a.Apply([evtColumns])
 
-
-nEta = getNweighted(a,isData)
-if(options.year=="2016"):
+if(year=="2016"):
     a.Cut("pT","FatJet_pt0>350 && FatJet_pt1>350")
 else:
     a.Cut("pT","FatJet_pt0>450 && FatJet_pt1>450")
 npT = getNweighted(a,isData)
 
+
+a.Define("nEle","nElectrons(nElectron,Electron_cutBased,0,Electron_pt,20)")
+#0:fail,1:veto,2:loose,3:medium,4:tight
+#condition is, cutBased>cut
+a.Define("nMu","nMuons(nMuon,Muon_looseId,Muon_pfIsoId,0,Muon_pt,20)")
+#1=PFIsoVeryLoose, 2=PFIsoLoose, 3=PFIsoMedium, 4=PFIsoTight, 5=PFIsoVeryTight, 6=PFIsoVeryVeryTight
+#condition is, pfIsoId>cut
+a.Cut("LeptonVeto","nMu==0 && nEle==0")
+nLeptonVeto = getNweighted(a,isData)
 
 h_pt0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_pt0_jetSel'.format(options.process),';Leading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt0","genWeight")
 h_pt1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_pt1_jetSel'.format(options.process),';Subleading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt1","genWeight")
@@ -200,6 +213,8 @@ histos.append(h_pt0)
 histos.append(h_pt1)
 histos.append(h_eta0)
 histos.append(h_eta1)
+
+
 
 #need to define variables which we want in n-1 histograms
 dijetColumns = VarGroup("dijet Columns")
@@ -306,7 +321,7 @@ if(isData):
     a.Cut("Eta_ForTrigger","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
     evtColumns.name = "Event Columns For Trigger"
     a.Apply([evtColumns])
-    if(options.year=="2016"):
+    if(year=="2016"):
         a.Cut("pT_ForTrigger","FatJet_pt0>350 && FatJet_pt1>350")
     else:
         a.Cut("pT_ForTrigger","FatJet_pt0>450 && FatJet_pt1>450")
@@ -366,8 +381,8 @@ opts.fMode = "RECREATE"
 opts.fLazy = False
 a.GetActiveNode().DataFrame.Snapshot("Events",outputFile,snapshotColumns,opts)
 
-cutFlowVars = [nProc,nSkimmed,nTrig,nEta,npT,nMJJ,nHiggs]
-cutFlowLabels = ["nProc","Skimmed","Trigger","Eta","pT","MJJ","Higgs mass","DeltaEta","TT","LL","L_AL"]#tagging bins will be filled out in template making
+cutFlowVars = [nProc,nSkimmed,nTrig,nEta,nJetID,npT,nLeptonVeto,nMJJ,nHiggs]
+cutFlowLabels = ["Processed","Skimmed","Trigger","Eta","JetID","pT","Lepton Veto","MJJ","Higgs mass","DeltaEta","TT","LL","L_AL","AL_T","AL_L","AL_AL"]#tagging bins will be filled out in template making
 nCutFlowlabels = len(cutFlowLabels)
 hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowlabels,0.5,nCutFlowlabels+0.5)
 for i,label in enumerate(cutFlowLabels):
@@ -386,5 +401,6 @@ for h in histos:
 nminusOneHists.Do('Write')
 out_f.Close()
 
-#a.PrintNodeTree('node_tree.dot',verbose=True) #not supported at the moment
+#a.PrintNodeTree('node_tree.dot',verbose=True)
 print("Total time: "+str((time.time()-start_time)/60.) + ' min')
+#print(nToRun,a.GetActiveNode().DataFrame.Count().GetValue())
