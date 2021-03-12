@@ -3,15 +3,7 @@
     "maxEvents": -1,
     "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2018/TTbar"
   },
-  "TTbar_pt_incl": {
-    "maxEvents": -1,
-    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2018/TTbar"
-  },
   "TTbarSemi": {
-    "maxEvents": -1,
-    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2018/TTbarSemi"
-  },
-  "TTbarSemi_incl": {
     "maxEvents": -1,
     "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2018/TTbarSemi"
   },

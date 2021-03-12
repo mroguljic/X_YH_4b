@@ -35,39 +35,6 @@ def normalizeProcess(process,year,inFile,outFile):
         histo.Write()
     f.Close()
 
-def normalizeProcessGenW(process,year,inFile,outFile):
-    #Assumes genW was applied when filling the source histogram
-    h_dict = {}
-    f = r.TFile.Open(inFile)
-    print(process,inFile)
-    json_file = open("skimInfo.json")
-    config = json.load(json_file)
-    if("MX" in process):
-        xsec = 0.01
-    else:
-        xsec = config[year][process]["xsec"]
-    luminosity = config[year]["lumi"]
-    nProc = f.Get("{0}_cutflow_nom".format(process)).GetBinContent(1)
-    avgW  = config[year][process]["avgW"]
-    print(nProc,xsec*luminosity)
-    nLumi    = xsec*luminosity
-    scaling  = nLumi/(nProc*avgW)
-    print("Scale: {0:.4f}".format(scaling))
-    for key in f.GetListOfKeys():
-        h = key.ReadObj()
-        hName = h.GetName()
-        h.Scale(scaling)
-        h.SetDirectory(0)
-        h_dict[hName] = h
-    f.Close()
-
-    f = r.TFile(outFile,"recreate")
-    f.cd()
-    for key in h_dict:
-        histo = h_dict[key]
-        histo.Write()
-    f.Close()
-
 
 def mergeSamples(inFiles,outFile,regexMatch,regexReplace):
     h_dict = {}
@@ -112,8 +79,7 @@ def scaleMuonTemplates():
         elif(year=='2018'):
             processes = semilepProcesses18     
         for proc in processes:
-            normalizeProcessGenW(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
-            #normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
+            normalizeProcess(proc,year,"{0}/{1}.root".format(nonScaledDir,proc),"{0}/{1}.root".format(lumiScaledDir,proc))
         year=year[-2:]#2018->18
 
         ttSamples = ["TTbarSemi.root"]
@@ -164,8 +130,8 @@ def scaleEvtSelTemplates():
     ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
 
     #Not all UL bkgs are available
-    srProcesses17 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbar_pt_incl","TTbarSemi","TTbarSemi_incl"]
-    srProcesses18 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbar_pt_incl","TTbarSemi","TTbarSemi_incl"]
+    srProcesses17 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbarSemi","TTbarSemi_incl"]
+    srProcesses18 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbarSemi"]
 
 
     srProcesses16=srProcesses16+signalPoints
@@ -200,11 +166,6 @@ def scaleEvtSelTemplates():
         ttSamples = ["TTbar.root","TTbarMtt700.root","TTbarMtt1000.root","TTbarSemi.root"]
         ttSamples = [lumiScaledDir+f for f in ttSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
         mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarSemi|TTbarMtt700|TTbarMtt1000|TTbar","TTbar")
-
-        ttinclSamples = ["TTbarSemi_incl.root","TTbar_pt_incl.root"]
-        ttinclSamples = [lumiScaledDir+f for f in ttinclSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(ttinclSamples,"{0}/TTbarIncl{1}.root".format(lumiScaledDir,year[-2:]),"TTbarSemi_incl|TTbar_pt_incl","TTbarIncl")
-
 
         JetHTSamples = [nonScaledDir+f for f in os.listdir(nonScaledDir) if (os.path.isfile(os.path.join(nonScaledDir, f)) and "JetHT" in f)]
         mergeSamples(JetHTSamples,"{0}/JetHT{1}.root".format(lumiScaledDir,year[-2:]),"JetHT201[0-9][A-Z]_","data_obs_")

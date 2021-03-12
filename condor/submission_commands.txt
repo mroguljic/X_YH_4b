@@ -1,8 +1,9 @@
+python run_selection.py -c selectionConfig/selection_signal_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/  -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/ -n 100 -q espresso
 python run_selection.py -c selectionConfig/selection_bkg_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/ -n 10 -q longlunch
 python run_selection.py -c selectionConfig/selection_data_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/ -n 10 -q workday
 
 
+python run_selection.py -c selectionConfig/selection_signal_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2018/  -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2018/ -n 100 -q espresso
 python run_selection.py -c selectionConfig/selection_bkg_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2018/ -n 10 -q longlunch
 python run_selection.py -c selectionConfig/selection_data_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2018/ -n 10 -q workday
-
 

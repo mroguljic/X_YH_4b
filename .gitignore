@@ -5,3 +5,6 @@ data/
 *pdf
 *pyc
 *root
+condor/selectionJobs/
+condor/mrogulji.cc
+condor/selectionConfig/selection_TTincl_2017.json

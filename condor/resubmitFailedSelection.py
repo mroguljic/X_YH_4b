@@ -5,18 +5,19 @@ from os import path
 import ROOT as r
 targetDir = sys.argv[1]
 
-samples = os.listdir(targetDir)
-failedJobs=0
-submit_cmds=[]
+samples         = os.listdir(targetDir)
+failedJobs      = 0
+submit_cmds     = []
+variations      = ["jerUp","jerDown","jesUp","jesDown","jmsUp","jmsDown","jmrUp","jmrDown"]
 for sample in samples:
-    inputDir   = targetDir+"/"+sample+"/"+"input/"
-    condorFile = "condor_{0}.condor".format(sample)
-    argsFile   =  "args_{0}.txt".format(sample)
+    inputDir    = targetDir+"/"+sample+"/"+"input/"
+    condorFile  = "condor_{0}.condor".format(sample)
+    argsFile    =  "args_{0}.txt".format(sample)
     f = open(inputDir+argsFile,"r")
     args = f.readlines()
-    toResubmit = ""
+    toResubmit  = ""
     for argSet in args:
-        argArr = argSet.split(" ")
+        argArr  = argSet.split(" ")
         outputFile = argArr[3]
         outputFile = outputFile.replace(".root","_nom.root")
         print(outputFile)
@@ -24,8 +25,14 @@ for sample in samples:
             try:
                 temp = r.TFile.Open(outputFile)
                 temp.Get("Events").GetEntriesFast()
-            #print(outputFile, " exists")
-                continue
+                varFlag = True                
+                # for variation in variations:
+                #     varFile = outputFile.replace("nom",variation)
+                #     if not(path.exists(varFile)):
+                #         print("Missing {0}".format(varFile))
+                #         varFlag = False
+                if(varFlag):
+                    continue
             except:
                 print("Caught a zombie: ", outputFile)
         toResubmit+=argSet

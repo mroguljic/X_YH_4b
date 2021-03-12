@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import mplhep as hep
+import matplotlib
+matplotlib.use('Agg')
 
 #---------------------------------------------------------------------
 # to run in the batch mode (to prevent canvases from popping up)
@@ -64,7 +66,7 @@ def makeEffVsMistagTGraph(histo_b,histo_nonb,allowNegative):
         nonb_abovecut += histo_nonb.GetBinContent(i)
         b_eff.append(b_abovecut/tot_b)
         nonb_eff.append(nonb_abovecut/tot_nonb)
-        if(histo_b.GetBinCenter(i)==0.905):
+        if(histo_b.GetBinCenter(i)<0.96 and histo_b.GetBinCenter(i)>0.94):
             wpT = b_eff[-1],nonb_eff[-1]
         if(histo_b.GetBinCenter(i)==0.805):
             wpL = b_eff[-1],nonb_eff[-1]
@@ -284,48 +286,66 @@ def plotSelectedGraphs(graphs,legend,colors,output):
 
 def main():
     # input file
-    sigFile = TFile.Open("results/histograms/lumiScaled/X1600_Y100_normalized.root")
-    bkgFile = TFile.Open("results/histograms/lumiScaled/QCD_normalized.root")
-    ttbarFile = TFile.Open("results/histograms/lumiScaled/ttbar_normalized.root")
-
-    legend = ["Signal vs QCD", "Signal vs ttbar"]
-    colors = [1,2]
-
-    graphs = []
-    h_sig_pnet = sigFile.Get("X1600_Y100_nm1_pnet0")
-    #h_sig_pnet = sigFile.Get("X1600_pnet_pT_Y").ProjectionX()
-    h_sig_pnet.SetDirectory(0)
-    #h_bkg_pnet = bkgFile.Get("QCD_pnet_pT_Y").ProjectionX()
-    h_bkg_pnet = bkgFile.Get("QCD_nm1_pnet0")
-    #h_tt_pnet = ttbarFile.Get("ttbar_pnet_pT_Y").ProjectionX()
-    h_tt_pnet = ttbarFile.Get("ttbar_nm1_pnet0")
-
-    allowNegative = False
-    # get eff vs mistag rate graph
-    gVsQCD, effVsSig, mistagVsQCD, wpTVsQCD,wpLVsQCD = makeEffVsMistagTGraph(h_sig_pnet,h_bkg_pnet,allowNegative)
-    graphs.append(gVsQCD)
-    gVsTT, effVsTT, mistagVsTT, wpTVsTT,wpLVsTT = makeEffVsMistagTGraph(h_sig_pnet,h_tt_pnet,allowNegative)
-    graphs.append(gVsTT)
-    allowNegative = False
-    # get eff vs mistag rate graph
-    #plotSelectedGraphs(graphs,legend,colors,"results/plots/ROC.png")
-    effVsSig = np.asarray(effVsSig)
-    mistagVsQCD = np.asarray(mistagVsQCD)
-    effVsTT = np.asarray(effVsTT)
-    mistagVsTT = np.asarray(mistagVsTT)
+    #for year in ["16","17","18"]:
     plt.style.use([hep.style.CMS])
     f, axs = plt.subplots()
-    axs.set_ylim([0.5*10e-3,1])
-    plt.yscale("log")
-    axs.set_xlabel("Signal efficiency")
-    axs.set_ylabel("Mistag rate")
-    plt.grid(which='both')
-    plt.plot(effVsSig,mistagVsQCD,lineStyle="-" ,color="b",label="Signal vs QCD")
-    plt.plot(effVsTT,mistagVsTT,lineStyle="-",color="k", label=r"Signal vs $t\bar{t}$")
-    plt.plot([wpTVsQCD[0],wpTVsTT[0]], [wpTVsQCD[1],wpTVsTT[1]], marker='o', markersize=5, color="r",label="WP = 0.9",linewidth=0)
-    plt.plot([wpLVsQCD[0],wpLVsTT[0]], [wpLVsQCD[1],wpLVsTT[1]], marker='o', markersize=5, color="m",label="WP = 0.8",linewidth=0)
+    axs.set_ylim([3*10e-4,1])
+    colors = [["b","k"],["r","g"],["orange","gold"]]
+    for i,year in enumerate(["17","17"]):
+        sigFile = TFile.Open("results/templates_hadronic/20{0}/scaled/MX1600_MY125.root".format(year))
+        bkgFile = TFile.Open("results/templates_hadronic/20{0}/scaled/QCD{0}.root".format(year))
+        ttbarFile = TFile.Open("results/templates_hadronic/20{0}/scaled/TTbar{0}.root".format(year))
+
+        if(i==1):#plot EOY ROC 
+            sigFile = TFile.Open("~/X_YH_4b/results/templates/WP_0.8_0.95/20{0}/scaled/MX1600_MY125.root".format(year))
+            bkgFile = TFile.Open("~/X_YH_4b/results/templates/WP_0.8_0.95/20{0}/scaled/QCD{0}.root".format(year))
+            ttbarFile = TFile.Open("~/X_YH_4b/results/templates/WP_0.8_0.95/20{0}/scaled/TTbar{0}.root".format(year))
+
+
+        legend = ["Signal vs QCD {0}".format(year), "Signal vs ttbar {0}".format(year)]
+        graphs = []
+
+        h_sig_pnet = sigFile.Get("MX1600_MY125_pnet_pT_Y_nom").ProjectionX()
+        h_sig_pnet.SetDirectory(0)
+        h_bkg_pnet = bkgFile.Get("QCD_pnet_pT_Y_nom").ProjectionX()
+        h_tt_pnet = ttbarFile.Get("TTbar_pnet_pT_Y_nom").ProjectionX()
+        allowNegative = False
+        # get eff vs mistag rate graph
+        gVsQCD, effVsSig, mistagVsQCD, wpTVsQCD,wpLVsQCD = makeEffVsMistagTGraph(h_sig_pnet,h_bkg_pnet,allowNegative)
+        graphs.append(gVsQCD)
+        gVsTT, effVsTT, mistagVsTT, wpTVsTT,wpLVsTT = makeEffVsMistagTGraph(h_sig_pnet,h_tt_pnet,allowNegative)
+        graphs.append(gVsTT)
+        # get eff vs mistag rate graph
+        effVsSig = np.asarray(effVsSig)
+        mistagVsQCD = np.asarray(mistagVsQCD)
+        effVsTT = np.asarray(effVsTT)
+        mistagVsTT = np.asarray(mistagVsTT)
+         
+
+        plt.yscale("log")
+        plt.xlabel("Signal efficiency", horizontalalignment='right', x=1.0)
+        plt.ylabel("Mistag rate",horizontalalignment='right', y=1.0)
+        plt.grid(which='both')
+        print([wpTVsQCD[0],wpTVsTT[0]], [wpTVsQCD[1],wpTVsTT[1]])
+        print([wpLVsQCD[0],wpLVsTT[0]], [wpLVsQCD[1],wpLVsTT[1]])
+        if(i==1):
+            plt.plot(effVsSig,mistagVsQCD,lineStyle="-" ,color=colors[i][0],label="EOY signal vs QCD 20{0}".format(year))
+            plt.plot(effVsTT,mistagVsTT,lineStyle="-",color=colors[i][1], label=r"EOY signal vs $t\bar{t}$"+" 20{0}".format(year))          
+        else:
+            plt.plot(effVsSig,mistagVsQCD,lineStyle="-" ,color=colors[i][0],label="UL signal vs QCD 20{0}".format(year))
+            plt.plot(effVsTT,mistagVsTT,lineStyle="-",color=colors[i][1], label=r"UL signal vs $t\bar{t}$"+" 20{0}".format(year))
+        if(i==0):
+            labelT = "WP = 0.95"
+            labelL = "WP = 0.8"
+        else:
+            labelT = '_nolegend_'
+            labelL = '_nolegend_'
+        plt.plot([wpTVsQCD[0],wpTVsTT[0]], [wpTVsQCD[1],wpTVsTT[1]], marker='o', markersize=5, color="r",label=labelT,linewidth=0)
+        plt.plot([wpLVsQCD[0],wpLVsTT[0]], [wpLVsQCD[1],wpLVsTT[1]], marker='o', markersize=5, color="m",label=labelL,linewidth=0)
     axs.legend()
-    plt.savefig("results/plots/ROC.png")
+    plt.grid(b=True,which='both',axis="both")
+    plt.savefig("ROC.pdf")
+    plt.savefig("ROC.png")
 if __name__ == '__main__':
     main()
     #compareTaggers()

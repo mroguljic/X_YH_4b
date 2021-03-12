@@ -3,7 +3,7 @@
   "MX1600_MY125": {
     "file": "results/templates_hadronic/2017/scaled/MX1600_MY125.root",
     "color":"red",
-    "label": "$M_{X}$=1600 GeV, $M_{Y}$=125 GeV",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=125 GeV",
     "order": 0
   },
   "TTbar": {

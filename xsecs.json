@@ -27,8 +27,8 @@
  "ZJets800": {"xsec": 18.57},
  "ttH": {"xsec": 0.5401},
  "TTbar": {"xsec": 377.96},
- "TTbarMtt700": {"xsec": 66.85},
- "TTbarMtt1000": {"xsec": 16.38},
+ "TTbarMtt700": {"xsec": 76.61},
+ "TTbarMtt1000": {"xsec": 20.58},
  "TTbarSemi": {"xsec": 365.34},
  "lumi":35900
  },
@@ -62,8 +62,8 @@
  "ttH": {"xsec": 0.5401},
  "TTbar": {"xsec": 377.96},
  "TTbar_pt_incl": {"xsec": 377.96},
- "TTbarMtt700": {"xsec": 66.85},
- "TTbarMtt1000": {"xsec": 16.38},
+ "TTbarMtt700": {"xsec": 76.61},
+ "TTbarMtt1000": {"xsec": 20.58},
  "TTbarSemi": {"xsec": 365.34},
  "TTbarSemi_incl": {"xsec": 365.34},
  "lumi":41500
@@ -98,8 +98,8 @@
  "ttH": {"xsec": 0.5401},
  "TTbar": {"xsec": 377.96},
  "TTbar_pt_incl": {"xsec": 377.96},
- "TTbarMtt700": {"xsec": 66.85},
- "TTbarMtt1000": {"xsec": 16.38},
+ "TTbarMtt700": {"xsec": 76.61},
+ "TTbarMtt1000": {"xsec": 20.58},
  "TTbarSemi": {"xsec": 365.34},
  "TTbarSemi_incl": {"xsec": 365.34},
  "lumi":59800

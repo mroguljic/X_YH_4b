@@ -138,6 +138,7 @@ a.SetActiveNode(checkpoint)
 a.Cut("AL_LCut","AL_L==1")
 h2DAL_L  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_L'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
 histos.append(h2DAL_L)
+nAL_L = getNweighted(a,isData)
 
 a.SetActiveNode(checkpoint)
 a.Cut("AL_ALCut","AL_AL==1")
@@ -183,14 +184,15 @@ if(options.variation=="nom"):
             continue
         h.SetDirectory(0)
         if("cutflow" in hName.lower()):
-            h.SetBinContent(h.GetNbinsX(),nL_AL)
-            h.SetBinContent(h.GetNbinsX()-1,nLL)
-            h.SetBinContent(h.GetNbinsX()-2,nTT)
-            h.SetBinContent(h.GetNbinsX()-3,nDeltaEta)
-            h.GetXaxis().SetBinLabel(h.GetNbinsX(),"L_AL")
-            h.GetXaxis().SetBinLabel(h.GetNbinsX()-1,"LL")
-            h.GetXaxis().SetBinLabel(h.GetNbinsX()-2,"TT")
-            h.GetXaxis().SetBinLabel(h.GetNbinsX()-3,"DeltaEta < 1.3")
+            #"DeltaEta","TT","LL","L_AL","AL_T","AL_L","AL_AL"
+            h.SetBinContent(h.GetNbinsX(),nAL_AL)
+            h.SetBinContent(h.GetNbinsX()-1,nAL_L)
+            h.SetBinContent(h.GetNbinsX()-2,nAL_T)
+            h.SetBinContent(h.GetNbinsX()-3,nL_AL)
+            h.SetBinContent(h.GetNbinsX()-4,nLL)
+            h.SetBinContent(h.GetNbinsX()-5,nTT)
+            h.SetBinContent(h.GetNbinsX()-6,nDeltaEta)
+            h.GetXaxis().SetBinLabel(h.GetNbinsX()-6,"DeltaEta < 1.3")
         histos.append(h)
 
 out_f = ROOT.TFile(options.output,options.mode)

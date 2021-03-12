@@ -32,7 +32,8 @@ with open(options.json) as json_file:
             
 
         f = r.TFile.Open(sample_cfg["file"])
-        h = f.Get("{0}_cutflow_nom".format(sample_cfg["prefix"]))
+        #h = f.Get("{0}_cutflow_nom".format(sample_cfg["prefix"]))
+        h = f.Get("{0}_cutflow_nom".format(sample))
         # if(sample=="ttbar"):
         #     h = f.Get("TTbar_cutflow")
         nBin = h.GetNbinsX()
