@@ -1,0 +1,49 @@
+imax * number of channels
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+------------------------------------------------------------
+bin T_CR
+observation -1.0
+------------------------------------------------------------
+
+shapes *	 T_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/2017/scaled/$PROCESS17.root	 $PROCESS_mSD_T_nom $PROCESS_mSD_T_$SYSTEMATIC
+shapes TTbar_bqq T_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/2017/scaled/TTbar17.root	 $PROCESS_mSD_T_nom $PROCESS_mSD_T_$SYSTEMATIC
+shapes TTbar_qq T_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/2017/scaled/TTbar17.root	 $PROCESS_mSD_T_nom $PROCESS_mSD_T_$SYSTEMATIC
+shapes TTbar_bq T_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/2017/scaled/TTbar17.root	 $PROCESS_mSD_T_nom $PROCESS_mSD_T_$SYSTEMATIC
+shapes TTbar_unmatched T_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/2017/scaled/TTbar17.root	 $PROCESS_mSD_T_nom $PROCESS_mSD_T_$SYSTEMATIC
+shapes data_obs	 T_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/2017/scaled/SingleMuon17.root	 data_obs_mSD_T
+------------------------------------------------------------
+bin		T_CR	T_CR	T_CR	
+process		TTbar_bq	TTbar_bqq	Other	
+process		-1	0	2	
+rate		-1	-1	-1	
+lumi	lnN	1.025	1.025	1.025	
+purewt	lnN	1.01	1.01	1.01	
+pdfrewt	lnN	1.01	1.01	1.01	
+jer	shape	1.0	1.0	1.0	
+jes	shape	1.0	1.0	1.0	
+jms	shape	1.0	1.0	1.0	
+jmr	shape	1.0	1.0	1.0	
+id	shape	1.0	1.0	1.0	
+iso	shape	1.0	1.0	1.0	
+trig	shape	1.0	1.0	1.0	
+sf	shape	1.0	1.0	1.0	
+
+topxsec	lnN	1.061/0.938	1.061/0.938	-
+bqqT_17 rateParam T_CR TTbar_bqq 1.0 [0.0,5.0]
+
+
+nuisance edit rename * T_CR jes jes17
+nuisance edit rename * T_CR jer jer17
+nuisance edit rename TTbar_bqq T_CR jms jms_bqq17
+nuisance edit rename TTbar_bq T_CR jms jms_bq17
+nuisance edit rename Other T_CR jms jms_Other17
+nuisance edit rename TTbar_bqq T_CR jmr jmr_bqq17
+nuisance edit rename TTbar_bq T_CR jmr jmr_bq17
+nuisance edit rename Other T_CR jmr jmr_Other17
+nuisance edit rename * T_CR id muonID17
+nuisance edit rename * T_CR iso muonIso17
+nuisance edit rename * T_CR trig muonTrig17
+nuisance edit rename * T_CR sf ak4SF17
+
+* autoMCStats 10000 1 1

@@ -1,0 +1,49 @@
+imax * number of channels
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+------------------------------------------------------------
+bin L_CR
+observation -1.0
+------------------------------------------------------------
+
+shapes *	 L_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/FullRunII/$PROCESSRunII.root	 $PROCESS_mSD_L_nom $PROCESS_mSD_L_$SYSTEMATIC
+shapes TTbar_bqq L_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/FullRunII/TTbarRunII.root	 $PROCESS_mSD_L_nom $PROCESS_mSD_L_$SYSTEMATIC
+shapes TTbar_qq L_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/FullRunII/TTbarRunII.root	 $PROCESS_mSD_L_nom $PROCESS_mSD_L_$SYSTEMATIC
+shapes TTbar_bq L_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/FullRunII/TTbarRunII.root	 $PROCESS_mSD_L_nom $PROCESS_mSD_L_$SYSTEMATIC
+shapes TTbar_unmatched L_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/FullRunII/TTbarRunII.root	 $PROCESS_mSD_L_nom $PROCESS_mSD_L_$SYSTEMATIC
+shapes data_obs	 L_CR	 /afs/cern.ch/work/m/mrogulji/X_YH_4b/results/templates_semiLeptonic/muon/FullRunII/SingleMuonRunII.root	 data_obs_mSD_L
+------------------------------------------------------------
+bin		L_CR	L_CR	L_CR	
+process		TTbar_bq	TTbar_bqq	Other	
+process		-1	0	2	
+rate		-1	-1	-1	
+lumi	lnN	1.025	1.025	1.025	
+purewt	lnN	1.01	1.01	1.01	
+pdfrewt	lnN	1.01	1.01	1.01	
+jer	shape	1.0	1.0	1.0	
+jes	shape	1.0	1.0	1.0	
+jms	shape	1.0	1.0	1.0	
+jmr	shape	1.0	1.0	1.0	
+id	shape	1.0	1.0	1.0	
+iso	shape	1.0	1.0	1.0	
+trig	shape	1.0	1.0	1.0	
+sf	shape	1.0	1.0	1.0	
+
+topxsec	lnN	1.061/0.938	1.061/0.938	-
+bqqL_RunII rateParam L_CR TTbar_bqq 1.0 [0.0,5.0]
+
+
+nuisance edit rename * L_CR jes jesRunII
+nuisance edit rename * L_CR jer jerRunII
+nuisance edit rename TTbar_bqq L_CR jms jms_bqqRunII
+nuisance edit rename TTbar_bq L_CR jms jms_bqRunII
+nuisance edit rename Other L_CR jms jms_OtherRunII
+nuisance edit rename TTbar_bqq L_CR jmr jmr_bqqRunII
+nuisance edit rename TTbar_bq L_CR jmr jmr_bqRunII
+nuisance edit rename Other L_CR jmr jmr_OtherRunII
+nuisance edit rename * L_CR id muonIDRunII
+nuisance edit rename * L_CR iso muonIsoRunII
+nuisance edit rename * L_CR trig muonTrigRunII
+nuisance edit rename * L_CR sf ak4SFRunII
+
+* autoMCStats 10000 1 1
