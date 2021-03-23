@@ -1,0 +1,52 @@
+{
+  "ST": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/2017/scaled/ST17.root",
+    "color":"turquoise",
+    "label": "ST",
+    "order": 10
+  },
+  "TTbar_bqq": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/2017/scaled/TTbar17.root",
+    "xsec": 0.01,
+    "color":"firebrick",
+    "label": "TT_bqq",
+    "order": 6
+  },
+  "TTbar_bq": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/2017/scaled/TTbar17.root",
+    "xsec": 0.01,
+    "color":"blueviolet",
+    "label": "TT_bq",
+    "order": 5
+  },
+  "TTbar_qq": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/2017/scaled/TTbar17.root",
+    "xsec": 0.01,
+    "color":"orange",
+    "label": "TT_qq",
+    "order": 4
+  },
+  "TTbar_unmatched": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/2017/scaled/TTbar17.root",
+    "xsec": 0.01,
+    "color":"lightgrey",
+    "label": "TT_unm",
+    "order": 3
+  },
+  "WJets": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/2017/scaled/WJets17.root",
+    "xsec": 0.01,
+    "color":"limegreen",
+    "label": "WJets",
+    "order": 1
+  },
+  "data_obs": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/2017/scaled/SingleMuon17.root",
+    "xsec": 0.01,
+    "color":"limegreen",
+    "label": "Data",
+    "order": 0
+  }
+}
+
+
