@@ -22,10 +22,11 @@ def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nF
       Path(sampleOut_dir).mkdir(parents=True, exist_ok=True)
 
       #Create condor file and sh file
-      if("JetHT" in sample):
-        exeScript = selection_template_data.replace("JOB_DIR",sampleJobs_dir)
-      else:
+      if not ("MX" in sample or "TTbar" in sample):
         exeScript = selection_template.replace("JOB_DIR",sampleJobs_dir)
+      else:
+        #Not running variations on data nor QCD (data-driven estimate!)
+        exeScript = selection_template_data.replace("JOB_DIR",sampleJobs_dir)
       open(os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), 'w').write(exeScript)
 
       condor_script = re.sub('EXEC',os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), selection_condor)
