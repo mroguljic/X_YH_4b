@@ -11,7 +11,7 @@ def split_jobs(files, njobs):
 
 
 
-def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nFiles=1,leptonChannel="mu"):
+def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nFiles=1):
     for sample, sample_cfg in config.items():      
       sampleJobs_dir = os.path.join(jobs_dir,sample)
       sampleOut_dir = os.path.join(out_dir, sample)
@@ -21,7 +21,10 @@ def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nF
       Path(sampleOut_dir).mkdir(parents=True, exist_ok=True)
 
       #Create condor file and sh file
-      exeScript = semileptonic_template.replace("JOB_DIR",sampleJobs_dir)
+      if("SingleMuon" in sample):
+        exeScript = semileptonic_template_data.replace("JOB_DIR",sampleJobs_dir)
+      else:
+        exeScript = semileptonic_template.replace("JOB_DIR",sampleJobs_dir)
       open(os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), 'w').write(exeScript)
 
       condor_script = re.sub('EXEC',os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), semileptonic_condor)
@@ -42,7 +45,7 @@ def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nF
         inputPath = os.path.join(sampleJobs_dir, 'input', 'input_{}.txt'.format(n))
         outputPath = os.path.join(sampleOut_dir,'{0}_{1}.root'.format(sample,n))
         open(inputPath, 'w').writelines("{}\n".format(root_file) for root_file in l)
-        argsFile.write("-i {0} -o {1} -p {2} -y {3} -c {4}\n".format(inputPath,outputPath,sample,year,leptonChannel))
+        argsFile.write("-i {0} -o {1} -p {2} -y {3}\n".format(inputPath,outputPath,sample,year))
       #Submit
       print("condor_submit {0}".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}.condor'.format(sample))))
       if dry==False:
@@ -61,7 +64,6 @@ def main():
   parser.add_argument('-d', '--dry', action='store_true', help='Dry run (Do not submit jobs)')
   parser.add_argument('-o', '--outdir',help='Output directory')
   parser.add_argument('-j', '--jobdir',help='Jobs directory')
-  parser.add_argument('-l', '--lepton',help='Lepton channel (mu/e)')
   parser.add_argument('-n', '--nFiles',help='Number of files per job',type=int,default=1)
   parser.add_argument("-q", "--queue", dest="queue", action='store', default='longlunch', help="Default is 'longlunch' (This parameter is optional)", metavar="QUEUE")
  
@@ -71,7 +73,7 @@ def main():
 
   with open(args.config, 'r') as config_file:
     config = json.load(config_file)
-    create_jobs(config, args.dry,queue=args.queue, year=args.year,out_dir=args.outdir,jobs_dir=args.jobdir,nFiles=args.nFiles,leptonChannel=args.lepton)
+    create_jobs(config, args.dry,queue=args.queue, year=args.year,out_dir=args.outdir,jobs_dir=args.jobdir,nFiles=args.nFiles)
           
 
       
