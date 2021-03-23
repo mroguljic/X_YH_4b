@@ -1,8 +1,10 @@
 import os
 
 directories=[d for d in os.listdir(os.getcwd()) if os.path.isdir(d)]
-variations = ["nom","jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"]
-#variations = ["nom","sfUp","sfDown","jesUp","jesDown","jerUp","jerDown"] #CR
+if("semi" in os.getcwd()):
+    variations = ["nom","sfUp","sfDown","jesUp","jesDown","jerUp","jerDown"] #CR
+else:
+    variations = ["nom","jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"]
 for d in directories:
     for variation in variations:
         if("JetHT" in d and variation!="nom"):
