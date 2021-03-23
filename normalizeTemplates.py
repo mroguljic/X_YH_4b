@@ -63,13 +63,14 @@ def mergeSamples(inFiles,outFile,regexMatch,regexReplace):
 
 
 def scaleMuonTemplates():
-    semilepProcesses16 = ["TTbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_sChannel","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600","TTW","TTZ"]
-    semilepProcesses17 = ["TTbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_s_top","ST_s_antitop","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600","TTW","TTZ"]
-    semilepProcesses18 = ["TTbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_s_top","ST_s_antitop","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600","TTW","TTZ"]
+    semilepProcesses16 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
+    semilepProcesses17 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
+    semilepProcesses18 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
 
-    for year in ['2016','2017','2018']:
+    #for year in ['2016','2017','2018']:
+    for year in ['2017','2018']:
         print(year)
-        muonDir = "results/templates_semiLeptonic/muon/"
+        muonDir = "results/templates_semileptonic/"
         nonScaledDir = "{0}/{1}/nonScaled/".format(muonDir,year)
         lumiScaledDir = "{0}/{1}/scaled/".format(muonDir,year)
         if(year=='2016'):
@@ -86,20 +87,13 @@ def scaleMuonTemplates():
         ttSamples = [lumiScaledDir+f for f in ttSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
         mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarSemi|TTbar","TTbar")
 
-        STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_s_top","ST_antitop"]
-        if(year=="16"):
-            STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_sChannel"]
+        STsamples = ["ST_t_top.root","ST_t_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_s.root"]
         STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),"ST.+top_|ST.+nel","ST_")
+        mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),"ST.+top_|ST_s_","ST_")
 
-        WJetsSamples = ["WJetsLNu100.root","WJetsLNu250.root","WJetsLNu400.root","WJetsLNu600.root"]
+        WJetsSamples = ["WJets.root"]
         WJetsSamples = [lumiScaledDir+f for f in WJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(WJetsSamples,"{0}/WJets{1}.root".format(lumiScaledDir,year[-2:]),"WJets.+\d+_","WJets_")
-
-        TTVSamples = ["TTW.root","TTZ.root"]
-        TTVSamples = [lumiScaledDir+f for f in TTVSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(TTVSamples,"{0}/TTV{1}.root".format(lumiScaledDir,year[-2:]),"TT._","TTV_")
-
+        mergeSamples(WJetsSamples,"{0}/WJets{1}.root".format(lumiScaledDir,year[-2:]),"WJetsLNu_","WJets_")
 
         SingleMuonSamples = [nonScaledDir+f for f in os.listdir(nonScaledDir) if (os.path.isfile(os.path.join(nonScaledDir, f)) and "SingleMuon" in f)]#We are not lumi scaling data!
         mergeSamples(SingleMuonSamples,"{0}/SingleMuon{1}.root".format(lumiScaledDir,year[-2:]),"SingleMuon201[0-9][A-Z]_","data_obs_")
@@ -120,13 +114,12 @@ def scaleEvtSelTemplates():
             if((X>(Y+125.0))):
                 signalPoints.append("MX{0}_MY{1}".format(X,Y))
 
-    signalPoints = ["MX1600_MY125"]
 
-    srProcesses16 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
+    srProcesses16 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop"
     ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
-    srProcesses17 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
+    srProcesses17 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop"
     ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
-    srProcesses18 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top"
+    srProcesses18 = ["QCD500","QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT","ST_top","ST_antitop"
     ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
 
     #Not all UL bkgs are available

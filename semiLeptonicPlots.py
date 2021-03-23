@@ -136,8 +136,6 @@ def plotVarStack(data,var,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=Tr
         print(sample)
         tempFile = r.TFile.Open(sample_cfg["file"])
         if("muon" in sample.lower() or "data" in sample.lower()):
-            if("STbefore" in var):
-                var=var.replace("before","")
             print("{0}_{1}".format(sample,var))
             h = tempFile.Get("{0}_{1}".format(sample,var))
             h.SetDirectory(0)
@@ -430,40 +428,32 @@ if __name__ == '__main__':
 
     with open(options.json) as json_file:
         data = json.load(json_file)
-        plotVarStack(data,"MET_I","results/plots/semileptonic/{0}/MET{0}_I.png".format(year),xTitle="MET [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[0,1000],log=True,rebinX=1,luminosity=luminosity)
-        plotVarStack(data,"HT_I","results/plots/semileptonic/{0}/HT{0}_I.png".format(year),xTitle="HT [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
-        plotVarStack(data,"ST_I","results/plots/semileptonic/{0}/ST{0}_I.png".format(year),xTitle="ST [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e5],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
-        plotVarStack(data,"lepton_pT_I","results/plots/semileptonic/{0}/lepton_pT{0}_I.png".format(year),xTitle="Muon $p_{T}$ [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[0,1000],log=True,rebinX=1,luminosity=luminosity)
-        # cutFlowWithData(data,"results/plots/semileptonic/{0}/cutflow_{0}.png".format(year),xTitle="",yTitle="Events",xRange=[1.5,10.5],yRange=[None,10e15],log=True,sigXSec=1.0,luminosity=luminosity)
-        # # plotVarStack(data,"MET_I_noCor","results/plots/semileptonic/{0}/MET{0}_I_noCor.png".format(year),xTitle="MET [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[0,1000],log=True,rebinX=1,luminosity=luminosity)
-        # plotVarStack(data,"HT_I_noCor","results/plots/semileptonic/{0}/HT{0}_I_noCor.png".format(year),xTitle="HT [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
-        # plotVarStack(data,"ST_I_noCor","results/plots/semileptonic/{0}/ST{0}_I_noCor.png".format(year),xTitle="ST [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e5],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
-        # plotVarStack(data,"lepton_pT_I_noCor","results/plots/semileptonic/{0}/lepton_pT{0}_I_noCor.png".format(year),xTitle="Muon $p_{T}$ [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[0,1000],log=True,rebinX=1,luminosity=luminosity)
-
-
-        # plotVarStack(data,"mSD_I","results/plots/semileptonic/{0}/mSD{0}_I.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,10e6],xRange=[60,210],log=True,luminosity=luminosity,text="ParticleNet inclusive")
-        # plotVarStack(data,"mSD_I","results/plots/semileptonic/{0}/mSD{0}_lin_I.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,4000],xRange=[60,210],log=False,luminosity=luminosity,text="ParticleNet inclusive")
-        # plotVarStack(data,"mSD_T","results/plots/semileptonic/{0}/mSD{0}_T.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,10e6],xRange=[60,210],log=True,luminosity=luminosity,text="ParticleNet > 0.95")
-        # plotVarStack(data,"mSD_T","results/plots/semileptonic/{0}/mSD{0}_lin_T.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,300],xRange=[60,210],log=False,luminosity=luminosity,text="ParticleNet > 0.95")
-        # plotVarStack(data,"mSD_L","results/plots/semileptonic/{0}/mSD{0}_L.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,10e6],xRange=[60,210],log=True,luminosity=luminosity,text="0.8 < ParticleNet < 0.95")
-        # plotVarStack(data,"mSD_L","results/plots/semileptonic/{0}/mSD{0}_lin_L.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,500],xRange=[60,210],log=False,luminosity=luminosity,text="0.8 < ParticleNet < 0.95")
-        # plotVarStack(data,"mSD_AT","results/plots/semileptonic/{0}/mSD{0}_AT.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,10e6],xRange=[60,210],log=True,luminosity=luminosity,text="ParticleNet < 0.8")
-        # plotVarStack(data,"mSD_AT","results/plots/semileptonic/{0}/mSD{0}_lin_AT.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,4000],xRange=[60,210],log=False,luminosity=luminosity,text="ParticleNet < 0.8")
+        if not "msd" in options.json:
+            plotVarStack(data,"MET_I","results/plots/{0}/semileptonic/MET{0}_I.png".format(year),xTitle="MET [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[0,1000],log=True,rebinX=1,luminosity=luminosity)
+            plotVarStack(data,"HT_I","results/plots/{0}/semileptonic/HT{0}_I.png".format(year),xTitle="HT [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
+            plotVarStack(data,"ST_I","results/plots/{0}/semileptonic/ST{0}_I.png".format(year),xTitle="ST [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e5],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
+            plotVarStack(data,"lepton_pT_I","results/plots/{0}/semileptonic/lepton_pT{0}_I.png".format(year),xTitle="Muon $p_{T}$ [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[0,1000],log=True,rebinX=1,luminosity=luminosity)
+            cutFlowWithData(data,"results/plots/{0}/semileptonic/cutflow_{0}.png".format(year),xTitle="",yTitle="Events",xRange=[1.5,10.5],yRange=[None,10e15],log=True,sigXSec=1.0,luminosity=luminosity)
+        else:
+            plotVarStack(data,"mSD_I","results/plots/{0}/semileptonic/mSD{0}_I.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,10e5],xRange=[60,200],log=True,luminosity=luminosity,text="ParticleNet inclusive")
+            plotVarStack(data,"mSD_I","results/plots/{0}/semileptonic/mSD{0}_lin_I.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,1500],xRange=[60,200],log=False,luminosity=luminosity,text="ParticleNet inclusive")
+            plotVarStack(data,"mSD_T","results/plots/{0}/semileptonic/mSD{0}_T.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,10e5],xRange=[60,200],log=True,luminosity=luminosity,text="ParticleNet > 0.95")
+            plotVarStack(data,"mSD_T","results/plots/{0}/semileptonic/mSD{0}_lin_T.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,300],xRange=[60,200],log=False,luminosity=luminosity,text="ParticleNet > 0.95")
+            plotVarStack(data,"mSD_L","results/plots/{0}/semileptonic/mSD{0}_L.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,10e5],xRange=[60,200],log=True,luminosity=luminosity,text="0.8 < ParticleNet < 0.95")
+            plotVarStack(data,"mSD_L","results/plots/{0}/semileptonic/mSD{0}_lin_L.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,500],xRange=[60,200],log=False,luminosity=luminosity,text="0.8 < ParticleNet < 0.95")
+            plotVarStack(data,"mSD_AT","results/plots/{0}/semileptonic/mSD{0}_AT.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,10e5],xRange=[60,200],log=True,luminosity=luminosity,text="ParticleNet < 0.8")
+            plotVarStack(data,"mSD_AT","results/plots/{0}/semileptonic/mSD{0}_lin_AT.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,1500],xRange=[60,200],log=False,luminosity=luminosity,text="ParticleNet < 0.8")
 
 
 
 
-
-        #plotVarStack(data,"STbefore_I","results/plots/semileptonic/{0}/STbefore{0}_I.png".format(year),xTitle="ST [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e5],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
-
-
-        # plotTagJetCategories(data,"results/plots/semileptonic/{0}/mSDCats{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Jets/20 GeV",yRange=[10e0,3500],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
-        # plotTagJetCategories(data,"results/plots/semileptonic/{0}/mSDCats_pTLo{0}_I.png".format(year),pTBin="Lo",xTitle="Soft drop mass [GeV]",yTitle="Jets/20 GeV",yRange=[0,1000],xRange=[0,300],log=False,rebinX=2,text="300 GeV<$p_{T}$<500 GeV",luminosity=luminosity)
-        # plotTagJetCategories(data,"results/plots/semileptonic/{0}/mSDCats_pTHi{0}_I.png".format(year),pTBin="Hi",xTitle="Soft drop mass [GeV]",yTitle="Jets/20 GeV",yRange=[0,1000],xRange=[0,300],log=False,rebinX=2,text="$p_{T}$>500 GeV",luminosity=luminosity)
+        # plotTagJetCategories(data,"results/plots/{0}/semileptonic/mSDCats{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Jets/20 GeV",yRange=[10e0,3500],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
+        # plotTagJetCategories(data,"results/plots/{0}/semileptonic/mSDCats_pTLo{0}_I.png".format(year),pTBin="Lo",xTitle="Soft drop mass [GeV]",yTitle="Jets/20 GeV",yRange=[0,1000],xRange=[0,300],log=False,rebinX=2,text="300 GeV<$p_{T}$<500 GeV",luminosity=luminosity)
+        # plotTagJetCategories(data,"results/plots/{0}/semileptonic/mSDCats_pTHi{0}_I.png".format(year),pTBin="Hi",xTitle="Soft drop mass [GeV]",yTitle="Jets/20 GeV",yRange=[0,1000],xRange=[0,300],log=False,rebinX=2,text="$p_{T}$>500 GeV",luminosity=luminosity)
 
 
-        # plotVarMCStack(data,"unmatched_mSD_I","results/plots/semileptonic/{0}/mSD_unmatched{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
-        # plotVarMCStack(data,"bqq_mSD_I","results/plots/semileptonic/{0}/mSD_bqq{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
-        # plotVarMCStack(data,"bq_mSD_I","results/plots/semileptonic/{0}/mSD_bq{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
-        # plotVarMCStack(data,"qq_mSD_I","results/plots/semileptonic/{0}/mSD_qq{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
+        # plotVarMCStack(data,"unmatched_mSD_I","results/plots/{0}/semileptonic/mSD_unmatched{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
+        # plotVarMCStack(data,"bqq_mSD_I","results/plots/{0}/semileptonic/mSD_bqq{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
+        # plotVarMCStack(data,"bq_mSD_I","results/plots/{0}/semileptonic/mSD_bq{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
+        # plotVarMCStack(data,"qq_mSD_I","results/plots/{0}/semileptonic/mSD_qq{0}.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[0,None],xRange=[0,300],log=False,rebinX=2,luminosity=luminosity)
 

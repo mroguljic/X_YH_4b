@@ -13,7 +13,7 @@ for mx in MX:
             signalProcesses.append("MX{0}_MY{1}".format(mx,my))
 
 samples2016 = ["TTbar","TTbarSemi","TTbarMtt700","TTbarMtt1000","QCD700","QCD1000","QCD1500","QCD2000","JetHT2016B","JetHT2016C","JetHT2016D","JetHT2016E","JetHT2016F","JetHT2016G","JetHT2016H"]
-samples2017 = ["TTbar","TTbarSemi","TTbarSemi_incl","TTbarMtt700","TTbarMtt1000","QCD700","QCD1000","QCD1500","QCD2000","JetHT2017B","JetHT2017C","JetHT2017D","JetHT2017E","JetHT2017F"]
+samples2017 = ["TTbar","TTbarSemi","TTbarMtt700","TTbarMtt1000","QCD700","QCD1000","QCD1500","QCD2000","JetHT2017B","JetHT2017C","JetHT2017D","JetHT2017E","JetHT2017F"]
 samples2018 = ["TTbar","TTbarSemi","TTbarMtt700","TTbarMtt1000","QCD700","QCD1000","QCD1500","QCD2000","JetHT2018A","JetHT2018B","JetHT2018C","JetHT2018D"]
 
 if("2016" in iDir):
@@ -27,11 +27,10 @@ if("2018" in iDir):
     year=2018
     samples = samples2018
 
-    
-samples+=signalProcesses
+#samples+=signalProcesses
+samples=signalProcesses
 
 variations = ["nom","jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown","trigUp","trigDown","pnetUp","pnetDown"]
-variations = ["nom"]
 for process in samples:
     for variation in variations:
         if("pnet" in variation and "MX" not in process):
@@ -41,10 +40,8 @@ for process in samples:
         else:
             inputTag = variation
 
-        if("JetHT" in process and variation!="nom"):
-            continue
-        if("QCD" in process and variation!="nom"):
-            continue            
+        if(variation!="nom" and not ("MX" in process or "TTbar" in process)):
+            continue           
         inputFile = "{0}/{1}_{2}.root".format(iDir,process,inputTag)
         outputFile = os.path.join(outDir,"nonScaled/",process)
         outputFile = outputFile+".root"
