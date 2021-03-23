@@ -119,6 +119,9 @@ a.Define("LL","ScaledPnetH>0 && ScaledPnetY>0 && !(TT)")
 a.Define("L_AL","ScaledPnetH>0 && ScaledPnetY==0")
 a.Define("T_AL","ScaledPnetH==2 && ScaledPnetY==0")
 
+a.Define("NAL_T","ScaledPnetH==0 && ScaledPnetY==2 && pnetH>0.6")#Narrow validation region
+a.Define("NAL_L","ScaledPnetH==0 && ScaledPnetY==1 && pnetH>0.6")
+a.Define("NAL_AL","ScaledPnetH==0 && ScaledPnetY==0 && pnetH>0.6")
 #Delta Eta cut
 a.Cut("DeltaEtaSR","DeltaEta<1.3")
 nDeltaEta  = getNweighted(a,isData)
@@ -168,6 +171,23 @@ a.SetActiveNode(checkpoint)
 a.Cut("T_ALcut","T_AL==1")
 h2DT_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_T_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
 histos.append(h2DT_AL)
+
+#Narrow validation region
+a.SetActiveNode(checkpoint)
+a.Cut("NAL_TCut","NAL_T==1")
+h2DNAL_T  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_NAL_T'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
+histos.append(h2DNAL_T)
+nNAL_T = a.GetActiveNode().DataFrame.Count().GetValue()
+
+a.SetActiveNode(checkpoint)
+a.Cut("NAL_LCut","NAL_L==1")
+h2DNAL_L  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_NAL_L'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
+histos.append(h2DNAL_L)
+
+a.SetActiveNode(checkpoint)
+a.Cut("NAL_ALCut","NAL_AL==1")
+h2DNAL_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_NAL_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
+histos.append(h2DNAL_AL)
 
 
 
