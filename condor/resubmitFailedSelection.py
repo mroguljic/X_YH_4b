@@ -26,11 +26,13 @@ for sample in samples:
                 temp = r.TFile.Open(outputFile)
                 temp.Get("Events").GetEntriesFast()
                 varFlag = True                
-                # for variation in variations:
-                #     varFile = outputFile.replace("nom",variation)
-                #     if not(path.exists(varFile)):
-                #         print("Missing {0}".format(varFile))
-                #         varFlag = False
+                for variation in variations:
+                    if("JetHT" in outputFile or "SingleMuon" in outputFile or "QCD" in outputFile):
+                        continue
+                    varFile = outputFile.replace("nom",variation)
+                    if not(path.exists(varFile)):
+                        print("Missing {0}".format(varFile))
+                        varFlag = False
                 if(varFlag):
                     continue
             except:
