@@ -105,15 +105,15 @@ if("TTbar" in options.process):
     hMTT  = a.DataFrame.Histo1D(('{0}_MTT_skim'.format(options.process),';M_{TT} [GeV];;',30,0,3000.),"MTT","genWeight")
     histos.append(hMTT)
 
-if(year=="2016"):
+if(options.year=="2016"):
     deepJetM = 0.3093
     deepJetL = 0.0614
-elif(year=="2017"):
-    deepJetM = 0.3033
-    deepJetL = 0.0521 
-elif(year=="2018"):
-    deepJetM = 0.2770
-    deepJetL = 0.0494 
+elif(options.year=="2017"):
+    deepJetM = 0.3040 
+    deepJetL = 0.0532 
+elif(options.year=="2018"):
+    deepJetM = 0.2783 
+    deepJetL = 0.0490 
 else:
     print("Please specify data-taking year")
     sys.exit()
@@ -193,6 +193,10 @@ if(year=="2016"):
     a.Cut("pT","FatJet_pt0>350 && FatJet_pt1>350")
 else:
     a.Cut("pT","FatJet_pt0>450 && FatJet_pt1>450")
+
+a.Cut("mSD0Cut","mSD0>30")
+a.Cut("mSD1Cut","mSD1>30")
+
 npT = getNweighted(a,isData)
 
 
