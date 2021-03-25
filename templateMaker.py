@@ -10,10 +10,24 @@ from TIMBER.Analyzer import *
 
 def getNweighted(analyzer,isData):
     if not isData:
-        nWeighted = a.DataFrame.Sum("genWeight").GetValue()
+        nWeighted = analyzer.DataFrame.Sum("genWeight").GetValue()
     else:
-        nWeighted = a.DataFrame.Count().GetValue()
+        nWeighted = analyzer.DataFrame.Count().GetValue()
     return nWeighted
+
+def separateTopHistos(analyzer,process,region):
+    cats = {"unm":0,"qq":1,"bq":2,"bqq":3}
+
+    separatedHistos = []
+    beforeNode = analyzer.GetActiveNode()
+    for cat in cats:
+        analyzer.SetActiveNode(beforeNode)
+        analyzer.Cut("{0}_{1}_{2}_cut".format(process,cat,region),"jetCatY=={0}".format(cats[cat]))
+        hist = analyzer.DataFrame.Histo2D(('{0}_{1}_mJY_mJJ_{2}'.format(process,cat,region),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
+        separatedHistos.append(hist)
+    analyzer.SetActiveNode(beforeNode)
+    return separatedHistos
+
 
 
 parser = OptionParser()
@@ -111,17 +125,25 @@ else:
     a.Define("ScaledPnetH","TaggerCatH")
     a.Define("ScaledPnetY","TaggerCatY")
 
-a.Define("AL_T","ScaledPnetH==0 && ScaledPnetY==2")#validation region
-a.Define("AL_L","ScaledPnetH==0 && ScaledPnetY==1")
-a.Define("AL_AL","ScaledPnetH==0 && ScaledPnetY==0")
-a.Define("TT","ScaledPnetH==2 && ScaledPnetY==2")#signal region
-a.Define("LL","ScaledPnetH>0 && ScaledPnetY>0 && !(TT)")
-a.Define("L_AL","ScaledPnetH>0 && ScaledPnetY==0")
-a.Define("T_AL","ScaledPnetH==2 && ScaledPnetY==0")
+# a.Define("AL_T","ScaledPnetH==0 && ScaledPnetY==2")#validation region
+# a.Define("AL_L","ScaledPnetH==0 && ScaledPnetY==1")
+# a.Define("AL_AL","ScaledPnetH==0 && ScaledPnetY==0")
+# a.Define("TT","ScaledPnetH==2 && ScaledPnetY==2")#signal region
+# a.Define("LL","ScaledPnetH>0 && ScaledPnetY>0 && !(TT)")
+# a.Define("L_AL","ScaledPnetH>0 && ScaledPnetY==0")
+# a.Define("T_AL","ScaledPnetH==2 && ScaledPnetY==0")
 
-a.Define("NAL_T","ScaledPnetH==0 && ScaledPnetY==2 && pnetH>0.6")#Narrow validation region
-a.Define("NAL_L","ScaledPnetH==0 && ScaledPnetY==1 && pnetH>0.6")
-a.Define("NAL_AL","ScaledPnetH==0 && ScaledPnetY==0 && pnetH>0.6")
+# a.Define("NAL_T","ScaledPnetH==0 && ScaledPnetY==2 && pnetH>0.6")#Narrow validation region
+# a.Define("NAL_L","ScaledPnetH==0 && ScaledPnetY==1 && pnetH>0.6")
+# a.Define("NAL_AL","ScaledPnetH==0 && ScaledPnetY==0 && pnetH>0.6")
+
+regionDefs = [("AL_T","ScaledPnetH==0 && ScaledPnetY==2"),("AL_L","ScaledPnetH==0 && ScaledPnetY==1"),("AL_AL","ScaledPnetH==0 && ScaledPnetY==0"),
+("TT","ScaledPnetH==2 && ScaledPnetY==2"),("LL","ScaledPnetH>0 && ScaledPnetY>0 && !(TT)"),("L_AL","ScaledPnetH>0 && ScaledPnetY==0"),("T_AL","ScaledPnetH==2 && ScaledPnetY==0"),
+("NAL_T","ScaledPnetH==0 && ScaledPnetY==2 && pnetH>0.6"),("NAL_L","ScaledPnetH==0 && ScaledPnetY==1 && pnetH>0.6"),("NAL_AL","ScaledPnetH==0 && ScaledPnetY==0 && pnetH>0.6")
+]#TT needs to be defined before LL which is why we're using something that's ordered (list)
+regionYields = {}
+
+
 #Delta Eta cut
 a.Cut("DeltaEtaSR","DeltaEta<1.3")
 nDeltaEta  = getNweighted(a,isData)
@@ -131,64 +153,20 @@ if("TTbar" in options.process):
 
 a.Cut("MJY_SR","MJY>60")
 
+for region,cut in regionDefs:
+    a.Define(region,cut)
+
 checkpoint = a.GetActiveNode()
-a.Cut("AL_TCut","AL_T==1")
-h2DAL_T  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_T'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DAL_T)
-nAL_T = getNweighted(a,isData)
 
-a.SetActiveNode(checkpoint)
-a.Cut("AL_LCut","AL_L==1")
-h2DAL_L  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_L'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DAL_L)
-nAL_L = getNweighted(a,isData)
-
-a.SetActiveNode(checkpoint)
-a.Cut("AL_ALCut","AL_AL==1")
-h2DAL_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_AL_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DAL_AL)
-nAL_AL = getNweighted(a,isData)
-
-a.SetActiveNode(checkpoint)
-a.Cut("TTcut","TT==1")
-h2DTT  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_TT'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DTT)
-nTT = getNweighted(a,isData)
-
-a.SetActiveNode(checkpoint)
-a.Cut("LLcut","LL==1")
-h2DLL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_LL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DLL)
-nLL = getNweighted(a,isData)
-
-a.SetActiveNode(checkpoint)
-a.Cut("L_ALcut","L_AL==1")
-h2DL_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_L_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DL_AL)
-nL_AL = getNweighted(a,isData)
-
-a.SetActiveNode(checkpoint)
-a.Cut("T_ALcut","T_AL==1")
-h2DT_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_T_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DT_AL)
-
-#Narrow validation region
-a.SetActiveNode(checkpoint)
-a.Cut("NAL_TCut","NAL_T==1")
-h2DNAL_T  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_NAL_T'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DNAL_T)
-nNAL_T = a.GetActiveNode().DataFrame.Count().GetValue()
-
-a.SetActiveNode(checkpoint)
-a.Cut("NAL_LCut","NAL_L==1")
-h2DNAL_L  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_NAL_L'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DNAL_L)
-
-a.SetActiveNode(checkpoint)
-a.Cut("NAL_ALCut","NAL_AL==1")
-h2DNAL_AL  = a.DataFrame.Histo2D(('{0}_mJY_mJJ_NAL_AL'.format(options.process),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
-histos.append(h2DNAL_AL)
-
+for region,cut in regionDefs:
+    a.SetActiveNode(checkpoint)
+    a.Cut("{0}_cut".format(region),cut)
+    h2d = a.DataFrame.Histo2D(('{0}_mJY_mJJ_{1}'.format(options.process,region),';mJY [GeV];mJJ [GeV];',15,60,360,22,800.,3000.),"MJY","MJJ","evtWeight")
+    histos.append(h2d)
+    regionYields[region] = getNweighted(a,isData)
+    if("TTbar" in options.process):
+        categorizedHistos = separateTopHistos(a,options.process,region)
+        histos.extend(categorizedHistos)
 
 
 if(isData):
@@ -205,12 +183,12 @@ if(options.variation=="nom"):
         h.SetDirectory(0)
         if("cutflow" in hName.lower()):
             #"DeltaEta","TT","LL","L_AL","AL_T","AL_L","AL_AL"
-            h.SetBinContent(h.GetNbinsX(),nAL_AL)
-            h.SetBinContent(h.GetNbinsX()-1,nAL_L)
-            h.SetBinContent(h.GetNbinsX()-2,nAL_T)
-            h.SetBinContent(h.GetNbinsX()-3,nL_AL)
-            h.SetBinContent(h.GetNbinsX()-4,nLL)
-            h.SetBinContent(h.GetNbinsX()-5,nTT)
+            h.SetBinContent(h.GetNbinsX(),regionYields["AL_AL"])
+            h.SetBinContent(h.GetNbinsX()-1,regionYields["AL_L"])
+            h.SetBinContent(h.GetNbinsX()-2,regionYields["AL_T"])
+            h.SetBinContent(h.GetNbinsX()-3,regionYields["L_AL"])
+            h.SetBinContent(h.GetNbinsX()-4,regionYields["LL"])
+            h.SetBinContent(h.GetNbinsX()-5,regionYields["TT"])
             h.SetBinContent(h.GetNbinsX()-6,nDeltaEta)
             h.GetXaxis().SetBinLabel(h.GetNbinsX()-6,"DeltaEta < 1.3")
         histos.append(h)
