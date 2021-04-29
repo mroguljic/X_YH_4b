@@ -37,6 +37,10 @@ parser.add_option('-m', metavar='mode', type='string', action='store',
                 default   =   "RECREATE",
                 dest      =   'mode',
                 help      =   'RECREATE or UPDATE outputfile')
+parser.add_option('-w', '--wp', metavar='working points',nargs=2, action="store", type=float,
+                default   =   (0.8,0.95),
+                dest      =   'wps',
+                help      =   'Loose and tight working points')
 
 (options, args) = parser.parse_args()
 #SF and JES/R have their own event trees
@@ -152,8 +156,8 @@ elif(variation=="trigDown"):
     weightString = "weight__TriggerEff_down"
 
 
-pnetHi = 0.95
-pnetLo = 0.80
+pnetHi = options.wps[1]
+pnetLo = options.wps[0]
 pnetCuts = ["probeJetPNet>{0}".format(pnetHi),"probeJetPNet>{0} && probeJetPNet<{1}".format(pnetLo,pnetHi),"probeJetPNet>-0.001","probeJetPNet>-0.001 && probeJetPNet<{0}".format(pnetLo)]
 pnetTags = ["T","L","I","AT"]
 
@@ -186,9 +190,9 @@ for i in range(len(pnetCuts)):
         a.Cut("bqq_{0}".format(pnetTags[i]),"partonCategory==3")
         hMassInclusive = a.DataFrame.Histo1D(('{0}_bqq_mSD_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         beforePTcut = a.GetActiveNode()
-        hMassLoPT = a.Cut("ptLoCutbqq_{0}".format(pnetTags[i]),"probeJetPt<500 && probeJetPt>300").DataFrame.Histo1D(('{0}_bqq_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassLoPT = a.Cut("ptLoCutbqq_{0}".format(pnetTags[i]),"probeJetPt<600 && probeJetPt>300").DataFrame.Histo1D(('{0}_bqq_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         a.SetActiveNode(beforePTcut)
-        hMassHiPT = a.Cut("ptHiCutbqq_{0}".format(pnetTags[i]),"probeJetPt>500").DataFrame.Histo1D(('{0}_bqq_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassHiPT = a.Cut("ptHiCutbqq_{0}".format(pnetTags[i]),"probeJetPt>600").DataFrame.Histo1D(('{0}_bqq_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         histos.append(hMassLoPT)
         histos.append(hMassHiPT)
         histos.append(hMassInclusive)
@@ -197,9 +201,9 @@ for i in range(len(pnetCuts)):
         a.Cut("bq_{0}".format(pnetTags[i]),"partonCategory==2")
         hMassInclusive = a.DataFrame.Histo1D(('{0}_bq_mSD_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         beforePTcut = a.GetActiveNode()
-        hMassLoPT = a.Cut("ptLoCutbq_{0}".format(pnetTags[i]),"probeJetPt<500 && probeJetPt>300").DataFrame.Histo1D(('{0}_bq_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassLoPT = a.Cut("ptLoCutbq_{0}".format(pnetTags[i]),"probeJetPt<600 && probeJetPt>300").DataFrame.Histo1D(('{0}_bq_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         a.SetActiveNode(beforePTcut)
-        hMassHiPT = a.Cut("ptHiCutbq_{0}".format(pnetTags[i]),"probeJetPt>500").DataFrame.Histo1D(('{0}_bq_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassHiPT = a.Cut("ptHiCutbq_{0}".format(pnetTags[i]),"probeJetPt>600").DataFrame.Histo1D(('{0}_bq_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         histos.append(hMassLoPT)
         histos.append(hMassHiPT)
         histos.append(hMassInclusive)
@@ -208,9 +212,9 @@ for i in range(len(pnetCuts)):
         a.Cut("qq_{0}".format(pnetTags[i]),"partonCategory==1")
         hMassInclusive = a.DataFrame.Histo1D(('{0}_qq_mSD_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         beforePTcut = a.GetActiveNode()
-        hMassLoPT = a.Cut("ptLoCutqq_{0}".format(pnetTags[i]),"probeJetPt<500 && probeJetPt>300").DataFrame.Histo1D(('{0}_qq_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassLoPT = a.Cut("ptLoCutqq_{0}".format(pnetTags[i]),"probeJetPt<600 && probeJetPt>300").DataFrame.Histo1D(('{0}_qq_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         a.SetActiveNode(beforePTcut)
-        hMassHiPT = a.Cut("ptHiCutqq_{0}".format(pnetTags[i]),"probeJetPt>500").DataFrame.Histo1D(('{0}_qq_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassHiPT = a.Cut("ptHiCutqq_{0}".format(pnetTags[i]),"probeJetPt>600").DataFrame.Histo1D(('{0}_qq_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         histos.append(hMassLoPT)
         histos.append(hMassHiPT)
         histos.append(hMassInclusive)
@@ -219,18 +223,18 @@ for i in range(len(pnetCuts)):
         a.Cut("unmatched_{0}".format(pnetTags[i]),"partonCategory==0")
         hMassInclusive = a.DataFrame.Histo1D(('{0}_unmatched_mSD_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         beforePTcut = a.GetActiveNode()
-        hMassLoPT = a.Cut("ptLoCutunm_{0}".format(pnetTags[i]),"probeJetPt<500 && probeJetPt>300").DataFrame.Histo1D(('{0}_unmatched_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassLoPT = a.Cut("ptLoCutunm_{0}".format(pnetTags[i]),"probeJetPt<600 && probeJetPt>300").DataFrame.Histo1D(('{0}_unmatched_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         a.SetActiveNode(beforePTcut)
-        hMassHiPT = a.Cut("ptHiCutunm_{0}".format(pnetTags[i]),"probeJetPt>500").DataFrame.Histo1D(('{0}_unmatched_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassHiPT = a.Cut("ptHiCutunm_{0}".format(pnetTags[i]),"probeJetPt>600").DataFrame.Histo1D(('{0}_unmatched_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         histos.append(hMassLoPT)
         histos.append(hMassHiPT)
         histos.append(hMassInclusive)
     else:
         hMassInclusive = a.DataFrame.Histo1D(('{0}_mSD_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         beforePTcut = a.GetActiveNode()
-        hMassLoPT = a.Cut("ptLoCut_{0}".format(pnetTags[i]),"probeJetPt<500 && probeJetPt>300").DataFrame.Histo1D(('{0}_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassLoPT = a.Cut("ptLoCut_{0}".format(pnetTags[i]),"probeJetPt<600 && probeJetPt>300").DataFrame.Histo1D(('{0}_mSD_pTLo_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         a.SetActiveNode(beforePTcut)
-        hMassHiPT = a.Cut("ptHiCut_{0}".format(pnetTags[i]),"probeJetPt>500").DataFrame.Histo1D(('{0}_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
+        hMassHiPT = a.Cut("ptHiCut_{0}".format(pnetTags[i]),"probeJetPt>600").DataFrame.Histo1D(('{0}_mSD_pTHi_{1}'.format(options.process,pnetTags[i]),';mSD [GeV];Jets/10 GeV;',14,60,200),probeJetMassVar,weightString)
         histos.append(hMassLoPT)
         histos.append(hMassHiPT)
         histos.append(hMassInclusive)
@@ -248,11 +252,11 @@ for key in in_f.GetListOfKeys():
 
 #Rename variations to something understandable
 renamedVariation     = variation
-variationRenamers    = {"sf":"btagSFAK4","jms":"jmsAK8","jmr":"jmrAK8","id":"muonID","iso":"muonIso","trig":"muonTrig"}
-varBase          = variation.replace("Down","")
-varBase          = variation.replace("Up","")
-if varBase in variationRenamers:
-    renamedVariation = variation.replace(varBase,variationRenamers[varBase])
+# variationRenamers    = {"sf":"btagSFAK4","jms":"jmsAK8","jmr":"jmrAK8","id":"muonID","iso":"muonIso","trig":"muonTrig"}
+# varBase          = variation.replace("Down","")
+# varBase          = varBase.replace("Up","")
+# if varBase in variationRenamers:
+#     renamedVariation = variation.replace(varBase,variationRenamers[varBase])
 out_f = ROOT.TFile(options.output,options.mode)
 out_f.cd()
 for h in histos:
