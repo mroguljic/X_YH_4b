@@ -91,6 +91,9 @@ else:
 if not isData:
     triggerCorr = Correction('triggerCorrection',"TIMBER/Framework/src/EffLoader.cc",constructor=['"../TIMBER/TIMBER/data/TriggerEffs/TriggerEffs.root"','"triggEff_{0}"'.format(year)],corrtype='weight')
     a.AddCorrection(triggerCorr, evalArgs={'xval':'MJJ','yval':0,'zval':0})
+    if("TTbar" in options.process):
+        ptrwtCorr = Correction('topPtReweighting',"TIMBER/Framework/src/TopPt_reweighting.cc",corrtype='weight')
+        a.AddCorrection(ptrwtCorr, evalArgs={'genTPt':'topPt','genTbarPt':'antitopPt'})
 
 if isData:
     a.Define("genWeight","1")
@@ -104,6 +107,11 @@ if("trig" in variation):
         weightString = "weight__triggerCorrection_up"
     if(variation=="trigDown"):
         weightString = "weight__triggerCorrection_down"
+if("ptRwt" in variation):
+    if(variation=="ptRwtUp"):
+        weightString = "weight__topPtReweighting_up"
+    if(variation=="ptRwtDown"):
+        weightString = "weight__topPtReweighting_down"
 
 a.Define("evtWeight","genWeight*{0}".format(weightString))
 
@@ -125,22 +133,12 @@ else:
     a.Define("ScaledPnetH","TaggerCatH")
     a.Define("ScaledPnetY","TaggerCatY")
 
-# a.Define("AL_T","ScaledPnetH==0 && ScaledPnetY==2")#validation region
-# a.Define("AL_L","ScaledPnetH==0 && ScaledPnetY==1")
-# a.Define("AL_AL","ScaledPnetH==0 && ScaledPnetY==0")
-# a.Define("TT","ScaledPnetH==2 && ScaledPnetY==2")#signal region
-# a.Define("LL","ScaledPnetH>0 && ScaledPnetY>0 && !(TT)")
-# a.Define("L_AL","ScaledPnetH>0 && ScaledPnetY==0")
-# a.Define("T_AL","ScaledPnetH==2 && ScaledPnetY==0")
 
-# a.Define("NAL_T","ScaledPnetH==0 && ScaledPnetY==2 && pnetH>0.6")#Narrow validation region
-# a.Define("NAL_L","ScaledPnetH==0 && ScaledPnetY==1 && pnetH>0.6")
-# a.Define("NAL_AL","ScaledPnetH==0 && ScaledPnetY==0 && pnetH>0.6")
 
 regionDefs = [("AL_T","ScaledPnetH==0 && ScaledPnetY==2"),("AL_L","ScaledPnetH==0 && ScaledPnetY==1"),("AL_AL","ScaledPnetH==0 && ScaledPnetY==0"),
 ("TT","ScaledPnetH==2 && ScaledPnetY==2"),("LL","ScaledPnetH>0 && ScaledPnetY>0 && !(TT)"),("L_AL","ScaledPnetH>0 && ScaledPnetY==0"),("T_AL","ScaledPnetH==2 && ScaledPnetY==0"),
-("NAL_T","ScaledPnetH==0 && ScaledPnetY==2 && pnetH>0.6"),("NAL_L","ScaledPnetH==0 && ScaledPnetY==1 && pnetH>0.6"),("NAL_AL","ScaledPnetH==0 && ScaledPnetY==0 && pnetH>0.6")
-]#TT needs to be defined before LL which is why we're using something that's ordered (list)
+("NAL_T","ScaledPnetH==0 && ScaledPnetY==2 && pnetH>0.6"),("NAL_L","ScaledPnetH==0 && ScaledPnetY==1 && pnetH>0.6"),("NAL_AL","ScaledPnetH==0 && ScaledPnetY==0 && pnetH>0.6"),
+("WAL_T","ScaledPnetH==0 && ScaledPnetY==2 && pnetH>0.2"),("WAL_L","ScaledPnetH==0 && ScaledPnetY==1 && pnetH>0.2"),("WAL_AL","ScaledPnetH==0 && ScaledPnetY==0 && pnetH>0.2")]#TT needs to be defined before LL which is why we're using something that's ordered (list)
 regionYields = {}
 
 
@@ -169,9 +167,6 @@ for region,cut in regionDefs:
         histos.extend(categorizedHistos)
 
 
-if(isData):
-    nTT = 0
-    nLL = 0
 #include histos from evt sel in the template file for nominal template
 if(options.variation=="nom"):
     in_f = ROOT.TFile(iFile)
