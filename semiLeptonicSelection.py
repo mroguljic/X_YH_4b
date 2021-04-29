@@ -230,6 +230,18 @@ if(isData):
     snapshotColumns = ["lPt","lEta","MET_pt","HT","ST","probeJetMass_nom","probeJetPt","probeJetPNet"]
 else:
     snapshotColumns = ["lPt","lEta","MET_pt","HT","ST","probeJetMass_nom","probeJetMass_jmsDown","probeJetMass_jmsUp","probeJetMass_jmrDown","probeJetMass_jmrUp","probeJetPt","probeJetPNet","partonCategory","genWeight"]
+
+
+if("TTbar" in options.process):
+    CompileCpp("TIMBER/Framework/TTstitching.cc") 
+    a.Define("topIdx","getPartIdx(nGenPart,GenPart_pdgId,GenPart_statusFlags,6)")
+    a.Define("antitopIdx","getPartIdx(nGenPart,GenPart_pdgId,GenPart_statusFlags,-6)")
+    a.Define("topPt",'GenPart_pt[topIdx]')
+    a.Define("antitopPt",'GenPart_pt[antitopIdx]')
+    snapshotColumns.append("topPt")
+    snapshotColumns.append("antitopPt")
+
+
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
 a.GetActiveNode().DataFrame.Snapshot("Events",outputFile,snapshotColumns,opts)
