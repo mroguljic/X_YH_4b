@@ -49,6 +49,7 @@ CompileCpp("TIMBER/Framework/deltaRMatching.cc")
 CompileCpp("TIMBER/Framework/taggerOrdering.cc") 
 CompileCpp("TIMBER/Framework/helperFunctions.cc") 
 CompileCpp("TIMBER/Framework/TTstitching.cc") 
+CompileCpp("TIMBER/Framework/SemileptonicFunctions.cc") 
 CompileCpp("TIMBER/Framework/src/JMSUncShifter.cc") 
 CompileCpp("JMSUncShifter jmsShifter = JMSUncShifter();") 
 CompileCpp("TIMBER/Framework/src/JMRUncSmearer.cc") 
@@ -56,7 +57,7 @@ CompileCpp("JMRUncSmearer jmrSmearer = JMRUncSmearer();")
 
 
 varName = options.variation
-if(varName=="nom"):
+if(varName=="nom" or "MJYrot" in varName):
     ptVar  = "FatJet_pt_nom"
 elif("jm" in varName):#jmr,jms
     ptVar  = "FatJet_pt_nom"
@@ -64,6 +65,11 @@ elif("je" in varName):#jes,jer
     ptVar  = "FatJet_pt_{0}".format(varName.replace("jes","jesTotal"))
 else:
     print("Not recognizing shape uncertainty {0}, exiting".format(varName))        
+    sys.exit()
+
+
+if("MJYrot" in varName and not "TTbar" in options.process):
+    print("Not running MYJ rotation for {0}".format(options.process))
     sys.exit()
 
 a = analyzer(options.input)
@@ -144,13 +150,14 @@ nTrig = getNweighted(a,isData)
 
 #Jet(s) definition
 a.Cut("nFatJet","nFatJet>1")
+a.Cut("ID","FatJet_jetId[0]>3 && FatJet_jetId[1]>3")#bit 1 is loose, bit 2 is tight, bit3 is tightlepVeto
+nJetID = getNweighted(a,isData)
 if(year=="2016"):
     a.Cut("Eta","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
 else:
     a.Cut("Eta","abs(FatJet_eta[0])<2.5 && abs(FatJet_eta[1])<2.5")
 nEta = getNweighted(a,isData)
-a.Cut("ID","FatJet_jetId[0]>3 && FatJet_jetId[1]>3")#bit 1 is loose, bit 2 is tight, bit3 is tightlepVeto
-nJetID = getNweighted(a,isData)
+
 
 if(varName=="jmsUp"):
     msdShift = 2
@@ -189,13 +196,16 @@ evtColumns.Add("mSD1","correctedMSD[1]")
 
 a.Apply([evtColumns])
 
+a.Cut("mSD0Cut","mSD0>30")
+a.Cut("mSD1Cut","mSD1>30")
+
+nmSD = getNweighted(a,isData)
+
+
 if(year=="2016"):
     a.Cut("pT","FatJet_pt0>350 && FatJet_pt1>350")
 else:
     a.Cut("pT","FatJet_pt0>450 && FatJet_pt1>450")
-
-a.Cut("mSD0Cut","mSD0>30")
-a.Cut("mSD1Cut","mSD1>30")
 
 npT = getNweighted(a,isData)
 
@@ -243,7 +253,7 @@ for nkey in nminusOneNodes.keys():
     #print(nkey)
     if nkey == 'full': continue
     var = nkey.replace('_cut','').replace('minus_','')
-    hist = nminusOneNodes[nkey].DataFrame.Histo1D(("{0}_nm1_{1}".format(options.process,var),"nMinusOne {0}".format(var),nMinusOneLimits[var][2],nMinusOneLimits[var][0],nMinusOneLimits[var][1]),var)
+    hist = nminusOneNodes[nkey].DataFrame.Histo1D(("{0}_nm1_{1}".format(options.process,var),"nMinusOne {0}".format(var),nMinusOneLimits[var][2],nMinusOneLimits[var][0],nMinusOneLimits[var][1]),var,"genWeight")
     nminusOneHists.Add(var,hist)
 
 #Not applying delta eta, it will be applied later
@@ -285,7 +295,14 @@ nHiggs = getNweighted(a,isData)
 candidateColumns  = VarGroup("candidateColumns")
 candidateColumns.Add('ptjH','{0}[idxH]'.format(ptVar))
 candidateColumns.Add('ptjY','{0}[idxY]'.format(ptVar))
-candidateColumns.Add('MJY','correctedMSD[idxY]')
+if("MJYrot" in varName):
+    if(varName=="MJYrotDown"):
+        MJYrot_shift=-1
+    else:
+        MJYrot_shift=1
+    candidateColumns.Add('MJY','jmsShifter.rotateMsd(correctedMSD[idxY],MJJ,%i)'%(MJYrot_shift))
+else:
+    candidateColumns.Add('MJY','correctedMSD[idxY]')
 candidateColumns.Add('MJH','correctedMSD[idxH]')
 candidateColumns.Add('MJJ_halfReduced','MJJ - MJH + 125')
 candidateColumns.Add("pnetH","FatJet_particleNetMD_Xbb[idxH]/(FatJet_particleNetMD_Xbb[idxH]+FatJet_particleNetMD_QCD[idxH])")
@@ -371,6 +388,13 @@ if(isData):
     #return to event selection
     a.SetActiveNode(checkpoint)
 
+#Categorize TT jets
+if("TTbar" in options.process):
+    a.Define("jetCatH","classifyProbeJet(idxH, FatJet_phi, FatJet_eta, nGenPart, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
+    a.Define("jetCatY","classifyProbeJet(idxY, FatJet_phi, FatJet_eta, nGenPart, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
+
+
+
 outputFile = options.output.replace(".root","_{0}.root".format(varName))
 
 snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta"]
@@ -380,13 +404,15 @@ if not isData:
         snapshotColumns.append("MTT")
         snapshotColumns.append("topPt")
         snapshotColumns.append("antitopPt")
+        snapshotColumns.append("jetCatH")
+        snapshotColumns.append("jetCatY")
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
 opts.fLazy = False
 a.GetActiveNode().DataFrame.Snapshot("Events",outputFile,snapshotColumns,opts)
 
-cutFlowVars = [nProc,nSkimmed,nTrig,nEta,nJetID,npT,nLeptonVeto,nMJJ,nHiggs]
-cutFlowLabels = ["Processed","Skimmed","Trigger","Eta","JetID","pT","Lepton Veto","MJJ","Higgs mass","DeltaEta","TT","LL","L_AL","AL_T","AL_L","AL_AL"]#tagging bins will be filled out in template making
+cutFlowVars = [nProc,nSkimmed,nTrig,nJetID,nEta,nmSD,npT,nLeptonVeto,nMJJ,nHiggs]
+cutFlowLabels = ["Processed","Skimmed","Trigger","JetID","Eta","mSD","pT","Lepton Veto","MJJ","Higgs mass","DeltaEta","TT","LL","L_AL","AL_T","AL_L","AL_AL"]#tagging bins will be filled out in template making
 nCutFlowlabels = len(cutFlowLabels)
 hCutFlow = ROOT.TH1F('{0}_cutflow'.format(options.process),"Number of events after each cut",nCutFlowlabels,0.5,nCutFlowlabels+0.5)
 for i,label in enumerate(cutFlowLabels):
