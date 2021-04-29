@@ -180,15 +180,19 @@ elif(varName=="jmrDown"):
 else:
     msdSmear = 1
 
-smearString1 = "scaledMSD[0],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[0],{0}".format(msdSmear)
-smearString2 = "scaledMSD[1],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[1],{0}".format(msdSmear)
-a.Define("scaledMSD",'RVec<float> {jmsShifter.shiftMsd(FatJet_msoftdrop[0],"%s",%i),jmsShifter.shiftMsd(FatJet_msoftdrop[1],"%s",%i)}' %(options.year, msdShift, options.year,msdShift))
-a.Define("correctedMSD",'RVec<float> {jmrSmearer.smearMsd(%s),jmrSmearer.smearMsd(%s)}'%(smearString1,smearString2))
-
-
-
-
 evtColumns = VarGroup("Event columns")
+
+if isData:
+    evtColumns.Add("correctedMSD",'RVec<float> {FatJet_msoftdrop_nom[0],FatJet_msoftdrop_nom[1]}')
+else:
+    smearString1 = "scaledMSD[0],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[0],{0}".format(msdSmear)
+    smearString2 = "scaledMSD[1],1.1,GenJetAK8_mass,FatJet_genJetAK8Idx[1],{0}".format(msdSmear)
+    evtColumns.Add("scaledMSD",'RVec<float> {jmsShifter.shiftMsd(FatJet_msoftdrop[0],"%s",%i),jmsShifter.shiftMsd(FatJet_msoftdrop[1],"%s",%i)}' %(options.year, msdShift, options.year,msdShift))
+    evtColumns.Add("correctedMSD",'RVec<float> {jmrSmearer.smearMsd(%s),jmrSmearer.smearMsd(%s)}'%(smearString1,smearString2))
+
+
+
+
 evtColumns.Add("HT_2p4","calculateHT(nJet,Jet_eta,Jet_pt,30.0,2.4)")
 evtColumns.Add("HT_5p0","calculateHT(nJet,Jet_eta,Jet_pt,30.0,5.0)")
 evtColumns.Add("nAK4_2p4","nAK4(nJet,Jet_eta,Jet_pt,30.0,2.4)")
@@ -282,8 +286,8 @@ histos.append(h_pt0)
 histos.append(h_pt1)
 histos.append(h_eta0)
 histos.append(h_eta1)
-a.Define("pnet0","FatJet_ParticleNetMD_probXbb[0]")
-a.Define("pnet1","FatJet_ParticleNetMD_probXbb[1]")
+a.Define("pnet0","FatJet_ParticleNetMD_probXbb[0]/(FatJet_ParticleNetMD_probXbb[0]+FatJet_ParticleNetMD_probQCDb[0]+FatJet_ParticleNetMD_probQCDbb[0]+FatJet_ParticleNetMD_probQCDc[0]+FatJet_ParticleNetMD_probQCDcc[0]+FatJet_ParticleNetMD_probQCDothers[0])")
+a.Define("pnet1","FatJet_ParticleNetMD_probXbb[1]/(FatJet_ParticleNetMD_probXbb[1]+FatJet_ParticleNetMD_probQCDb[1]+FatJet_ParticleNetMD_probQCDbb[1]+FatJet_ParticleNetMD_probQCDc[1]+FatJet_ParticleNetMD_probQCDcc[1]+FatJet_ParticleNetMD_probQCDothers[1])")
 a.Define("pnetLow","particleNetLow(pnet0,pnet1)")
 a.Define("pnetHigh","particleNetHigh(pnet0,pnet1)")
 h_nm1_pnet0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet0'.format(options.process),';Leading jet ParticleNet score;Events/0.01;',1000,0,1),"pnet0")
@@ -316,8 +320,8 @@ candidateColumns.Add('ptjY','{0}[idxY]'.format(ptVar))
 candidateColumns.Add('MJY','correctedMSD[idxY]')
 candidateColumns.Add('MJH','correctedMSD[idxH]')
 candidateColumns.Add('MJJ_halfReduced','MJJ - MJH + 125')
-candidateColumns.Add("pnetH","FatJet_ParticleNetMD_probXbb[idxH]")
-candidateColumns.Add("pnetY","FatJet_ParticleNetMD_probXbb[idxY]")
+candidateColumns.Add("pnetH","FatJet_ParticleNetMD_probXbb[idxH]/(FatJet_ParticleNetMD_probXbb[idxH]+FatJet_ParticleNetMD_probQCDb[idxH]+FatJet_ParticleNetMD_probQCDbb[idxH]+FatJet_ParticleNetMD_probQCDc[idxH]+FatJet_ParticleNetMD_probQCDcc[idxH]+FatJet_ParticleNetMD_probQCDothers[idxH])")
+candidateColumns.Add("pnetY","FatJet_ParticleNetMD_probXbb[idxY]/(FatJet_ParticleNetMD_probXbb[idxY]+FatJet_ParticleNetMD_probQCDb[idxY]+FatJet_ParticleNetMD_probQCDbb[idxY]+FatJet_ParticleNetMD_probQCDc[idxY]+FatJet_ParticleNetMD_probQCDcc[idxY]+FatJet_ParticleNetMD_probQCDothers[idxY])")
 
 
 
