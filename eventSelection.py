@@ -43,7 +43,7 @@ parser.add_option('--var', metavar='variation', type='string', action='store',
 start_time = time.time()
 year = options.year
 
-CompileCpp('TIMBER/Framework/massMatching.cc') 
+CompileCpp('TIMBER/Framework/massMatching.cc')
 CompileCpp("TIMBER/Framework/common.cc") 
 CompileCpp("TIMBER/Framework/deltaRMatching.cc") 
 CompileCpp("TIMBER/Framework/taggerOrdering.cc") 
@@ -57,7 +57,7 @@ CompileCpp("JMRUncSmearer jmrSmearer = JMRUncSmearer();")
 
 
 varName = options.variation
-if(varName=="nom" or "MJYrot" in varName):
+if(varName=="nom"):
     ptVar  = "FatJet_pt_nom"
 elif("jm" in varName):#jmr,jms
     ptVar  = "FatJet_pt_nom"
@@ -65,11 +65,6 @@ elif("je" in varName):#jes,jer
     ptVar  = "FatJet_pt_{0}".format(varName.replace("jes","jesTotal"))
 else:
     print("Not recognizing shape uncertainty {0}, exiting".format(varName))        
-    sys.exit()
-
-
-if("MJYrot" in varName and not "TTbar" in options.process):
-    print("Not running MYJ rotation for {0}".format(options.process))
     sys.exit()
 
 a = analyzer(options.input)
@@ -111,22 +106,15 @@ if("TTbar" in options.process):
     hMTT  = a.DataFrame.Histo1D(('{0}_MTT_skim'.format(options.process),';M_{TT} [GeV];;',30,0,3000.),"MTT","genWeight")
     histos.append(hMTT)
 
-if(options.year=="2016"):
-    deepJetM = 0.3093
-    deepJetL = 0.0614
-elif(options.year=="2017"):
-    deepJetM = 0.3040 
-    deepJetL = 0.0532 
-elif(options.year=="2018"):
-    deepJetM = 0.2783 
-    deepJetL = 0.0490 
-else:
-    print("Please specify data-taking year")
-    sys.exit()
 
 nSkimmed = getNweighted(a,isData)
 
 MetFilters = ["Flag_BadPFMuonFilter","Flag_EcalDeadCellTriggerPrimitiveFilter","Flag_HBHENoiseIsoFilter","Flag_HBHENoiseFilter","Flag_globalSuperTightHalo2016Filter","Flag_goodVertices"]
+if(isData):
+    MetFilters.append("Flag_eeBadScFilter")
+if(year!="2016"):
+    MetFilters.append("Flag_ecalBadCalibFilter")
+    MetFilters.append("Flag_eeBadScFilter")
 MetFiltersString = a.GetFlagString(MetFilters)
 
 if(year=="2016"):
@@ -139,10 +127,10 @@ elif(year=="2018"):
    triggerList=["HLT_PFHT1050","HLT_AK8PFJet400_TrimMass30","HLT_AK8PFJet420_TrimMass30","HLT_AK8PFHT800_TrimMass50",
 "HLT_PFJet500","HLT_AK8PFJet500"]
 
+a.Cut("MET",MetFiltersString)
 beforeTrigCheckpoint = a.GetActiveNode()
 if(isData):
     triggersStringAll = a.GetTriggerString(triggerList)    
-    a.Cut("MET",MetFiltersString)
     a.Cut("Triggers",triggersStringAll)
     #Only applying trigger to data, will apply trigger turn-on to MC
 nTrig = getNweighted(a,isData)
@@ -150,7 +138,7 @@ nTrig = getNweighted(a,isData)
 
 #Jet(s) definition
 a.Cut("nFatJet","nFatJet>1")
-a.Cut("ID","FatJet_jetId[0]>3 && FatJet_jetId[1]>3")#bit 1 is loose, bit 2 is tight, bit3 is tightlepVeto
+a.Cut("ID","FatJet_jetId[0]>1 && FatJet_jetId[1]>1")#bit 1 is loose, bit 2 is tight, bit3 is tightlepVeto, we select tight
 nJetID = getNweighted(a,isData)
 if(year=="2016"):
     a.Cut("Eta","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
@@ -175,29 +163,27 @@ else:
 
 evtColumns = VarGroup("Event columns")
 if isData:
-    evtColumns.Add("correctedMSD",'RVec<float> {FatJet_msoftdrop_nom[0],FatJet_msoftdrop_nom[1]}')
+    evtColumns.Add("correctedMSD",'RVec<float> {FatJet_msoftdrop[0],FatJet_msoftdrop[1]}')
 else:
     smearString1 = "scaledMSD[0],1.1,nGenJetAK8,GenJetAK8_mass,FatJet_genJetAK8Idx[0],{0}".format(msdSmear)
     smearString2 = "scaledMSD[1],1.1,nGenJetAK8,GenJetAK8_mass,FatJet_genJetAK8Idx[1],{0}".format(msdSmear)
     evtColumns.Add("scaledMSD",'RVec<float> {jmsShifter.shiftMsd(FatJet_msoftdrop[0],"%s",%i),jmsShifter.shiftMsd(FatJet_msoftdrop[1],"%s",%i)}' %(year, msdShift, year,msdShift))
     evtColumns.Add("correctedMSD",'RVec<float> {jmrSmearer.smearMsd(%s),jmrSmearer.smearMsd(%s)}'%(smearString1,smearString2))
-evtColumns.Add("HT_2p4","calculateHT(nJet,Jet_eta,Jet_pt,30.0,2.4)")
-evtColumns.Add("HT_5p0","calculateHT(nJet,Jet_eta,Jet_pt,30.0,5.0)")
-evtColumns.Add("nAK4_2p4","nAK4(nJet,Jet_eta,Jet_pt,30.0,2.4)")
-evtColumns.Add("nAK4_5p0","nAK4(nJet,Jet_eta,Jet_pt,30.0,5.0)")
-evtColumns.Add("n_bAK4","n_bAK4(nJet,Jet_eta,Jet_phi,Jet_pt,Jet_btagDeepB,{0},nFatJet,FatJet_eta,FatJet_phi)".format(deepJetM))
-evtColumns.Add("n_nonbAK4","n_nonbAK4(nJet,Jet_eta,Jet_phi,Jet_pt,Jet_btagDeepB,{0},nFatJet,FatJet_eta,FatJet_phi)".format(deepJetL))
+
 evtColumns.Add("FatJet_pt0","{0}[0]".format(ptVar))
 evtColumns.Add("FatJet_pt1","{0}[1]".format(ptVar))
 evtColumns.Add("FatJet_eta0","FatJet_eta[0]")
 evtColumns.Add("FatJet_eta1","FatJet_eta[1]")
+evtColumns.Add("FatJet_phi0","FatJet_phi[0]")
+evtColumns.Add("FatJet_phi1","FatJet_phi[1]")
 evtColumns.Add("mSD0","correctedMSD[0]")
 evtColumns.Add("mSD1","correctedMSD[1]")
 
 a.Apply([evtColumns])
 
-a.Cut("mSD0Cut","mSD0>30")
-a.Cut("mSD1Cut","mSD1>30")
+a.Cut("mSD0Cut","mSD0>60")
+a.Cut("mSD1Cut","mSD1>60")
+
 
 nmSD = getNweighted(a,isData)
 
@@ -210,23 +196,25 @@ else:
 npT = getNweighted(a,isData)
 
 
-a.Define("nEle","nElectrons(nElectron,Electron_cutBased,0,Electron_pt,20)")
+a.Define("nEle","nElectrons(nElectron,Electron_cutBased,0,Electron_pt,20,Electron_eta)")
 #0:fail,1:veto,2:loose,3:medium,4:tight
 #condition is, cutBased>cut
-a.Define("nMu","nMuons(nMuon,Muon_looseId,Muon_pfIsoId,0,Muon_pt,20)")
+a.Define("nMu","nMuons(nMuon,Muon_looseId,Muon_pfIsoId,0,Muon_pt,20,Muon_eta)")
 #1=PFIsoVeryLoose, 2=PFIsoLoose, 3=PFIsoMedium, 4=PFIsoTight, 5=PFIsoVeryTight, 6=PFIsoVeryVeryTight
 #condition is, pfIsoId>cut
 a.Cut("LeptonVeto","nMu==0 && nEle==0")
 nLeptonVeto = getNweighted(a,isData)
 
-h_pt0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_pt0_jetSel'.format(options.process),';Leading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt0","genWeight")
-h_pt1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_pt1_jetSel'.format(options.process),';Subleading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt1","genWeight")
-h_eta0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_eta0_jetSel'.format(options.process),';Leading AK8 jet eta;Jets/0.1;',50,-2.5,2.5),"FatJet_eta0","genWeight")
-h_eta1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_eta1_jetSel'.format(options.process),';Subleading AK8 jet eta;Jets/0.1;',50,-2.5,2.5),"FatJet_eta1","genWeight")
-histos.append(h_pt0)
-histos.append(h_pt1)
-histos.append(h_eta0)
-histos.append(h_eta1)
+# h_pt0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_pt0_jetSel'.format(options.process),';Leading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt0","genWeight")
+# h_pt1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_pt1_jetSel'.format(options.process),';Subleading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt1","genWeight")
+# h_eta0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_eta0_jetSel'.format(options.process),';Leading AK8 jet eta;Jets/0.1;',100,-2.5,2.5),"FatJet_eta0","genWeight")
+# h_eta1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_eta1_jetSel'.format(options.process),';Subleading AK8 jet eta;Jets/0.1;',100,-2.5,2.5),"FatJet_eta1","genWeight")
+# h_phi0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_phi0_jetSel'.format(options.process),';Leading AK8 jet eta;Jets/0.1;',160,-4,4),"FatJet_phi0","genWeight")
+# h_phi1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_phi1_jetSel'.format(options.process),';Subleading AK8 jet eta;Jets/0.1;',160,-4,4),"FatJet_phi1","genWeight")
+# histos.append(h_pt0)
+# histos.append(h_pt1)
+# histos.append(h_eta0)
+# histos.append(h_eta1)
 
 
 
@@ -261,27 +249,32 @@ a.SetActiveNode(beforeNM1checkpoint)
 a.Cut("MJJ_cut","MJJ>700")
 nMJJ = getNweighted(a,isData)
 
-h_pt0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_pt0_presel'.format(options.process),';Leading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt0","genWeight")
-h_pt1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_pt1_presel'.format(options.process),';Subleading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt1","genWeight")
-h_eta0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_eta0_presel'.format(options.process),';Leading AK8 jet eta;Jets/0.1;',50,-2.5,2.5),"FatJet_eta0","genWeight")
-h_eta1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_eta1_presel'.format(options.process),';Subleading AK8 jet eta;Jets/0.1;',50,-2.5,2.5),"FatJet_eta1","genWeight")
-
-histos.append(h_pt0)
-histos.append(h_pt1)
-histos.append(h_eta0)
-histos.append(h_eta1)
 a.Define("pnet0","FatJet_particleNetMD_Xbb[0]/(FatJet_particleNetMD_Xbb[0]+FatJet_particleNetMD_QCD[0])")
 a.Define("pnet1","FatJet_particleNetMD_Xbb[1]/(FatJet_particleNetMD_Xbb[1]+FatJet_particleNetMD_QCD[1])")
 a.Define("pnetLow","particleNetLow(pnet0,pnet1)")
 a.Define("pnetHigh","particleNetHigh(pnet0,pnet1)")
-h_nm1_pnet0 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet0'.format(options.process),';Leading jet ParticleNet score;Events/0.01;',1000,0,1),"pnet0","genWeight")
-h_nm1_pnet1 = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet1'.format(options.process),';Subleading jet ParticleNet score;Events/0.01;',1000,0,1),"pnet1","genWeight")
-h_nm1_pnetLow = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnetLow'.format(options.process),';Lower ParticleNet score;Events/0.01;',1000,0,1),"pnetLow","genWeight")
-h_nm1_pnetHigh = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnetHigh'.format(options.process),';Higher ParticleNet score;Events/0.01;',1000,0,1),"pnetHigh","genWeight")
+h_nm1_pnet0     = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet0'.format(options.process),';Leading jet ParticleNet score;Events/0.01;',1000,0,1),"pnet0","genWeight")
+h_nm1_pnet1     = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet1'.format(options.process),';Subleading jet ParticleNet score;Events/0.01;',1000,0,1),"pnet1","genWeight")
+h_nm1_pnetLow   = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnetLow'.format(options.process),';Lower ParticleNet score;Events/0.01;',1000,0,1),"pnetLow","genWeight")
+h_nm1_pnetHigh  = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnetHigh'.format(options.process),';Higher ParticleNet score;Events/0.01;',1000,0,1),"pnetHigh","genWeight")
+h_nm1_pt0       = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pt0'.format(options.process),';Leading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt0","genWeight")
+h_nm1_pt1       = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pt1'.format(options.process),';Subleading AK8 jet pT;Jets/10 GeV;',300,0,3000),"FatJet_pt1","genWeight")
+h_nm1_eta0      = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_eta0'.format(options.process),';Leading AK8 jet eta;Jets/0.05;',100,-2.5,2.5),"FatJet_eta0","genWeight")
+h_nm1_eta1      = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_eta1'.format(options.process),';Subleading AK8 jet eta;Jets/0.05;',100,-2.5,2.5),"FatJet_eta1","genWeight")
+h_nm1_phi0      = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_phi0'.format(options.process),';Leading AK8 jet phi;Jets/0.05;',160,-4,4),"FatJet_phi0","genWeight")
+h_nm1_phi1      = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_phi1'.format(options.process),';Subleading AK8 jet phi;Jets/0.05;',160,-4,4),"FatJet_phi1","genWeight")
+
+
 histos.append(h_nm1_pnet1)
 histos.append(h_nm1_pnet0)
 histos.append(h_nm1_pnetLow)
 histos.append(h_nm1_pnetHigh)
+histos.append(h_nm1_pt0)
+histos.append(h_nm1_pt1)
+histos.append(h_nm1_eta0)
+histos.append(h_nm1_eta1)
+histos.append(h_nm1_phi0)
+histos.append(h_nm1_phi1)
 
 idxColumns = VarGroup("idxColumns")
 idxColumns.Add("idxH","higgsMassMatchingAlt(mSD0,mSD1)")
@@ -295,14 +288,8 @@ nHiggs = getNweighted(a,isData)
 candidateColumns  = VarGroup("candidateColumns")
 candidateColumns.Add('ptjH','{0}[idxH]'.format(ptVar))
 candidateColumns.Add('ptjY','{0}[idxY]'.format(ptVar))
-if("MJYrot" in varName):
-    if(varName=="MJYrotDown"):
-        MJYrot_shift=-1
-    else:
-        MJYrot_shift=1
-    candidateColumns.Add('MJY','jmsShifter.rotateMsd(correctedMSD[idxY],MJJ,%i)'%(MJYrot_shift))
-else:
-    candidateColumns.Add('MJY','correctedMSD[idxY]')
+
+candidateColumns.Add('MJY','correctedMSD[idxY]')
 candidateColumns.Add('MJH','correctedMSD[idxH]')
 candidateColumns.Add('MJJ_halfReduced','MJJ - MJH + 125')
 candidateColumns.Add("pnetH","FatJet_particleNetMD_Xbb[idxH]/(FatJet_particleNetMD_Xbb[idxH]+FatJet_particleNetMD_QCD[idxH])")
@@ -354,6 +341,7 @@ if(isData):
     idxCuts.name = "idxCuts For Trigger"
     a.Apply([dijetColumns,idxColumns,idxCuts,candidateColumns])
     a.Cut("MJJ_cut_trigger","MJJ>700")
+    a.Cut("MJY_cut_trigger","MJY>60")
     triggersStringAll = a.GetTriggerString(triggerList)  
 
     DEtaStrings = ["DeltaEta>0","DeltaEta<1.3","DeltaEta>1.5"]
@@ -363,27 +351,20 @@ if(isData):
         a.SetActiveNode(detaCheckpoint)
         a.Cut("deta_{0}".format(tag),DEtaStrings[i])
 
-        h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers_{1}'.format(options.process,tag),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,700,3200,30,30,330),'MJJ','MJY',"genWeight")
+        h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers_{1}'.format(options.process,tag),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,700,3200,26,60,320),'MJJ','MJY',"genWeight")
         h_pT0noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT0noTriggers_{1}'.format(options.process,tag),';Leading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt0","genWeight")
         h_pT1noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT1noTriggers_{1}'.format(options.process,tag),';Subleading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt1","genWeight")
-        h_HT2p4noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT2p4noTriggers_{1}'.format(options.process,tag),';HT [GeV]; Events/10 GeV;',200,0,2000),"HT_2p4","genWeight")
-        h_HT5p0noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT5p0noTriggers_{1}'.format(options.process,tag),';HT, eta<5.0 [GeV]; Events/10 GeV;',200,0,2000),"HT_5p0","genWeight")
         a.Cut("triggers_{0}".format(tag),triggersStringAll)
-        h_triggersAll = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersAll_{1}'.format(options.process,tag),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,700,3200,30,30,330),'MJJ','MJY',"genWeight")
+        h_triggersAll = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersAll_{1}'.format(options.process,tag),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,700,3200,26,60,320),'MJJ','MJY',"genWeight")
         h_pT0triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT0triggersAll_{1}'.format(options.process,tag),';Leading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt0","genWeight")
         h_pT1triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT1triggersAll_{1}'.format(options.process,tag),';Subleading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt1","genWeight")
-        h_HT2p4triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT2p4triggersAll_{1}'.format(options.process,tag),';HT [GeV]; Events/10 GeV;',200,0,2000),"HT_2p4","genWeight")
-        h_HT5p0triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_HT5p0triggersAll_{1}'.format(options.process,tag),';HT, eta<5.0 [GeV]; Events/10 GeV;',200,0,2000),"HT_5p0","genWeight")
 
         histos.append(h_noTriggers)
         histos.append(h_pT0noTriggers)
         histos.append(h_pT1noTriggers)
-        histos.append(h_HT2p4noTriggers)
-        histos.append(h_HT5p0noTriggers)
         histos.append(h_triggersAll)
         histos.append(h_pT0triggersAll)
         histos.append(h_pT1triggersAll)
-        histos.append(h_HT2p4triggersAll)
 
     #return to event selection
     a.SetActiveNode(checkpoint)
@@ -394,12 +375,27 @@ if("TTbar" in options.process):
     a.Define("jetCatY","classifyProbeJet(idxY, FatJet_phi, FatJet_eta, nGenPart, GenPart_phi, GenPart_eta, GenPart_pdgId, GenPart_genPartIdxMother)")
 
 
+snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta","PV_npvsGood"]
+
+#HEM drop
+if(isData):
+    if(year=="2018" and not "2018A" in options.process):
+        a.Define("Jet0_HEM","FatJet_phi[0]>-1.57 && FatJet_phi[0]<-0.8 && FatJet_eta[0]<-1.3")
+        a.Define("Jet1_HEM","FatJet_phi[1]>-1.57 && FatJet_phi[1]<-0.8 && FatJet_eta[1]<-1.3")
+        a.Define("HEMflag","run>319076 && (Jet0_HEM || Jet1_HEM)")
+        a.Cut("HEMcut","HEMflag<1")
+else:
+    if(year=="2018"):
+        a.Define("Jet0_HEM","FatJet_phi[0]>-1.57 && FatJet_phi[0]<-0.8 && FatJet_eta[0]<-1.3")
+        a.Define("Jet1_HEM","FatJet_phi[1]>-1.57 && FatJet_phi[1]<-0.8 && FatJet_eta[1]<-1.3")
+        a.Define("HEMflag","Jet0_HEM || Jet1_HEM")
+        a.Define("HEMweight","HEMweightMC(HEMflag)")        
+        snapshotColumns.append("HEMweight")
 
 outputFile = options.output.replace(".root","_{0}.root".format(varName))
 
-snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta"]
 if not isData:
-    snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta","nFatJet","FatJet_hadronFlavour","ptjH","ptjY","genWeight"]
+    snapshotColumns = ["pnetH","pnetY","MJJ","MJY","MJH","DeltaEta","PV_npvsGood","nFatJet","FatJet_hadronFlavour","ptjH","ptjY","genWeight","Pileup_nTrueInt"]
     if("TTbar" in options.process):
         snapshotColumns.append("MTT")
         snapshotColumns.append("topPt")
@@ -433,4 +429,3 @@ out_f.Close()
 
 #a.PrintNodeTree('node_tree.dot',verbose=True)
 print("Total time: "+str((time.time()-start_time)/60.) + ' min')
-#print(nToRun,a.GetActiveNode().DataFrame.Count().GetValue())
