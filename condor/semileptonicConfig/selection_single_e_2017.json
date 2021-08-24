@@ -1,0 +1,22 @@
+{
+  "SingleElectron2017B": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/SingleElectron2017B"
+  },
+  "SingleElectron2017C": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/SingleElectron2017C"
+  },
+  "SingleElectron2017D": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/SingleElectron2017D"
+  },
+  "SingleElectron2017E": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/SingleElectron2017E"
+  },
+  "SingleElectron2017F": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/SingleElectron2017F"
+  }
+}

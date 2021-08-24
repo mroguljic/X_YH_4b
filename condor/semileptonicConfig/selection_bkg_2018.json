@@ -1,0 +1,26 @@
+{
+  "WJets": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2018/WJets"
+  },
+  "ST_s": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2018/ST_s"
+  },
+  "ST_t_top": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2018/ST_t_top"
+  },
+  "ST_t_antitop": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2018/ST_t_antitop"
+  },
+  "ST_tW_top": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2018/ST_tW_top"
+  },
+  "ST_tW_antitop": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2018/ST_tW_antitop"
+  }
+}

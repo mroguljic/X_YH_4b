@@ -1,0 +1,22 @@
+{
+  "SingleMuon2017B": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2017/SingleMuon2017B"
+  },
+  "SingleMuon2017C": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2017/SingleMuon2017C"
+  },
+  "SingleMuon2017D": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2017/SingleMuon2017D"
+  },
+  "SingleMuon2017E": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2017/SingleMuon2017E"
+  },
+  "SingleMuon2017F": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/CR/2017/SingleMuon2017F"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "EGamma2018A": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2018/EGamma2018A"
+  },
+  "EGamma2018B": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2018/EGamma2018B"
+  },
+  "EGamma2018C": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2018/EGamma2018C"
+  },
+  "EGamma2018D": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2018/EGamma2018D"
+  }
+}

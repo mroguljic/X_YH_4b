@@ -1,0 +1,42 @@
+{
+  "WJets": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/WJets"
+  },
+  "ST_s": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/ST_s"
+  },
+  "ST_t_top": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/ST_t_top"
+  },
+  "ST_t_antitop": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/ST_t_antitop"
+  },
+  "ST_tW_top": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/ST_tW_top"
+  },
+  "ST_tW_antitop": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/ST_tW_antitop"
+  },
+  "QCDHT700": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/QCDHT700"
+  },
+  "QCDHT1000": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/QCDHT1000"
+  },
+  "QCDHT1500": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/QCDHT1500"
+  },
+  "QCDHT2000": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/SingleElectron/2017/QCDHT2000"
+  }
+}
