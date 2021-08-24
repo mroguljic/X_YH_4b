@@ -1,6 +1,6 @@
 {
     "data_obs":{
-    "file": "results/templates/WP_0.8_0.95/2016/scaled/JetHT16.root",
+    "file": "results/templates_hadronic/2016/scaled/JetHT16.root",
     "xsec": 1,
     "color":1,
     "label": "2016 data"

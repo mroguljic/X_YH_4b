@@ -16,6 +16,9 @@ parser.add_option('-j', '--json', metavar='IFILE', type='string', action='store'
 
 totalBkg = []
 
+additionalRegions = ["L_AL","T_AL"]
+additionalRegions = []
+
 with open(options.json) as json_file:
     labels = ["Sample"]
     values = []
@@ -25,34 +28,46 @@ with open(options.json) as json_file:
     for sample, sample_cfg in data.items():
         if ("MX" in sample):
             datasetType = "sig"
-        elif ("JetHT" in sample):
+        elif ("JetHT" in sample or "data" in sample or "SingleMuon" in sample):
             datasetType = "data"
         else:
             datasetType = "bkg"
             
 
         f = r.TFile.Open(sample_cfg["file"])
-        #h = f.Get("{0}_cutflow_nom".format(sample_cfg["prefix"]))
         h = f.Get("{0}_cutflow_nom".format(sample))
-        # if(sample=="ttbar"):
-        #     h = f.Get("TTbar_cutflow")
         nBin = h.GetNbinsX()
         totalBkgRow = []
         latexRow = sample+" &"
-        for i in range(1,nBin+1):
+        #for i in range(1,nBin+1):
+        for i in range(1,nBin-3):
             if(labelFlag==False):
-                labels.append(h.GetXaxis().GetBinLabel(i))
+                labels.append(h.GetXaxis().GetBinLabel(i).replace(" ","_"))
             nCut = h.GetBinContent(i)
+            #nCut = nCut/(h.GetBinContent(1))
             if(nCut>10000):
                 latexRow = latexRow +" {0:1.2e} &".format(nCut)
             else:   
-                latexRow = latexRow +" {0:.2f} &".format(nCut)
+                latexRow = latexRow +" {0:.3f} &".format(nCut)
             totalBkgRow.append(nCut)
 
         if(labelFlag==False):
             labelFlag=True
             print(" & ".join(labels), " \\\\")
-        latexRow = latexRow[:-2]+"\\\\"
+
+        #Additional regions
+        for region in additionalRegions:
+            nCut = f.Get("{0}_mJY_mJJ_{1}_nom".format(sample,region)).Integral()
+            #nCut = nCut/(h.GetBinContent(1))
+            if(nCut>10000):
+                latexRow = latexRow +" {0:1.2e} &".format(nCut)
+            else:   
+                latexRow = latexRow +" {0:.3f} &".format(nCut)
+            totalBkgRow.append(nCut)
+        #-----#
+        
+
+        latexRow = latexRow[:-2]+" \\\\"
         print(latexRow)
         if(datasetType=="bkg"):
             if len(totalBkg)==0:
@@ -62,7 +77,7 @@ with open(options.json) as json_file:
         # a = latexRow.split(" & ")
         # print("{0} {1} {2}".format(a[0],a[-4],a[-5]))
 
-latexTotalBkg = "Total bkg "
+latexTotalBkg = "Total_bkg "
 for val in totalBkg:
     if(val>10000):
         latexTotalBkg += "& {0:1.2e} ".format(val)

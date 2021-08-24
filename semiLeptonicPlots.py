@@ -99,7 +99,7 @@ def cutFlowWithData(data,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=Tru
         axs[0].set_ylim(yRange)
     if(xRange):
         axs[0].set_xlim(xRange)
-    lumiText = luminosity + " $fb^{-1} (13 TeV)$"    
+    lumiText = luminosity + " $fb^{-1}\ (13 TeV)$"    
     hep.cms.lumitext(lumiText)
     hep.cms.text("WiP",loc=1)
     plt.legend(loc = 'best',ncol=2)
@@ -194,7 +194,7 @@ def plotVarStack(data,var,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=Tr
         axs[0].set_xlim(xRange)
     if(text):
         plt.text(0.1, 0.85,text, horizontalalignment='left',verticalalignment='center',transform=axs[0].transAxes, fontsize=18)
-    lumiText = luminosity + " $fb^{-1} (13 TeV)$"
+    lumiText = luminosity + " $fb^{-1}\ (13 TeV)$"
     hep.cms.lumitext(text=lumiText, ax=axs[0], fontname=None, fontsize=None)
     hep.cms.text("WiP",loc=1)
     plt.legend(loc='best',ncol=1)#loc = 'best'
@@ -249,7 +249,7 @@ def plotVarMCStack(data,var,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=
         ax.set_ylim(yRange)
     if(xRange):
         ax.set_xlim(xRange)
-    lumiText = luminosity + " $fb^{-1} (13 TeV)$"
+    lumiText = luminosity + " $fb^{-1}\ (13 TeV)$"
     hep.cms.lumitext(text=lumiText, ax=ax, fontname=None, fontsize=None)
     hep.cms.text("Simulaton WiP",loc=1)
     plt.legend(loc='best',ncol=1)#loc = 'best'
@@ -294,7 +294,7 @@ def plotTagJetMass(data,outFile,xTitle="",yTitle="",yRange=[],xRange=[],log=True
         ax.set_ylim(yRange)
     if(xRange):
         ax.set_xlim(xRange)
-    lumiText = luminosity + " $fb^{-1} (13 TeV)$"
+    lumiText = luminosity + " $fb^{-1}\ (13 TeV)$"
     hep.cms.lumitext(text=lumiText, ax=ax, fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     plt.legend(loc='best',ncol=1)#loc = 'best'
@@ -385,7 +385,7 @@ def plotTagJetCategories(data,outFile,pTBin="",xTitle="",yTitle="",yRange=[],xRa
         axs[0].set_ylim(yRange)
     if(xRange):
         axs[0].set_xlim(xRange)
-    lumiText = luminosity + " $fb^{-1} (13 TeV)$"
+    lumiText = luminosity + " $fb^{-1}\ (13 TeV)$"
     hep.cms.lumitext(text=lumiText, ax=axs[0], fontname=None, fontsize=None)
     hep.cms.text("Simulation WiP",loc=1)
     if(text):
@@ -440,11 +440,11 @@ if __name__ == '__main__':
         data = json.load(json_file)
         if not "msd" in options.json:
             plotVarStack(data,"MET_I","results/plots/{0}/semileptonic/{1}/MET{0}_I.png".format(year,channel),xTitle="MET [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[0,1000],log=True,rebinX=1,luminosity=luminosity)
-            #plotVarStack(data,"HT_I","results/plots/{0}/semileptonic/{1}/HT{0}_I.png".format(year,channel),xTitle="HT [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
-            #plotVarStack(data,"ST_I","results/plots/{0}/semileptonic/{1}/ST{0}_I.png".format(year,channel),xTitle="ST [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e5],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
-            #plotVarStack(data,"lepton_pT_I","results/plots/{0}/semileptonic/{1}/lepton_pT{0}_I.png".format(year,channel),xTitle="Lepton $p_{T}$ [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[0,1000],log=True,rebinX=1,luminosity=luminosity)
-            #cutFlowWithData(data,"results/plots/{0}/semileptonic/{1}/cutflow_{0}.png".format(year,channel),xTitle="",yTitle="Events",xRange=[1.5,10.5],yRange=[None,10e15],log=True,sigXSec=1.0,luminosity=luminosity)
-            #plotVarStack(data,"mSD_I","results/plots/{0}/semileptonic/{1}/mSD{0}_byProcess_I.png".format(year,channel),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,2500],xRange=[60,200],log=False,luminosity=luminosity,text="ParticleNet inclusive")
+            plotVarStack(data,"HT_I","results/plots/{0}/semileptonic/{1}/HT{0}_I.png".format(year,channel),xTitle="HT [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
+            plotVarStack(data,"ST_I","results/plots/{0}/semileptonic/{1}/ST{0}_I.png".format(year,channel),xTitle="ST [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e5],xRange=[400,2000],log=True,rebinX=1,luminosity=luminosity)
+            plotVarStack(data,"lepton_pT_I","results/plots/{0}/semileptonic/{1}/lepton_pT{0}_I.png".format(year,channel),xTitle="Lepton $p_{T}$ [GeV]",yTitle="Events/100 GeV",yRange=[10e-1,10e4],xRange=[0,1000],log=True,rebinX=1,luminosity=luminosity)
+            cutFlowWithData(data,"results/plots/{0}/semileptonic/{1}/cutflow_{0}.png".format(year,channel),xTitle="",yTitle="Events",xRange=[1.5,10.5],yRange=[None,10e15],log=True,sigXSec=1.0,luminosity=luminosity)
+            plotVarStack(data,"mSD_I","results/plots/{0}/semileptonic/{1}/mSD{0}_byProcess_I.png".format(year,channel),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,2500],xRange=[60,200],log=False,luminosity=luminosity,text="ParticleNet inclusive")
             plotVarStack(data,"METphi_I","results/plots/{0}/semileptonic/{1}/METphi{0}_I.png".format(year,channel),xTitle=r"MET $\varphi [GeV]$",yTitle="Events/0.5",yRange=[0,5000],xRange=[-3.5,3.5],log=False,luminosity=luminosity,text="ParticleNet inclusive",rebinX=5)  
         else:
             plotVarStack(data,"mSD_I","results/plots/{0}/semileptonic/mSD{0}_I.png".format(year),xTitle="Soft drop mass [GeV]",yTitle="Events/20 GeV",yRange=[10e-1,10e5],xRange=[60,200],log=True,luminosity=luminosity,text="ParticleNet inclusive")

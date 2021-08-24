@@ -54,15 +54,17 @@ def importPars(incard,fitresults,toDrop,verbosity=0):
 
 
 
-ntoys        = 500
+ntoys        = 100
 seed         = 10
 algo         = "saturated"
-cards        = ["CR_L_16.txt","CR_T_16.txt","CR_L_17.txt","CR_T_17.txt","CR_L_18.txt","CR_T_18.txt","CR_L_RunII.txt","CR_T_RunII.txt"]
-fitresults   = ["fitDiagnostics_L_16.root","fitDiagnostics_T_16.root","fitDiagnostics_L_17.root","fitDiagnostics_T_17.root","fitDiagnostics_L_18.root","fitDiagnostics_T_18.root","fitDiagnostics_L_RunII.root","fitDiagnostics_T_RunII.root"]
+#cards        = ["CR_L_16.txt","CR_T_16.txt","CR_L_17.txt","CR_T_17.txt","CR_L_18.txt","CR_T_18.txt","CR_L_RunII.txt","CR_T_RunII.txt"]
+#fitresults   = ["fitDiagnostics_L_16.root","fitDiagnostics_T_16.root","fitDiagnostics_L_17.root","fitDiagnostics_T_17.root","fitDiagnostics_L_18.root","fitDiagnostics_T_18.root","fitDiagnostics_L_RunII.root","fitDiagnostics_T_RunII.root"]
 
-cards        = ["CR_L_17.txt","CR_T_17.txt","CR_L_18.txt","CR_T_18.txt"]
-fitresults   = ["fitDiagnostics_L_17.root","fitDiagnostics_T_17.root","fitDiagnostics_L_18.root","fitDiagnostics_T_18.root"]
+cards        = ["combinedCard.txt"]#,"combinedCard_badDeltaR.txt"]
+fitresults   = ["fitDiagnostics_corrected.root"]#,"fitDiagnostics_badDeltaR.root"]
 
+cards        = ["combinedCard_badDeltaR.txt"]
+fitresults   = ["fitDiagnostics_badDeltaR.root"]
 
 for i,card in enumerate(cards):
     gofDir   = card.replace(".txt","")

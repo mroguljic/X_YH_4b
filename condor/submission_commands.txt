@@ -1,21 +1,50 @@
 #Hadronic selection
-python run_selection.py -c selectionConfig/selection_signal_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/  -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/ -n 100 -q espresso
+
+python run_selection.py -c selectionConfig/selection_signal_2017.json -y 2016 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2016/  -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2016/ -n 100 -q espresso |& tee submit_2016_signal.sh
+
+python run_selection.py -c selectionConfig/selection_signal_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/  -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/ -n 100 -q espresso |& tee submit_2017_signal.sh
 python run_selection.py -c selectionConfig/selection_bkg_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/ -n 10 -q longlunch
-python run_selection.py -c selectionConfig/selection_data_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/ -n 10 -q workday
+python run_selection.py -c selectionConfig/selection_data_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/ -n 10 -q longlunch
 
 
-python run_selection.py -c selectionConfig/selection_signal_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2018/  -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2018/ -n 100 -q espresso
+python run_selection.py -c selectionConfig/selection_signal_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2018/  -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2018/ -n 100 -q espresso |& tee submit_2018_signal.sh
 python run_selection.py -c selectionConfig/selection_bkg_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2018/ -n 10 -q longlunch
-python run_selection.py -c selectionConfig/selection_data_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2018/ -n 10 -q workday
+python run_selection.py -c selectionConfig/selection_data_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2018/ -n 10 -q longlunch
 
 
+#2+1
+python run_21_selection.py -c selectionConfig/selection_signal_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semiResolvedSelection/2017/nonScaled/  -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semiResolvedSelection/2017/ -n 100 -q espresso |& tee submit_2017_signal.sh
+python run_21_selection.py -c selectionConfig/selection_bkg_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semiResolvedSelection/2017/nonScaled/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semiResolvedSelection/2017/ -n 5 -q longlunch
+python run_21_selection.py -c selectionConfig/selection_data_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semiResolvedSelection/2017/nonScaled/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semiResolvedSelection/2017/ -n 5 -q longlunch
 
-#Semileptonic CR
-python run_semiLeptonicSelection.py -c semileptonicConfig/selection_TT_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2017/ -n 10 -q workday
-python run_semiLeptonicSelection.py -c semileptonicConfig/selection_bkg_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2017/ -n 10 -q longlunch
-python run_semiLeptonicSelection.py -c semileptonicConfig/selection_data_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2017/ -n 10 -q longlunch
+python run_21_selection.py -c selectionConfig/selection_signal_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semiResolvedSelection/2018/  -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semiResolvedSelection/2018/ -n 100 -q espresso |& tee submit_2018_signal.sh
+python run_21_selection.py -c selectionConfig/selection_bkg_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semiResolvedSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semiResolvedSelection/2018/ -n 10 -q workday
+python run_21_selection.py -c selectionConfig/selection_data_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semiResolvedSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semiResolvedSelection/2018/ -n 10 -q workday
 
-python run_semiLeptonicSelection.py -c semileptonicConfig/selection_TT_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2018/ -n 10 -q workday
-python run_semiLeptonicSelection.py -c semileptonicConfig/selection_bkg_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2018/ -n 10 -q longlunch
-python run_semiLeptonicSelection.py -c semileptonicConfig/selection_data_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2018/ -n 10 -q longlunch
+#Semileptonic CR: Muon channel
+#2017
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_TT_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/muon/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2017/ -n 10 -q workday --channel mu
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_bkg_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/muon/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2017/ -n 10 -q longlunch --channel mu
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_data_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/muon/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2017/ -n 10 -q longlunch --channel mu
 
+#2018
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_TT_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/muon/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2018/ -n 10 -q workday --channel mu
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_bkg_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/muon/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2018/ -n 10 -q longlunch --channel mu
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_data_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/muon/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/2018/ -n 10 -q longlunch --channel mu
+
+
+#Semileptonic CR: Electron channel
+#2016
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_TT_2016.json -y 2016 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/electron/2016/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/electron/2016/ -n 50 -q workday --channel e
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_bkg_2016.json -y 2016 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/electron/2016/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/electron/2016/ -n 30 -q longlunch --channel e
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_single_e_2016.json -y 2016 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/electron/2016/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/electron/2016/ -n 150 -q longlunch --channel e
+
+#2017
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_TT_2017_e.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/electron/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/electron/2017/ -n 10 -q workday --channel e
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_bkg_2017_e.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/electron/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/electron/2017/ -n 10 -q longlunch --channel e
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_single_e_2017.json -y 2017 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/electron/2017/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/electron/2017/ -n 10 -q longlunch --channel e
+
+#2018
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_TT_2018_e.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/electron/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/electron/2018/ -n 10 -q workday --channel e
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_bkg_2018_e.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/electron/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/electron/2018/ -n 10 -q longlunch --channel e
+python run_semiLeptonicSelection.py -c semileptonicConfig/selection_single_e_2018.json -y 2018 -d -o /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/semileptonicSelection/electron/2018/ -j /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/semileptonicJobs/electron/2018/ -n 10 -q longlunch --channel e

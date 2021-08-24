@@ -3,7 +3,7 @@ executable            = /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/sele
 output                = /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/JetHT2017B/output/output_$(Process).out
 error                 = /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/JetHT2017B/output/output_$(Process).err
 log                   = /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/JetHT2017B/output/output_$(Process).log
-+JobFlavour           = "workday"
++JobFlavour           = "longlunch"
 Arguments = "$(args)"
 use_x509userproxy = true
 Queue args from /afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/condor/selectionJobs/2017/JetHT2017B/input/args_JetHT2017B.txt

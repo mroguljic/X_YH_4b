@@ -1,9 +1,20 @@
 {
-
   "MX1600_MY125": {
     "file": "results/templates_hadronic/2018/scaled/MX1600_MY125.root",
     "color":"red",
     "label": "$M_{X}$=1600 GeV\n$M_{Y}$=125 GeV",
+    "order": 0
+  },
+  "MX1600_MY200": {
+    "file": "results/templates_hadronic/2018/scaled/MX1600_MY200.root",
+    "color":"blue",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=200 GeV",
+    "order": 0
+  },
+  "MX2000_MY125": {
+    "file": "results/templates_hadronic/2018/scaled/MX2000_MY125.root",
+    "color":"black",
+    "label": "$M_{X}$=2000 GeV\n$M_{Y}$=125 GeV",
     "order": 0
   },
   "TTbar": {

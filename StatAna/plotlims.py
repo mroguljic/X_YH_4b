@@ -1,177 +1,293 @@
 #!/usr/bin/env python
-
 import os, sys
-import uproot4 as rt
 import numpy as np
 import matplotlib.pyplot as plt
 import mplhep as hep
-import pandas as pd
 import matplotlib
 from matplotlib import colors as mcolors
+import ROOT as r
+import os
+from matplotlib.ticker import AutoMinorLocator, MultipleLocator
 
-matplotlib.use('qt4agg')
+matplotlib.use('Agg')
 
-colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)
+def getLimits(rootFile):
+    f = r.TFile.Open(rootFile)
+    limitTree = f.Get("limit")
+    limits = []
+    for limit in limitTree:
+        limits.append(limit.limit*10.)#signal is normalized to 10fb xsec
 
-np.set_printoptions(threshold=np.inf)
-pd.set_option("display.max_rows", None, "display.max_columns", None)
+    return limits
 
-def plot():
-  pass
+def checkLimitFile(file):
+    if os.path.exists(file):
+        f = r.TFile.Open(file)
+        limitTree = f.Get("limit")
+        if(limitTree.GetEntriesFast()>1):
+            f.Close()
+            return True
+        else:
+            f.Close()
+            print("File with bad limit: {0}".format(file))
+            return False
+    else:
+        print("Missing file: {0}".format(file))
+        return False
 
-def main():
-  import argparse
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--dir', '-d', dest='dir', type=str,
-      help='directory where limit ROOT files are located')
-  parser.add_argument('--mx', '-x', dest='mx', type=int, nargs='+',
-      help='comma-separated list of MX values to plot')
-  parser.add_argument('--my', '-y', dest='my', type=int, nargs='+',
-      help='comma-separated list of MY values to plot')
-  parser.add_argument('--all_years', '-Y', dest='all_years', action='store_true',
-      help='Plot expected limits for all years together')
-  args = parser.parse_args()
 
-  years = [2016, 2017, 2018]
+def deltaEtaLimits():
+    colors = ["blue","orange","black","green","red","purple"]
+    for i,my in enumerate([100,125,200]):
+        MX = [1000,1200,1400,1600,1800,2000]
+        limitsDEta = []
+        limitsNoDEta = []
+        goodMX = []
+        for mx in MX:
+            fileDEta = "limits/noDeltaEta/limits_MX{0}_MY{1}.AsymptoticLimits.mH125.root".format(mx,my)
+            fileNoDEta = "limits/DeltaEta/limits_MX{0}_MY{1}.AsymptoticLimits.mH125.root".format(mx,my)
+            if not (checkLimitFile(fileDEta) and checkLimitFile(fileNoDEta)):
+                continue
+            goodMX.append(mx)
+            limitsDEta.append(getLimits(fileDEta))
+            limitsNoDEta.append(getLimits(fileNoDEta))
 
-  fnames = [(int(year), mx, my, os.path.join(args.dir,f'higgsCombine_{year}_MX{mx}_MY{my}_LL_TT.AsymptoticLimits.mH125.root'))
-      for year in years for mx in args.mx for my in args.my]
-  all_years = '_'.join(str(year) for year in years)
 
-  fnames += [(all_years, mx, my, os.path.join(args.dir,f'higgsCombine_{all_years}_MX{mx}_MY{my}_LL_TT.AsymptoticLimits.mH125.root')) for mx in args.mx for my in args.my]
+        limitsDEta = np.array(limitsDEta)*(10.**i)#Multiplying by 10. so we can show multiple limits on same canvas
+        limitsNoDEta = np.array(limitsNoDEta)*(10.**i)#Multiplying by 10. so we can show multiple limits on same canvas
+        #transpose so that:
+        #limitsDEta[2][:] corresponds to exp limits
+        #limitsDEta[1][:] corresponds to exp 68% limits low
+        #limitsDEta[0][:] corresponds to exp 95% limits low
+        #limitsDEta[3][:] corresponds to exp 68% limits up
+        #limitsDEta[4][:] corresponds to exp 95% limits up
+        limitsDEta = limitsDEta.T.tolist() 
+        limitsNoDEta = limitsNoDEta.T.tolist()
 
-  #print(f'fnames ={fnames}')
+        plt.style.use(hep.style.CMS)
+        hep.cms.label(loc=1, year='138 $fb^{-1}$', paper=True, llabel='Simulation WiP')
+        plt.plot(goodMX, limitsDEta[2], color=colors[i], linewidth='2.4', linestyle='--', label=r'MY{0}: $\Delta\eta$ cut (x$10^{1})$'.format(my,i))
+        plt.plot(goodMX, limitsNoDEta[2], color=colors[-1-i], linewidth='2.4', linestyle='--', label=r'MY{0}: No $\Delta\eta$ cut (x$10^{1})$'.format(my,i))
 
-  fin = [(f[0], f[1], f[2], f[3]) for f in fnames if os.path.exists(f[3])]
-
-  #print(f'fin = {fin}')
-
-  lims =  pd.DataFrame(
-      [
-        np.array([f[0], f[1], f[2]] + np.array(rt.open(f[3]+':limit/limit'), dtype=float).tolist()) 
-        for f in fin]
-      ,columns=['Year', 'MX[GeV]', 'MY[GeV]', 'Exp-2sig[fb]', 'Exp-1sig[fb]', 'Exp[fb]', 'Exp+1sig[fb]', 'Exp+2sig[fb]', 'Obs[fb]']
-      )
-
-  lims.iloc[:, 1:] = lims.iloc[:, 1:].apply(pd.to_numeric)
-  lims.iloc[:, 3:] = lims.iloc[:, 3:]*10
-  #lims = lims.dropna()
-
-  #print(f'lims = {lims}')
-
-  plt.style.use(hep.style.CMS)
-  hep.cms.label(loc=1, year='137 $fb^{-1}$', paper=True, llabel='Simulation WiP')
-
-  plt.xlabel("$M_{X} [GeV]$")
-  plt.ylabel(r'$\sigma(pp \rightarrow X \rightarrow HY \rightarrow b\overline{b} b \overline{b})\,[fb]$')
-  
-  plt.yscale('log')
-  #plt.ylim(0.01, 1000)
-  plt.ylim(0.05, 5000)
-
-  cols = ['brown', 'darkorange', 'sienna', 'crimson', 'darkolivegreen', 'forestgreen', 'darkslategray', 'steelblue', 'rebeccapurple', 'darkmagenta']
-  
-  year = all_years
-  for my in args.my:
-    mx = lims.loc[(lims['Year']==year) & (lims['MY[GeV]']==my)]['MX[GeV]'].tolist()
-    exp = lims.loc[(lims['Year']==year) & (lims['MY[GeV]']==my)]['Exp[fb]'].tolist()
-    exp1down = lims.loc[(lims['Year']==year) & (lims['MY[GeV]']==my)]['Exp-1sig[fb]'].tolist()
-    exp1up = lims.loc[(lims['Year']==year) & (lims['MY[GeV]']==my)]['Exp+1sig[fb]'].tolist()
-    exp2down = lims.loc[(lims['Year']==year) & (lims['MY[GeV]']==my)]['Exp-2sig[fb]'].tolist()
-    exp2up = lims.loc[(lims['Year']==year) & (lims['MY[GeV]']==my)]['Exp+2sig[fb]'].tolist()
-
-    plt.plot(mx, exp, color=colors[cols[args.my.index(my)]], linewidth='2.4', label=r'$M_Y = {}$'.format(my))
-    #plt.fill_between(mx, exp1down, exp1up, color='forestgreen', label='68% expected')
-    #plt.fill_between(mx, exp2down, exp2up, color='darkorange', label='95% expected')
-    #plt.fill_between(mx, exp1down, exp1up, color='forestgreen', label='_nolegend_')
-    #plt.plot(mx, exp, color='black', linewidth='2.4', linestyle='--', label=r'Median expected')
-  
-  #plt.text(800, 100, r'$M_{Y} = 125\,GeV$')
-  plt.legend(loc="upper right"
+        #plt.text(800, 100, r'$M_{Y} = 125\,GeV$')
+    plt.yscale('log')
+    plt.ylim(0.01, 1000000)
+    plt.legend(loc=(0.10,0.55)
       , title='95% CL upper limits'
-      +'\n(median expected)'
       ,ncol=2
-      #,ncol=1
-      ,title_fontsize=20
-      ,fontsize=20
+      ,title_fontsize=17
+      ,fontsize=17
       )
-  
-  plt.tight_layout()
-
-  fig = matplotlib.pyplot.gcf()
-  fig.set_size_inches(4*2.5, 3*2.5, forward=True)
-  
-  fig.savefig('Cards_10Nov2020/explim_MX_variousMYs.pdf')
-  fig.savefig('Cards_10Nov2020/explim_MX_variousMYs.png')
-  #fig.savefig('Cards_10Nov2020/explim_MX_MY125.pdf')
-  #fig.savefig('Cards_10Nov2020/explim_MX_MY125.png')
-
-  #mx = [int(x) for x in lims.loc[lims['Year']==year]['MX[GeV]'].unique().tolist()]
-  #my = [int(x) for x in lims.loc[lims['Year']==year]['MY[GeV]'].unique().tolist()]
-  #lim_exp = lims.loc[(lims['Year']==year)].reset_index().pivot('MX[GeV]', 'MY[GeV]', 'Exp[fb]').to_numpy(dtype=float)
-  #print(lims.loc[(lims['Year']==year)].reset_index().pivot('MX[GeV]', 'MY[GeV]', 'Exp[fb]'))
-
-
-  #im = plt.imshow(lim_exp)
-  #plt.axis.set_xticks(np.arange(len(my)))
-  #plt.axis.set_yticks(np.arange(len(mx)))
-
-  ##im.ax.set_xticklabels(my)
-  ##im.ax.set_yticklabels(mx)
-
-  #cbar = im.ax.figure.colorbar(im, ax=ax)
-  ##cbar.ax.set_ylabel(r'Median expected$\,[GeV]$', rotation=-90)
-
-  ##plt.xlabel(r'$M_{Y}\,[GeV]$')
-  ##plt.ylabel(r'$M_{X}\,[GeV]$')
-  ##im = plt.imshow(lim_exp, extent=(my[0], my[-1], mx[0]-50, mx[-1]+50), interpolation='nearest', aspect = 'auto', origin='lower', norm=mcolors.LogNorm(vmin=0.01, vmax=1000))
-
-  ##cbar = plt.colorbar(im, label=r'Median expected$\,[fb]$')
-  ###cbar.ax.set_yticklabels(rotation=90)
-  ##plt.clim(0.05, 1000);
-  #plt.tight_layout()
-
-  #plt.show()
-
-  #return
-
-  lumi_year = {
-      '2016': '35.9',
-      '2017': '41.5', 
-      '2018': '59.2',
-      '2016+2017+2018': '137'
-      }
-
-  hep.cms.label(loc=1, year='', paper=True, llabel='Simulation WiP')
-  if args.all_years:
-    all_years = lims.loc[:,'Year'].unique()
-    print(all_years)
-    for year in all_years:
-      medianexp_by_year = lims.loc[(lims['Year']==year) & (lims['MY[GeV]']==125)]['Exp[fb]'].tolist()  
-      mx_by_year = lims.loc[(lims['Year']==year) & (lims['MY[GeV]']==125)]['MX[GeV]'].tolist()  
-      if isinstance(year, str):
-        yr = year.replace('_', '+')
-      elif isinstance(year, float):
-        yr = str(int(year))
-      yr = ''.join([yr, '(', lumi_year[yr], r'$\,fb^{-1}$', ')'])
-      plt.plot(mx_by_year, medianexp_by_year, linewidth='2.4', linestyle='--', label=yr)
-    plt.text(800, 100, r'$M_{Y} = 125\,GeV$')
-    plt.legend(loc="upper right"
-        , title='95% CL upper limits'
-        +'\n'+'Median expected'
-        #,ncol=2
-        ,ncol=1
-        ,title_fontsize=20
-        ,fontsize=20
-        )
+    plt.ylabel(r'$\sigma(pp \rightarrow X \rightarrow HY \rightarrow b\overline{b} b \overline{b})\,[fb]$',horizontalalignment='right', y=1.0)
+    plt.xlabel("$M_{X} [GeV]$", horizontalalignment='right', x=1.0)
     plt.tight_layout()
+
     fig = matplotlib.pyplot.gcf()
     fig.set_size_inches(4*2.5, 3*2.5, forward=True)
+
+    fig.savefig('DeltaEta_limits.pdf')
+
+
+def wpStudyLimits():
+    colors_p9_p94 = ["lightcoral","indianred","brown","firebrick","red"]
+    colors_p9_p98 = ["forestgreen","limegreen","darkgreen","green","lime"]
+    colors_p94_p98 = ["blue","skyblue","dodgerblue","royalblue","navy"]
+    for i,my in enumerate([100,125,200,300,400]):
+        MX = [1000,1200,1400,1600,1800,2000]
+        limits_p9_p94  = []
+        limits_p9_p98  = []
+        limits_p94_p98 = []
+        goodMX         = []
+        for mx in MX:
+            file_p9_p94 =  "limits/WP_study/limits_0.9_0.94_MX{0}_MY{1}.AsymptoticLimits.mH125.root".format(mx,my)
+            file_p9_p98 =  "limits/WP_study/limits_0.9_0.98_MX{0}_MY{1}.AsymptoticLimits.mH125.root".format(mx,my)
+            file_p94_p98 = "limits/WP_study/limits_0.94_0.98_MX{0}_MY{1}.AsymptoticLimits.mH125.root".format(mx,my)
+            if not (checkLimitFile(file_p9_p94) and checkLimitFile(file_p9_p98) and checkLimitFile(file_p94_p98)):
+                continue
+            goodMX.append(mx)
+            limits_p9_p94.append(getLimits(file_p9_p94))
+            limits_p9_p98.append(getLimits(file_p9_p98))
+            limits_p94_p98.append(getLimits(file_p94_p98))
+
+
+        limits_p9_p94 = np.array(limits_p9_p94)*(10.**i)#Multiplying by 10. so we can show multiple limits on same canvas
+        limits_p9_p98 = np.array(limits_p9_p98)*(10.**i)#Multiplying by 10. so we can show multiple limits on same canvas
+        limits_p94_p98 = np.array(limits_p94_p98)*(10.**i)#Multiplying by 10. so we can show multiple limits on same canvas
+        #transpose so that:
+        #limitsDEta[2][:] corresponds to exp limits
+        #limitsDEta[1][:] corresponds to exp 68% limits low
+        #limitsDEta[0][:] corresponds to exp 95% limits low
+        #limitsDEta[3][:] corresponds to exp 68% limits up
+        #limitsDEta[4][:] corresponds to exp 95% limits up
+        limits_p9_p94 = limits_p9_p94.T.tolist() 
+        limits_p9_p98 = limits_p9_p98.T.tolist()    
+        limits_p94_p98 = limits_p94_p98.T.tolist()
+
+        plt.style.use(hep.style.CMS)
+        hep.cms.label(loc=1, year='35.9 $fb^{-1}$', paper=True, llabel='Simulation WiP')
+        plt.plot(goodMX, limits_p9_p94[2], color=colors_p9_p94[i], linewidth='2.4', linestyle='--', label=r'Y{0}:0.9 0.94(x$10^{1})$'.format(my,i))
+        plt.plot(goodMX, limits_p9_p98[2], color=colors_p9_p98[i], linewidth='2.4', linestyle='--', label=r'Y{0}:0.9 0.98(x$10^{1})$'.format(my,i))
+        plt.plot(goodMX, limits_p94_p98[2], color=colors_p94_p98[i], linewidth='2.4', linestyle='--', label=r'Y{0}:0.94 0.98(x$10^{1})$'.format(my,i))
     
-    fig.savefig('Cards_10Nov2020/explim_ByYear_MX_MY125.pdf')
-    fig.savefig('Cards_10Nov2020/explim_ByYear_MX_MY125.png')
+    plt.ylabel(r'$\sigma(pp \rightarrow X \rightarrow HY \rightarrow b\overline{b} b \overline{b})\,[fb]$',horizontalalignment='right', y=1.0)
+    plt.xlabel("$M_{X} [GeV]$", horizontalalignment='right', x=1.0)
+      
+        #plt.text(800, 100, r'$M_{Y} = 125\,GeV$')
+    plt.yscale('log')
+    plt.ylim(0.01, 10**16)
+    plt.legend(loc=(0.05,0.50)
+      , title='95% CL upper limits'
+      ,ncol=3
+      ,title_fontsize=15
+      ,fontsize=13
+      )
+
+
+    plt.tight_layout()
+
+    fig = matplotlib.pyplot.gcf()
+    fig.set_size_inches(4*2.5, 3*2.5, forward=True)
+
+    fig.savefig('wp_study.pdf')
+
+def mxLimits(my=125,obs=False):
+    MX = [900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2200,2400,2600,2800,3000,3500,4000]
+    #MX = [1000,1200,1400,1600,1800,2000,2200,2800,3000]
+    limits = []
+    goodMX = []
+    for mx in MX:
+        #file_limits = "limits/DeltaEta/limits_MX{0}_MY{1}.AsymptoticLimits.mH125.root".format(mx,my)
+        if(obs):
+            file_limits = "limits/obsLimits/MX{0}_MY{1}.root".format(int(mx),int(my))
+        else:
+            file_limits = "limits/toyLimits/MX{0}_MY{1}.root".format(int(mx),int(my))            
+        if not (checkLimitFile(file_limits)):
+            continue
+        goodMX.append(mx)
+        limits.append(getLimits(file_limits))
+
+    #transpose so that:
+    #limitsDEta[0][:] corresponds to exp 95% limits low
+    #limitsDEta[1][:] corresponds to exp 68% limits low
+    #limitsDEta[2][:] corresponds to exp limits
+    #limitsDEta[3][:] corresponds to exp 68% limits up
+    #limitsDEta[4][:] corresponds to exp 95% limits up
+    limits = np.array(limits)
+    #print(limits)
+    limits = limits.T.tolist() 
+
+    plt.style.use(hep.style.CMS)
+    hep.cms.label(loc=1, year='138 $fb^{-1}$', paper=True, llabel='Simulation WiP')
+
+    plt.fill_between(goodMX, limits[1], limits[3], color='forestgreen', label='68% expected')
+    plt.fill_between(goodMX, limits[0], limits[4], color='darkorange', label='95% expected')
+    plt.fill_between(goodMX, limits[1], limits[3], color='forestgreen', label='_nolegend_')
+    plt.plot(goodMX, limits[2], color='black', linewidth='2.4', linestyle='--', label=r'Median expected')
+    if(obs):
+        plt.plot(goodMX, limits[5], color='black', linewidth='2.4', linestyle='-', label=r'Observed')
+    plt.xlabel("$M_{X} [GeV]$")
+    plt.ylabel(r'$\sigma(pp \rightarrow X \rightarrow HY \rightarrow b\overline{b} b \overline{b})\,[fb]$',horizontalalignment='right', y=1.0)
+    plt.xlabel("$M_{X} [GeV]$", horizontalalignment='right', x=1.0)
+    plt.text(3000, 250, r'$M_{Y} = 125\,GeV$')
+    plt.yscale('log')
+    plt.ylim(0.01, 10**3)
+    plt.legend(loc=(0.10,0.60)
+      , title='95% CL upper limits'
+      ,ncol=2
+      ,title_fontsize=17
+      ,fontsize=17
+      )
+
+
+    plt.tight_layout()
+
+    fig = matplotlib.pyplot.gcf()
+    fig.set_size_inches(4*2.5, 3*2.5, forward=True)
+
+    if(obs):
+        fig.savefig('obslim_MX_MY125.pdf')
+        fig.savefig('obslim_MX_MY125.png')
+    else:
+        fig.savefig('explim_MX_MY125.pdf')
+        fig.savefig('explim_MX_MY125.png')
+    plt.clf()
+
+
+def multipleMY(MY,obs=False):
+    MX = [900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2200,2400,2600,2800,3000,3500,4000]
+    limits = []#MY,significance,MX
+    goodMX = []#MY, good MX
+    for my in MY:
+        tempLimits = []
+        tempMX     = []
+        for mx in MX:
+            if(obs):
+                file_limits = "limits/obsLimits//MX{0}_MY{1}.root".format(int(mx),int(my))
+            else:
+                file_limits = "limits/toyLimits//MX{0}_MY{1}.root".format(int(mx),int(my))                
+            if not (checkLimitFile(file_limits)):
+                continue
+            expLimits = getLimits(file_limits)
+            if not expLimits:
+                print("rm -f {0}".format(file_limits))
+                continue
+            tempMX.append(mx)
+            tempLimits.append(expLimits)
+        limits.append(tempLimits)
+        goodMX.append(tempMX)
+
+    #transpose so that:
+    #limits[][0][:] corresponds to exp 95% limits low
+    #limits[][1][:] corresponds to exp 68% limits low
+    #limits[][2][:] corresponds to exp limits
+    #limits[][3][:] corresponds to exp 68% limits up
+    #limits[][4][:] corresponds to exp 95% limits up
+    #limits[][5][:] corresponds to observed limit
+    for i in range(len(limits)):
+        limits[i] = np.array(limits[i])
+        limits[i] = limits[i].T.tolist() 
+
+
+    plt.style.use(hep.style.CMS)
+    f, axs = plt.subplots(len(MY),1, sharex=True, sharey=False,gridspec_kw={'hspace': 0.03})
+    plt.subplots_adjust(top=0.95, bottom=0.05)
+    for i in range(len(MY)):
+        plt.sca(axs[i])
+        if(i==0):
+            hep.cms.label(loc=1, year='138 $fb^{-1}$', paper=True, llabel='Simulation WiP')
+        plt.fill_between(goodMX[i], limits[i][1], limits[i][3], color='forestgreen', label='68% expected')
+        plt.fill_between(goodMX[i], limits[i][0], limits[i][4], color='darkorange',  label='95% expected')
+        plt.fill_between(goodMX[i], limits[i][1], limits[i][3], color='forestgreen', label='_nolegend_')
+        plt.plot(goodMX[i], limits[i][2], color='black', linewidth='2.4', linestyle='--', label=r'Median expected')
+        if(obs):
+            plt.plot(goodMX[i], limits[i][5], color='black', linewidth='2.4', linestyle='-', label=r'Observed')
+        plt.text(3000, 10, r'$M_{Y} = '+str(MY[i])+r'\,GeV$')
+        plt.yscale('log')
+        axs[i].set_ylim(0.03,100)
+        axs[i].tick_params(axis='y', which='minor', direction='in')
+        axs[i].yaxis.set_minor_locator(AutoMinorLocator())
+        axs[i].minorticks_on()
+    plt.xlabel("$M_{X} [GeV]$", horizontalalignment='right', x=1.0)
+
+
+    fig = matplotlib.pyplot.gcf()
+    fig.set_size_inches(6*2.5, (2*len(MY))*2.0, forward=True)
+    fig.text(0.03, 0.5, r'$\sigma(pp \rightarrow X \rightarrow HY \rightarrow b\overline{b} b \overline{b})\,[fb]$', va="center", rotation='vertical',fontsize=50)
+    if(obs):
+        fig.savefig('obslim_2D_slices.png')
+        fig.savefig('obslim_2D_slices.pdf')
+    else:
+        fig.savefig('explim_2D_slices.png')
+        fig.savefig('explim_2D_slices.pdf')
+    plt.clf()
 
 
 
-if __name__ == "__main__":
-  main()
+
+#deltaEtaLimits()
+#wpStudyLimits()
+
+mxLimits()
+#multipleMY([60,90,125,200,300,450,600])
+mxLimits(obs=True)
+#multipleMY([60,90,125,200,300,450,600],obs=True)

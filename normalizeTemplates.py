@@ -116,7 +116,7 @@ def scaleMuonTemplates():
     # os.system("hadd -f {0}/SingleMuonRunII.root {1}/2016/scaled/SingleMuon16.root {1}/2017/scaled/SingleMuon17.root {1}/2018/scaled/SingleMuon18.root".format(runIIDir,muonDir))
 
 
-def scaleEvtSelTemplates():
+def scaleHadronicTemplates():
     MX = [800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2200,2400,2600,2800,3000,3500,4000]
     MY = [40,50,60,70,80,90,100,125,150,200,250,300,350,400,450,500,600,700,800]#,600,800,1000,1200,1400,1600,1800]
     signalPoints  = []
@@ -134,7 +134,6 @@ def scaleEvtSelTemplates():
     ,"WJets400","WJets600","WJets800","ZJets400","ZJets600","ZJets800","ttH","ZH","WminusH","WplusH"]
 
     #Not all UL bkgs are available
-    srProcesses16 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarHT"]
     srProcesses17 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbarSemi"]
     srProcesses18 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbarSemi"]
 
@@ -191,18 +190,9 @@ def scaleEvtSelTemplates():
         JetHTSamples = [nonScaledDir+f for f in os.listdir(nonScaledDir) if (os.path.isfile(os.path.join(nonScaledDir, f)) and "JetHT" in f)]
         mergeSamples(JetHTSamples,"{0}/JetHT{1}.root".format(lumiScaledDir,year[-2:]),"JetHT201[0-9][A-Z]_","data_obs_")
 
-        # pseudoSamples = ["{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:])]
+        # # pseudoSamples = ["{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:])]
         # mergeSamples(pseudoSamples,"{0}/pseudo{1}.root".format(lumiScaledDir,year[-2:]),"QCD|TTbar","data_obs")
 
-
-    # templatesDir = "results/templates/WP_0.8_0.95/"
-    # runIIDir="{0}/FullRunII/".format(templatesDir)
-    # os.system("hadd -f {0}/ttbarRunII.root {1}/2016/scaled/TTbar16.root {1}/2017/scaled/TTbar17.root {1}/2018/scaled/TTbar18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/QCDRunII.root {1}/2016/scaled/QCD16.root {1}/2017/scaled/QCD17.root {1}/2018/scaled/QCD18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/VJetsRunII.root {1}/2016/scaled/VJets16.root {1}/2017/scaled/VJets17.root {1}/2018/scaled/VJets18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/STRunII.root {1}/2016/scaled/ST16.root {1}/2017/scaled/ST17.root {1}/2018/scaled/ST18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/JetHTRunII.root {1}/2016/scaled/JetHT16.root {1}/2017/scaled/JetHT17.root {1}/2018/scaled/JetHT18.root".format(runIIDir,templatesDir))
-    # os.system("hadd -f {0}/pseudoRunII.root {1}/2016/scaled/pseudo16.root {1}/2017/scaled/pseudo17.root {1}/2018/scaled/pseudo18.root".format(runIIDir,templatesDir))
 
 def scaleElectronTemplates():
     semilepProcesses16 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600","QCDHT700","QCDHT1000","QCDHT1500","QCDHT2000"]
@@ -310,7 +300,7 @@ def scaleSemiResolvedTemplates():
 
 if __name__ == '__main__':
 
-    #scaleEvtSelTemplates()
+    scaleHadronicTemplates()
     #scaleMuonTemplates()
-    scaleElectronTemplates()
+    #scaleElectronTemplates()
     #scaleSemiResolvedTemplates()

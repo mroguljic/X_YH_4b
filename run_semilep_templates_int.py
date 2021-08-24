@@ -11,19 +11,29 @@ samples = [d for d in os.listdir(iDir) if os.path.isdir(iDir+"/"+d)]
 
 if("2016" in iDir):
     year=2016
+    wpL = 0.94
+    wpT = 0.98
 if("2017" in iDir):
     year=2017
+    wpL = 0.94
+    wpT = 0.98
 if("2018" in iDir):
     year=2018
+    wpL = 0.94
+    wpT = 0.98
 
-
-variations = ["nom","jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown","trigUp","trigDown","sfUp","sfDown","isoUp","isoDown","idUp","idDown"]
+variations = ["nom","jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown","trigUp","trigDown","sfUp","sfDown","IdUp","IdDown","ptRwtUp","ptRwtDown","puRwtUp","puRwtDown"]
 varsSeparateSelection = ["sfUp","sfDown","jesUp","jesDown","jerUp","jerDown"]
-#samples = ["ST_antitop","ST_top","ST_sChannel","ST_tW_antitop","ST_tW_top","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600","TTbarSemi"]    
 for process in samples:
-    print(process)
+    print(process) 
     for variation in variations:
         if("SingleMuon" in process and variation!="nom"):
+            continue
+        if("SingleElectron" in process and variation!="nom"):
+            continue
+        if("EGamma" in process and variation!="nom"):
+            continue
+        if("ptRwt" in variation and not "TTbar" in process):
             continue
         if(variation in varsSeparateSelection):
             inputTag = variation
@@ -38,6 +48,6 @@ for process in samples:
             mode="RECREATE"
         else:
             mode="UPDATE"
-        cmd = "python makeSemiLeptonicTemplates.py -i {0} -o {1} -y {2} -p {3} -v {4} -m {5}".format(inputFile,outputFile,year,process,variation,mode)
+        cmd = "python makeSemiLeptonicTemplates.py -i {0} -o {1} -y {2} -p {3} -v {4} -m {5} -w {6} {7}".format(inputFile,outputFile,year,process,variation,mode,wpL,wpT)
         print(cmd)
         os.system(cmd)

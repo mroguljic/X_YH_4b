@@ -8,14 +8,68 @@
   "MX1000_MY150": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1000_MY150"
   },
+  "MX1000_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1000_MY200"
+  },
+  "MX1000_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1000_MY30"
+  },
   "MX1000_MY40": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1000_MY40"
+  },
+  "MX1000_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1000_MY50"
   },
   "MX1000_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1000_MY60"
   },
+  "MX1000_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1000_MY70"
+  },
   "MX1000_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1000_MY80"
+  },
+  "MX1000_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1000_MY90"
+  },
+  "MX1100_MY100": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY100"
+  },
+  "MX1100_MY125": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY125"
+  },
+  "MX1100_MY150": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY150"
+  },
+  "MX1100_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY200"
+  },
+  "MX1100_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY250"
+  },
+  "MX1100_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY300"
+  },
+  "MX1100_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY30"
+  },
+  "MX1100_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY40"
+  },
+  "MX1100_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY50"
+  },
+  "MX1100_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY60"
+  },
+  "MX1100_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY70"
+  },
+  "MX1100_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY80"
+  },
+  "MX1100_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1100_MY90"
   },
   "MX1200_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY100"
@@ -26,14 +80,92 @@
   "MX1200_MY150": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY150"
   },
+  "MX1200_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY200"
+  },
+  "MX1200_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY250"
+  },
+  "MX1200_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY300"
+  },
+  "MX1200_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY30"
+  },
+  "MX1200_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY350"
+  },
+  "MX1200_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY400"
+  },
   "MX1200_MY40": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY40"
+  },
+  "MX1200_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY50"
   },
   "MX1200_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY60"
   },
+  "MX1200_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY70"
+  },
   "MX1200_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY80"
+  },
+  "MX1200_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1200_MY90"
+  },
+  "MX1300_MY100": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY100"
+  },
+  "MX1300_MY125": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY125"
+  },
+  "MX1300_MY150": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY150"
+  },
+  "MX1300_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY200"
+  },
+  "MX1300_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY250"
+  },
+  "MX1300_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY300"
+  },
+  "MX1300_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY30"
+  },
+  "MX1300_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY350"
+  },
+  "MX1300_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY400"
+  },
+  "MX1300_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY40"
+  },
+  "MX1300_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY450"
+  },
+  "MX1300_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY500"
+  },
+  "MX1300_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY50"
+  },
+  "MX1300_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY60"
+  },
+  "MX1300_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY70"
+  },
+  "MX1300_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY80"
+  },
+  "MX1300_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1300_MY90"
   },
   "MX1400_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY100"
@@ -47,14 +179,104 @@
   "MX1400_MY200": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY200"
   },
+  "MX1400_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY250"
+  },
+  "MX1400_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY300"
+  },
+  "MX1400_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY30"
+  },
+  "MX1400_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY350"
+  },
+  "MX1400_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY400"
+  },
   "MX1400_MY40": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY40"
+  },
+  "MX1400_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY450"
+  },
+  "MX1400_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY500"
+  },
+  "MX1400_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY50"
+  },
+  "MX1400_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY600"
   },
   "MX1400_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY60"
   },
+  "MX1400_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY70"
+  },
   "MX1400_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY80"
+  },
+  "MX1400_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1400_MY90"
+  },
+  "MX1500_MY100": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY100"
+  },
+  "MX1500_MY125": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY125"
+  },
+  "MX1500_MY150": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY150"
+  },
+  "MX1500_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY200"
+  },
+  "MX1500_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY250"
+  },
+  "MX1500_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY300"
+  },
+  "MX1500_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY30"
+  },
+  "MX1500_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY350"
+  },
+  "MX1500_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY400"
+  },
+  "MX1500_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY40"
+  },
+  "MX1500_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY450"
+  },
+  "MX1500_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY500"
+  },
+  "MX1500_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY50"
+  },
+  "MX1500_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY600"
+  },
+  "MX1500_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY60"
+  },
+  "MX1500_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY70"
+  },
+  "MX1500_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY700"
+  },
+  "MX1500_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY80"
+  },
+  "MX1500_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1500_MY90"
   },
   "MX1600_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY100"
@@ -68,14 +290,113 @@
   "MX1600_MY200": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY200"
   },
+  "MX1600_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY250"
+  },
+  "MX1600_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY300"
+  },
+  "MX1600_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY30"
+  },
+  "MX1600_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY350"
+  },
+  "MX1600_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY400"
+  },
   "MX1600_MY40": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY40"
+  },
+  "MX1600_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY450"
+  },
+  "MX1600_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY500"
+  },
+  "MX1600_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY50"
+  },
+  "MX1600_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY600"
   },
   "MX1600_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY60"
   },
+  "MX1600_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY700"
+  },
+  "MX1600_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY70"
+  },
+  "MX1600_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY800"
+  },
   "MX1600_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY80"
+  },
+  "MX1600_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1600_MY90"
+  },
+  "MX1700_MY100": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY100"
+  },
+  "MX1700_MY125": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY125"
+  },
+  "MX1700_MY150": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY150"
+  },
+  "MX1700_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY200"
+  },
+  "MX1700_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY250"
+  },
+  "MX1700_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY300"
+  },
+  "MX1700_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY350"
+  },
+  "MX1700_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY400"
+  },
+  "MX1700_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY40"
+  },
+  "MX1700_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY450"
+  },
+  "MX1700_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY500"
+  },
+  "MX1700_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY50"
+  },
+  "MX1700_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY600"
+  },
+  "MX1700_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY60"
+  },
+  "MX1700_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY700"
+  },
+  "MX1700_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY70"
+  },
+  "MX1700_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY800"
+  },
+  "MX1700_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY80"
+  },
+  "MX1700_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY900"
+  },
+  "MX1700_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1700_MY90"
   },
   "MX1800_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY100"
@@ -89,11 +410,104 @@
   "MX1800_MY200": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY200"
   },
+  "MX1800_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY250"
+  },
+  "MX1800_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY300"
+  },
+  "MX1800_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY30"
+  },
+  "MX1800_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY350"
+  },
+  "MX1800_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY400"
+  },
   "MX1800_MY40": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY40"
   },
+  "MX1800_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY450"
+  },
+  "MX1800_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY500"
+  },
+  "MX1800_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY600"
+  },
+  "MX1800_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY700"
+  },
+  "MX1800_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY800"
+  },
   "MX1800_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY80"
+  },
+  "MX1800_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1800_MY90"
+  },
+  "MX1900_MY100": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY100"
+  },
+  "MX1900_MY125": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY125"
+  },
+  "MX1900_MY150": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY150"
+  },
+  "MX1900_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY200"
+  },
+  "MX1900_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY250"
+  },
+  "MX1900_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY300"
+  },
+  "MX1900_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY30"
+  },
+  "MX1900_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY350"
+  },
+  "MX1900_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY400"
+  },
+  "MX1900_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY40"
+  },
+  "MX1900_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY450"
+  },
+  "MX1900_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY500"
+  },
+  "MX1900_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY50"
+  },
+  "MX1900_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY600"
+  },
+  "MX1900_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY60"
+  },
+  "MX1900_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY700"
+  },
+  "MX1900_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY70"
+  },
+  "MX1900_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY80"
+  },
+  "MX1900_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY900"
+  },
+  "MX1900_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX1900_MY90"
   },
   "MX2000_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY100"
@@ -107,17 +521,116 @@
   "MX2000_MY200": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY200"
   },
+  "MX2000_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY250"
+  },
   "MX2000_MY300": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY300"
+  },
+  "MX2000_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY30"
+  },
+  "MX2000_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY350"
+  },
+  "MX2000_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY400"
   },
   "MX2000_MY40": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY40"
   },
+  "MX2000_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY450"
+  },
+  "MX2000_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY500"
+  },
+  "MX2000_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY50"
+  },
+  "MX2000_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY600"
+  },
   "MX2000_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY60"
   },
+  "MX2000_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY700"
+  },
+  "MX2000_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY70"
+  },
+  "MX2000_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY800"
+  },
   "MX2000_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY80"
+  },
+  "MX2000_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY900"
+  },
+  "MX2000_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2000_MY90"
+  },
+  "MX2100_MY100": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY100"
+  },
+  "MX2100_MY125": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY125"
+  },
+  "MX2100_MY150": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY150"
+  },
+  "MX2100_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY200"
+  },
+  "MX2100_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY250"
+  },
+  "MX2100_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY300"
+  },
+  "MX2100_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY30"
+  },
+  "MX2100_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY350"
+  },
+  "MX2100_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY400"
+  },
+  "MX2100_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY40"
+  },
+  "MX2100_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY500"
+  },
+  "MX2100_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY50"
+  },
+  "MX2100_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY600"
+  },
+  "MX2100_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY60"
+  },
+  "MX2100_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY700"
+  },
+  "MX2100_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY70"
+  },
+  "MX2100_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY800"
+  },
+  "MX2100_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY80"
+  },
+  "MX2100_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY900"
+  },
+  "MX2100_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2100_MY90"
   },
   "MX2200_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY100"
@@ -131,14 +644,41 @@
   "MX2200_MY200": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY200"
   },
+  "MX2200_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY250"
+  },
   "MX2200_MY300": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY300"
+  },
+  "MX2200_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY30"
+  },
+  "MX2200_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY350"
+  },
+  "MX2200_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY400"
   },
   "MX2200_MY40": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY40"
   },
+  "MX2200_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY450"
+  },
+  "MX2200_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY500"
+  },
+  "MX2200_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY50"
+  },
   "MX2200_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY60"
+  },
+  "MX2200_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY700"
+  },
+  "MX2200_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2200_MY70"
   },
   "MX2400_MY125": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY125"
@@ -149,17 +689,56 @@
   "MX2400_MY200": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY200"
   },
+  "MX2400_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY250"
+  },
   "MX2400_MY300": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY300"
+  },
+  "MX2400_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY30"
+  },
+  "MX2400_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY350"
+  },
+  "MX2400_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY400"
   },
   "MX2400_MY40": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY40"
   },
+  "MX2400_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY450"
+  },
+  "MX2400_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY500"
+  },
+  "MX2400_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY50"
+  },
+  "MX2400_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY600"
+  },
   "MX2400_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY60"
   },
+  "MX2400_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY700"
+  },
+  "MX2400_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY70"
+  },
+  "MX2400_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY800"
+  },
   "MX2400_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY80"
+  },
+  "MX2400_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY900"
+  },
+  "MX2400_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2400_MY90"
   },
   "MX2600_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY100"
@@ -173,20 +752,56 @@
   "MX2600_MY200": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY200"
   },
+  "MX2600_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY250"
+  },
   "MX2600_MY300": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY300"
   },
-  "MX2600_MY40": {
-    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY40"
+  "MX2600_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY30"
+  },
+  "MX2600_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY350"
   },
   "MX2600_MY400": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY400"
   },
+  "MX2600_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY40"
+  },
+  "MX2600_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY450"
+  },
+  "MX2600_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY500"
+  },
+  "MX2600_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY50"
+  },
+  "MX2600_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY600"
+  },
   "MX2600_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY60"
   },
+  "MX2600_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY700"
+  },
+  "MX2600_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY70"
+  },
+  "MX2600_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY800"
+  },
   "MX2600_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY80"
+  },
+  "MX2600_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY900"
+  },
+  "MX2600_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2600_MY90"
   },
   "MX2800_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY100"
@@ -200,20 +815,56 @@
   "MX2800_MY200": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY200"
   },
+  "MX2800_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY250"
+  },
   "MX2800_MY300": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY300"
   },
-  "MX2800_MY40": {
-    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY40"
+  "MX2800_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY30"
+  },
+  "MX2800_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY350"
   },
   "MX2800_MY400": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY400"
   },
+  "MX2800_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY40"
+  },
+  "MX2800_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY450"
+  },
+  "MX2800_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY500"
+  },
+  "MX2800_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY50"
+  },
+  "MX2800_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY600"
+  },
   "MX2800_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY60"
   },
+  "MX2800_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY700"
+  },
+  "MX2800_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY70"
+  },
+  "MX2800_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY800"
+  },
   "MX2800_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY80"
+  },
+  "MX2800_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY900"
+  },
+  "MX2800_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX2800_MY90"
   },
   "MX3000_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY100"
@@ -227,31 +878,298 @@
   "MX3000_MY200": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY200"
   },
+  "MX3000_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY250"
+  },
   "MX3000_MY300": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY300"
   },
-  "MX3000_MY40": {
-    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY40"
+  "MX3000_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY30"
+  },
+  "MX3000_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY350"
   },
   "MX3000_MY400": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY400"
   },
+  "MX3000_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY40"
+  },
+  "MX3000_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY450"
+  },
+  "MX3000_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY500"
+  },
+  "MX3000_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY50"
+  },
+  "MX3000_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY600"
+  },
   "MX3000_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY60"
+  },
+  "MX3000_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY700"
+  },
+  "MX3000_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY70"
+  },
+  "MX3000_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY800"
   },
   "MX3000_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY80"
   },
+  "MX3000_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY900"
+  },
+  "MX3000_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3000_MY90"
+  },
+  "MX300_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX300_MY30"
+  },
+  "MX3500_MY100": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY100"
+  },
+  "MX3500_MY125": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY125"
+  },
+  "MX3500_MY150": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY150"
+  },
+  "MX3500_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY200"
+  },
+  "MX3500_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY250"
+  },
+  "MX3500_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY300"
+  },
+  "MX3500_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY30"
+  },
+  "MX3500_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY350"
+  },
+  "MX3500_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY400"
+  },
+  "MX3500_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY40"
+  },
+  "MX3500_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY450"
+  },
+  "MX3500_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY500"
+  },
+  "MX3500_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY50"
+  },
+  "MX3500_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY600"
+  },
+  "MX3500_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY60"
+  },
+  "MX3500_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY700"
+  },
+  "MX3500_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY70"
+  },
+  "MX3500_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY800"
+  },
+  "MX3500_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY80"
+  },
+  "MX3500_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY900"
+  },
+  "MX3500_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX3500_MY90"
+  },
+  "MX350_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX350_MY30"
+  },
+  "MX4000_MY100": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY100"
+  },
+  "MX4000_MY125": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY125"
+  },
+  "MX4000_MY150": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY150"
+  },
+  "MX4000_MY200": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY200"
+  },
+  "MX4000_MY250": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY250"
+  },
+  "MX4000_MY300": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY300"
+  },
+  "MX4000_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY30"
+  },
+  "MX4000_MY350": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY350"
+  },
+  "MX4000_MY400": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY400"
+  },
+  "MX4000_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY40"
+  },
+  "MX4000_MY450": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY450"
+  },
+  "MX4000_MY500": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY500"
+  },
+  "MX4000_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY50"
+  },
+  "MX4000_MY600": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY600"
+  },
+  "MX4000_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY60"
+  },
+  "MX4000_MY700": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY700"
+  },
+  "MX4000_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY70"
+  },
+  "MX4000_MY800": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY800"
+  },
+  "MX4000_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY80"
+  },
+  "MX4000_MY900": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY900"
+  },
+  "MX4000_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX4000_MY90"
+  },
+  "MX400_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX400_MY30"
+  },
+  "MX400_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX400_MY40"
+  },
+  "MX450_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX450_MY30"
+  },
+  "MX450_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX450_MY40"
+  },
+  "MX500_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX500_MY30"
+  },
+  "MX500_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX500_MY40"
+  },
+  "MX500_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX500_MY50"
+  },
+  "MX500_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX500_MY60"
+  },
+  "MX600_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX600_MY30"
+  },
+  "MX600_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX600_MY40"
+  },
+  "MX600_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX600_MY50"
+  },
+  "MX600_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX600_MY60"
+  },
+  "MX600_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX600_MY70"
+  },
+  "MX700_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX700_MY30"
+  },
+  "MX700_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX700_MY40"
+  },
+  "MX700_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX700_MY50"
+  },
+  "MX700_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX700_MY60"
+  },
+  "MX700_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX700_MY70"
+  },
+  "MX700_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX700_MY80"
+  },
+  "MX700_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX700_MY90"
+  },
   "MX800_MY100": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX800_MY100"
+  },
+  "MX800_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX800_MY30"
   },
   "MX800_MY40": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX800_MY40"
   },
+  "MX800_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX800_MY50"
+  },
   "MX800_MY60": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX800_MY60"
   },
+  "MX800_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX800_MY70"
+  },
   "MX800_MY80": {
     "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX800_MY80"
+  },
+  "MX800_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX800_MY90"
+  },
+  "MX900_MY100": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX900_MY100"
+  },
+  "MX900_MY125": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX900_MY125"
+  },
+  "MX900_MY30": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX900_MY30"
+  },
+  "MX900_MY40": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX900_MY40"
+  },
+  "MX900_MY50": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX900_MY50"
+  },
+  "MX900_MY60": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX900_MY60"
+  },
+  "MX900_MY70": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX900_MY70"
+  },
+  "MX900_MY80": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX900_MY80"
+  },
+  "MX900_MY90": {
+    "dataset": "/afs/cern.ch/user/m/mrogulji/store/XToHYTo4B/UL_skims/2017/MX900_MY90"
   }
 }

@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import mplhep as hep
 import matplotlib
 from root_numpy import hist2array
+import sys
 matplotlib.use('Agg')
 
 
@@ -188,10 +189,21 @@ def plotFitRes(gData,hProcs,output,scale=10.,offset=0.,colors=["limegreen","turq
     plt.sca(axs[0])
 
     hep.histplot(histos,edges[0],stack=True,ax=axs[0],label=labels,linewidth=1,histtype="fill",facecolor=colors,edgecolor='black')
-    plt.errorbar(dataX, dataY, yerr=[dataYErrlo,dataYErrup], fmt='o',color="black")
-    #if("postfit" in output):
+    plt.errorbar(dataX, dataY, yerr=[dataYErrlo,dataYErrup], fmt='o',color="black",label="Data")
+
     uncLo, uncUp    = getUncBand(totalHistos)
-    plt.fill_between(dataX,uncLo,uncUp,facecolor="none", hatch="xxx", edgecolor="grey", linewidth=0.0,step="mid")
+
+
+    #------------------------------------#
+    #Fix to extend error bar over whole first and last bin!
+    for i in range(len(dataX)):
+        dataX[i] = dataX[i] - 0.5*scale
+    dataX.append(dataX[-1]+scale)
+    uncLo= np.append(uncLo,[0])
+    uncUp= np.append(uncUp,[0])
+    #------------------------------------#
+    
+    plt.fill_between(dataX,uncLo,uncUp,facecolor="none", hatch="xxx", edgecolor="grey", linewidth=0.0,step="post")
     # if(log):
     #     axs[0].set_yscale("log")
     axs[0].legend()
@@ -206,13 +218,13 @@ def plotFitRes(gData,hProcs,output,scale=10.,offset=0.,colors=["limegreen","turq
 
 
     if("16" in output):
-        luminosity = "35.9 $fb^{-1} "
+        luminosity = "36.3 $fb^{-1}\ "
     elif("17" in output):
-        luminosity = "41.5 $fb^{-1} "
+        luminosity = "41.5 $fb^{-1}\ "
     elif("18" in output):
-        luminosity = "59.8 $fb^{-1} "
+        luminosity = "59.8 $fb^{-1}\ "
     else:
-        luminosity = "137 $fb^{-1} "
+        luminosity = "138 $fb^{-1}\ "
 
     lumiText = luminosity + "(13 TeV)$"
     hep.cms.lumitext(text=lumiText, ax=axs[0], fontname=None, fontsize=None)
@@ -235,16 +247,36 @@ def plotFitRes(gData,hProcs,output,scale=10.,offset=0.,colors=["limegreen","turq
 
 
     plt.savefig(output)
+    plt.savefig(output.replace(".png",".pdf"))
     plt.clf()
 
-years   =["17","18"]
+years   =["16","17","18"]
 regions =["L","T"]
-yRanges = {"L":300,"T":150}
-for year in years:
-    for region in regions:
-        yMax = yRanges[region]
-        gDataPost, hProcsPost = getFitRes("fitDiagnostics_{0}_{1}.root".format(region,year),"shapes_fit_b","{0}_CR".format(region))
-        plotFitRes(gDataPost,hProcsPost,"postfitPlots/{0}_CR_{1}.png".format(region,year),yRange=[0,yMax],text="20{0} CR {1} postfit".format(year,region),scale=10.,offset=60.)
+yRanges = {"L":350,"T":170}
+# for year in years:
+#     for region in regions:
+#         yMax = yRanges[region]
+#         gDataPost, hProcsPost = getFitRes("fitDiagnostics_{0}_{1}.root".format(region,year),"shapes_fit_b","{0}_CR".format(region))
+#         plotFitRes(gDataPost,hProcsPost,"postfitPlots/{0}_CR_{1}.png".format(region,year),yRange=[0,yMax],text="20{0} CR {1} postfit".format(year,region),scale=10.,offset=60.)
 
-        gDataPre, hProcsPre = getFitRes("fitDiagnostics_{0}_{1}.root".format(region,year),"shapes_prefit","{0}_CR".format(region))
-        plotFitRes(gDataPre,hProcsPre,"postfitPlots/{0}_CR_{1}_prefit.png".format(region,year),yRange=[0,yMax],text="20{0} CR {1} prefit".format(year,region),scale=10.,offset=60.)
+#         plotFitRes(gDataPre,hProcsPre,"postfitPlots/{0}_CR_{1}_prefit.png".format(region,year),yRange=[0,yMax],text="20{0} CR {1} prefit".format(year,region),scale=10.,offset=60.)
+
+for region in regions:
+    for year in years:
+        yMax = yRanges[region]
+        fitDir = sys.argv[1]
+        gDataPost, hProcsPost = getFitRes(fitDir+"/fitDiagnostics.root".format(region,year),"shapes_fit_b","CR_{0}_{1}".format(region,year))
+        plotFitRes(gDataPost,hProcsPost,"CR_{0}_{1}.png".format(region,year),yRange=[0,yMax],text="20{0} CR {1} postfit".format(year,region),scale=10.,offset=60.)
+
+
+        gDataPre, hProcsPre = getFitRes(fitDir+"/fitDiagnostics.root".format(region,year),"shapes_prefit","CR_{0}_{1}".format(region,year))
+        plotFitRes(gDataPre,hProcsPre,"{0}_CR_{1}_prefit.png".format(region,year),yRange=[0,yMax],text="20{0} CR {1} prefit".format(year,region),scale=10.,offset=60.)
+
+
+
+# for region in regions:
+#     for year in years:
+#         yMax = yRanges[region]
+#         fitDir = sys.argv[1]
+#         gDataPost, hProcsPost = getFitRes("fitDiagnostics.root".format(region,year),"shapes_fit_b","CR_{0}_{1}".format(region,year))
+#         plotFitRes(gDataPost,hProcsPost,"CR_{0}_{1}.png".format(region,year),yRange=[0,yMax],text="20{0} CR {1} postfit".format(year,region),scale=10.,offset=60.)
