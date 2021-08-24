@@ -1,0 +1,10 @@
+{
+    "data_obs":{
+    "file": "results/semiResolvedSelection/2017/scaled/JetHT17.root",
+    "xsec": 1,
+    "color":1,
+    "label": "2017 data"
+    }
+}
+
+

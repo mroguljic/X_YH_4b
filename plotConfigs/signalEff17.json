@@ -1,0 +1,65 @@
+{
+
+  "MX1000_MY125": {
+    "file": "results/templates_hadronic/2017/scaled/MX1000_MY125.root",
+    "color":"red",
+    "label": "$M_{X}$=1000 GeV\n$M_{Y}$=125 GeV",
+    "order": 0
+  },
+  "MX1200_MY125": {
+    "file": "results/templates_hadronic/2017/scaled/MX1200_MY125.root",
+    "color":"red",
+    "label": "$M_{X}$=1200 GeV\n$M_{Y}$=125 GeV",
+    "order": 0
+  },
+  "MX1400_MY125": {
+    "file": "results/templates_hadronic/2017/scaled/MX1400_MY125.root",
+    "color":"red",
+    "label": "$M_{X}$=1400 GeV\n$M_{Y}$=125 GeV",
+    "order": 0
+  },
+  "MX2000_MY125": {
+    "file": "results/templates_hadronic/2017/scaled/MX2000_MY125.root",
+    "color":"red",
+    "label": "$M_{X}$=1000 GeV\n$M_{Y}$=125 GeV",
+    "order": 0
+  },
+  "MX3000_MY125": {
+    "file": "results/templates_hadronic/2017/scaled/MX3000_MY125.root",
+    "color":"red",
+    "label": "$M_{X}$=3000 GeV\n$M_{Y}$=125 GeV",
+    "order": 0
+  },
+  "MX1600_MY60": {
+    "file": "results/templates_hadronic/2017/scaled/MX1600_MY60.root",
+    "color":"red",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=60 GeV",
+    "order": 0
+  },
+  "MX1600_MY100": {
+    "file": "results/templates_hadronic/2017/scaled/MX1600_MY100.root",
+    "color":"red",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=100 GeV",
+    "order": 0
+  },
+  "MX1600_MY125": {
+    "file": "results/templates_hadronic/2017/scaled/MX1600_MY125.root",
+    "color":"red",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=125 GeV",
+    "order": 0
+  },
+  "MX1600_MY200": {
+    "file": "results/templates_hadronic/2017/scaled/MX1600_MY200.root",
+    "color":"blue",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=200 GeV",
+    "order": 0
+  },
+  "MX1600_MY300": {
+    "file": "results/templates_hadronic/2017/scaled/MX1600_MY300.root",
+    "color":"blue",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=300 GeV",
+    "order": 0
+  }
+}
+
+

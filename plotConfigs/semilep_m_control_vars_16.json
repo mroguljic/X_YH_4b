@@ -1,0 +1,31 @@
+{
+  "ST": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/muon/2016/scaled/ST16.root",
+    "color":"turquoise",
+    "label": "ST",
+    "order": 10
+  },
+  "TTbar": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/muon/2016/scaled/TTbar16.root",
+    "xsec": 0.01,
+    "color":"firebrick",
+    "label": "TTbar",
+    "order": 6
+  },
+  "WJets": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/muon/2016/scaled/WJets16.root",
+    "xsec": 0.01,
+    "color":"limegreen",
+    "label": "WJets",
+    "order": 1
+  },
+  "data_obs": {
+    "file": "/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_semileptonic/muon/2016/scaled/SingleMuon16.root",
+    "xsec": 0.01,
+    "color":"limegreen",
+    "label": "Data",
+    "order": 0
+  }
+}
+
+

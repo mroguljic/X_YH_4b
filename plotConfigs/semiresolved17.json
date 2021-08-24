@@ -1,0 +1,41 @@
+{
+
+  "MX1600_MY125": {
+    "file": "results/semiResolvedSelection/2017/scaled/MX1600_MY125.root",
+    "color":"green",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=125 GeV",
+    "order": 0
+  },
+  "MX1600_MY200": {
+    "file": "results/semiResolvedSelection/2017/scaled/MX1600_MY200.root",
+    "color":"blue",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=200 GeV",
+    "order": 0
+  },
+  "MX1600_MY400": {
+    "file": "results/semiResolvedSelection/2017/scaled/MX1600_MY400.root",
+    "color":"black",
+    "label": "$M_{X}$=1600 GeV\n$M_{Y}$=400 GeV",
+    "order": 0
+  },
+  "TTbar": {
+    "file": "results/semiResolvedSelection/2017/scaled/TTbar17.root",
+    "color":"magenta",
+    "label": "ttbar",
+    "order": 6
+  },
+  "QCD": {
+    "file": "results/semiResolvedSelection/2017/scaled/QCD17.root",
+    "color":"gold",
+    "label": "Multijets",
+    "order": 7
+  },
+  "data_obs": {
+    "file": "results/semiResolvedSelection/2017/scaled/JetHT17.root",
+    "color":"k",
+    "label": "Data",
+    "order": 8
+  }
+}
+
+
