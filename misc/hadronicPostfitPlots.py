@@ -17,6 +17,17 @@ import ctypes
 r.gROOT.SetBatch(True)
 r.gStyle.SetOptFit(111)
 
+def getPoissonErrors(hist):
+    hist.SetBinErrorOption(1)
+    errors_low = []
+    errors_hi  = []
+    for i in range(1,hist.GetNbinsX()+1):
+        errors_low.append(hist.GetBinErrorLow(i))
+        errors_hi.append(hist.GetBinErrorUp(i))
+
+    return [errors_low,errors_hi]
+
+
 def rebinHisto(hModel,hToRebin,name,scale=1.0):
     hRes = hModel.Clone(name)
     hRes.Reset()
@@ -69,7 +80,6 @@ def merge_low_sig_high(hLow,hSig,hHigh,hName="temp"):
     bins_x      = get_binning_x(hLow,hSig,hHigh)
     bins_y      = get_binning_y(hLow,hSig,hHigh)
     h_res       = r.TH2F(hName,"",n_x,bins_x,n_y,bins_y)
-    #h_res.SetBinErrorOption(1)
     for i in range(1,n_x_low+1):
         for j in range(1,n_y+1):
             h_res.SetBinContent(i+0,j,hLow.GetBinContent(i,j))
@@ -84,7 +94,6 @@ def merge_low_sig_high(hLow,hSig,hHigh,hName="temp"):
         for j in range(1,n_y+1):
             h_res.SetBinContent(i+n_x_sig+n_x_low,j,hHigh.GetBinContent(i,j))
             h_res.SetBinError(i+n_x_sig+n_x_low,j,hHigh.GetBinError(i,j))
-
     return h_res
 
 
@@ -111,17 +120,21 @@ def getUncBand(totalHistos):
     return np.array(yLo), np.array(yUp)
 
 
-def calculatePull(hData,hTotBkg,uncBand):
+def calculatePull(hData,dataErrors,hTotBkg,uncBand):
     pulls = []
     for i,dataYield in enumerate(hData):
         mcYield     = hTotBkg[i]
         diff        = dataYield-mcYield
         dataErr     = np.sqrt(dataYield)
-        mcErr       = (uncBand[1][i]-uncBand[0][i])/2
-        sigma       = np.sqrt(mcErr*mcErr+dataErr*dataErr)
+        if(dataYield>=mcYield):
+            dataErr = dataErrors[0][i]#ErrorLo
+            mcErr   = uncBand[1][i]-mcYield#ErrorUp
+        else:
+            dataErr = dataErrors[1][i]#ErrorUp
+            mcErr   = uncBand[0][i]-mcYield#ErrorLo
+
+        sigma =  np.sqrt(dataErr*dataErr+mcErr*mcErr)
         pull        = diff/sigma
-        if(dataYield==0):
-            pull    = 0
         pulls.append(pull)
     return np.array(pulls)
 
@@ -147,9 +160,9 @@ def plotShapes(hData,hQCD,hTTbar,hTotBkg,uncBand,hSignals,labelsSig,colorsSig,xl
     print("{0:.1f}\t{1:.1f} +/- {2:.1f}\t{3:.1f} +/- {4:.1f}\t{5:.1f} +/- {6:.1f}".format(dataYield,bkgYield,bkgErr.value,qcdYield,qcdErr.value,ttbarYield,ttbarErr.value))
 
 
+    dataErrors      = getPoissonErrors(hData)
     hData, edges    = hist2array(hData,return_edges=True)
     centresData     = (edges[0][:-1] + edges[0][1:])/2.#Bin centres
-    errorsData      = np.sqrt(hData)
     xerrorsData     = []
 
     for i in range(len(edges[0])-1):
@@ -174,7 +187,7 @@ def plotShapes(hData,hQCD,hTTbar,hTotBkg,uncBand,hSignals,labelsSig,colorsSig,xl
     axs = axs.flatten()
     plt.sca(axs[0])
     hep.histplot(histosBkg,edges[0],stack=True,ax=axs[0],label = labelsBkg, histtype="fill",facecolor=colorsBkg,edgecolor='black')
-    plt.errorbar(centresData,hData, yerr=errorsData, xerr=xerrorsData, fmt='o',color="k",label = "Data")    
+    plt.errorbar(centresData,hData, yerr=dataErrors, xerr=xerrorsData, fmt='o',color="k",label = "Data")    
     plt.fill_between(edges[0][0:-1],uncBand[0],uncBand[1],facecolor="none", hatch="xxx", edgecolor="grey", linewidth=0.0,step="post")
 
     for i,h in enumerate(histosSig):
@@ -192,7 +205,7 @@ def plotShapes(hData,hQCD,hTTbar,hTotBkg,uncBand,hSignals,labelsSig,colorsSig,xl
 
     lumiText = "138$fb^{-1} (13 TeV)$"    
     hep.cms.lumitext(lumiText)
-    hep.cms.text("WiP",loc=1)
+    hep.cms.text("Preliminary",loc=1)
     plt.legend(loc='best',ncol=2)
 
     if(len(hSignals)>0):
@@ -206,7 +219,7 @@ def plotShapes(hData,hQCD,hTTbar,hTotBkg,uncBand,hSignals,labelsSig,colorsSig,xl
     axs[1].axhline(y=-2.0, xmin=0, xmax=1, color="grey",linestyle="-.",alpha=0.5)
     axs[1].set_ylim([-3.0,3.0])
     plt.xlabel(xlabel,horizontalalignment='right', x=1.0)
-    pulls = calculatePull(hData,hTotBkg,uncBand)
+    pulls = calculatePull(hData,dataErrors,hTotBkg,uncBand)
     hep.histplot(pulls,edges[0],ax=axs[1],linewidth=1,histtype="fill",facecolor="blue",edgecolor='black')
 
     print("Saving ", outputFile)
@@ -237,7 +250,6 @@ def getSignals(signalsToPlot,region):
 
 
 testFile    = "/afs/cern.ch/user/m/mrogulji/UL_X_YH/X_YH_4b/CMSSW_10_6_14/src/2DAlphabet/RunII_SR_data_11_CR_zeroFail/postfitshapes_b.root"
-#testFile    = "/afs/cern.ch/user/m/mrogulji/UL_X_YH/X_YH_4b/CMSSW_10_6_14/src/2DAlphabet/RunII_SR_toy_11_CR_zeroFail/postfitshapes_b.root"
 TTprocesses = ["16_TTbar_bqq","17_TTbar_bqq","18_TTbar_bqq","16_TTbar_bq","17_TTbar_bq","18_TTbar_bq","16_TTbar_Other","17_TTbar_Other","18_TTbar_Other"]
 
 ymax = {"LL":320.,"TT":45.,"NAL_L":420.,"NAL_T":200.,"NAL_AL":5000,"T_AL":300,"L_AL":1000}
@@ -269,10 +281,9 @@ for region in ["TT","LL","L_AL","T_AL"]:
     totalBkg    = get2DPostfitPlot(testFile,"TotalBkg".format(region),dirRegion,taggingCat)
     print("Total bkg in {0}: {1}".format(region,totalBkg.Integral()))
 
-    tempRoot = r.TFile.Open("postfit_bkg.root","UPDATE")
-    tempRoot.cd()
-    totalBkg.Write()
-    tempRoot.Close()
+
+
+
 
     massPointsToPlot = ["MX1600_MY125","MX2000_MY300","MX3000_MY400"]
     labelsSignal     = ["$M_{X}$=1600 GeV\n$M_{Y}$=125 GeV","$M_{X}$=2000 GeV\n$M_{Y}$=300 GeV","$M_{X}$=3000 GeV\n$M_{Y}$=400 GeV"]
@@ -289,7 +300,7 @@ for region in ["TT","LL","L_AL","T_AL"]:
     signalHistos     = getSignals(massPointsToPlot,dirRegion)
     rebinnedSignal   = []
     for i in range(len(massPointsToPlot)):
-        rebinnedSignal.append(rebinHisto(dataShape,signalHistos[i],"{0}_{1}_rebinned".format(massPointsToPlot[i],region),scale=0.1).ProjectionX("{0}_{1}_projx".format(massPointsToPlot[i],region)))
+        rebinnedSignal.append(rebinHisto(dataShape,signalHistos[i],"{0}_{1}_rebinned".format(massPointsToPlot[i],region),scale=1.0).ProjectionX("{0}_{1}_projx".format(massPointsToPlot[i],region)))
 
     if("NAL" in region):
         rebinnedSignal = []
@@ -307,7 +318,7 @@ for region in ["TT","LL","L_AL","T_AL"]:
     signalHistos     = getSignals(massPointsToPlot,dirRegion)
     rebinnedSignal   = []
     for i in range(len(massPointsToPlot)):
-        rebinnedSignal.append(rebinHisto(dataShape,signalHistos[i],"{0}_{1}_rebinned".format(massPointsToPlot[i],region),scale=0.1).ProjectionY("{0}_{1}_projx".format(massPointsToPlot[i],region)))
+        rebinnedSignal.append(rebinHisto(dataShape,signalHistos[i],"{0}_{1}_rebinned".format(massPointsToPlot[i],region),scale=1.0).ProjectionY("{0}_{1}_projx".format(massPointsToPlot[i],region)))
     if("NAL" in region):
         rebinnedSignal = []
     plotShapes(data_proj,qcd_proj,ttbar_proj,totalBkg_proj,uncBand_proj,rebinnedSignal,labelsSignal,["red","blue","magenta"],"$M_{JJ}$ [GeV]","{0}_MJJ.png".format(region),xRange=[800.,4000.],yRange=[0.,ymax[region]])
