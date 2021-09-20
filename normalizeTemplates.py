@@ -12,7 +12,7 @@ def normalizeProcess(process,year,inFile,outFile):
     json_file = open("xsecs.json")
     config = json.load(json_file)
     if("MX" in process):
-        xsec = 0.01
+        xsec = 0.0005#0.5 fb
     else:
         xsec    = config[year][process]["xsec"]
     luminosity  = config[year]["lumi"]
