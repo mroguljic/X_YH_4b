@@ -2,14 +2,6 @@ import os
 import sys
 from pathlib import Path
 
-# MX = ["800","900","1000","1200","1400","1600","1800","2000","2200","2400","2600","2800","3000"]
-# MY = ["40","60","80","100","125","150","200","250","300","400"]#,"600","800","1000","1200","1400","1600","1800"]
-# signalProcesses = []
-
-# for mx in MX:
-#     for my in MY:
-#         if os.path.isdir(iDir+"/"+"MX{0}_MY{1}".format(mx,my)):
-#             signalProcesses.append("MX{0}_MY{1}".format(mx,my))
 
 iDir = sys.argv[1]
 outDir = sys.argv[2]
@@ -37,7 +29,6 @@ if("2018" in iDir):
     samples = samples2018
     wpL = 0.94
     wpT = 0.98
-#samples+=signalProcesses
 
 
 variations = ["nom","jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown","trigUp","trigDown","pnetUp","pnetDown","ptRwtUp","ptRwtDown","puRwtUp","puRwtDown"]
