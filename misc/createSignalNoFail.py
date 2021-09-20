@@ -9,6 +9,7 @@ for X in MX:
         signalPoints.append("MX{0}_MY{1}".format(X,Y))
 
 for signalPoint in signalPoints:
+    print(signalPoint)
     for year in ["16","17","18"]:
         sourceFile = "../results/templates_hadronic/20{0}/scaled/{1}.root".format(year,signalPoint)
         targetFile  = "remadeSignal/20{0}/{1}.root".format(year,signalPoint)

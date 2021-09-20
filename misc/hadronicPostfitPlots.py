@@ -206,7 +206,7 @@ def plotShapes(hData,hQCD,hTTbar,hTotBkg,uncBand,hSignals,labelsSig,colorsSig,xl
     lumiText = "138$fb^{-1} (13 TeV)$"    
     hep.cms.lumitext(lumiText)
     hep.cms.text("Preliminary",loc=1)
-    plt.legend(loc='best',ncol=2)
+    plt.legend(loc='best',ncol=2,bbox_to_anchor=[0.35,0.45])
 
     if(len(hSignals)>0):
         plt.text(0.65, 0.40, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 fb", horizontalalignment='center',verticalalignment='center',transform=axs[0].transAxes, fontsize=22)

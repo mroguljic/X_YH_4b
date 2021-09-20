@@ -102,16 +102,16 @@ def makePlot(outputFile,plotTTbar=False,plotFast=False,multipleSignal=False):
     WAL_AL = patches.Rectangle((-log10(0.4), 0.), -log10(0.2)+log10(0.4), -log10(0.06), linewidth=3, edgecolor='black', facecolor='lightcyan',zorder=0)
 
 
-    ax.add_patch(WAL_AL)
-    ax.add_patch(WAL_L)
-    ax.add_patch(WAL_T)
-    ax.add_patch(NAL_AL)
-    ax.add_patch(NAL_L)
-    ax.add_patch(NAL_T)
-    ax.add_patch(L_AL)
-    ax.add_patch(T_AL)
-    ax.add_patch(TT)
-    ax.add_patch(LL)
+    # ax.add_patch(WAL_AL)
+    # ax.add_patch(WAL_L)
+    # ax.add_patch(WAL_T)
+    # ax.add_patch(NAL_AL)
+    # ax.add_patch(NAL_L)
+    # ax.add_patch(NAL_T)
+    # ax.add_patch(L_AL)
+    # ax.add_patch(T_AL)
+    # ax.add_patch(TT)
+    # ax.add_patch(LL)
 
 
 
@@ -138,16 +138,17 @@ def makePlot(outputFile,plotTTbar=False,plotFast=False,multipleSignal=False):
 
 
     #Region labels
-    # plt.text(transformPnet(0.983), transformPnet(0.983), 'TT',alpha=0.7,fontsize=22)
-    # plt.text(transformPnet(0.96), transformPnet(0.96), 'LL',alpha=0.7,fontsize=22)
-    # plt.text(transformPnet(0.85), transformPnet(0.96), 'NAL_L',alpha=0.7,fontsize=22)
-    # plt.text(transformPnet(0.85), transformPnet(0.983), 'NAL_T',alpha=0.7,fontsize=22)
-    # plt.text(transformPnet(0.62), transformPnet(0.96), 'WAL_L',alpha=0.7,fontsize=22)
-    # plt.text(transformPnet(0.62), transformPnet(0.983), 'WAL_T',alpha=0.7,fontsize=22)
-    # plt.text(transformPnet(0.983), transformPnet(0.65), 'L_AL',alpha=0.7,fontsize=22)
-    # plt.text(transformPnet(0.96), transformPnet(0.65), 'T_AL',alpha=0.7,fontsize=22)
-    # plt.text(transformPnet(0.85), transformPnet(0.65), 'NAL_AL',alpha=0.7,fontsize=22)
-    # plt.text(transformPnet(0.62), transformPnet(0.65), 'WAL_AL',alpha=0.7,fontsize=22)
+    regionLabelColor = "blue"
+    plt.text(transformPnet(0.983), transformPnet(0.983), 'TT',alpha=0.7,fontsize=22,color=regionLabelColor)
+    plt.text(transformPnet(0.96), transformPnet(0.96), 'LL',alpha=0.7,fontsize=22,color=regionLabelColor)
+    plt.text(transformPnet(0.85), transformPnet(0.96), 'NAL_L',alpha=0.7,fontsize=22,color=regionLabelColor)
+    plt.text(transformPnet(0.85), transformPnet(0.983), 'NAL_T',alpha=0.7,fontsize=22,color=regionLabelColor)
+    plt.text(transformPnet(0.62), transformPnet(0.96), 'WAL_L',alpha=0.7,fontsize=22,color=regionLabelColor)
+    plt.text(transformPnet(0.62), transformPnet(0.983), 'WAL_T',alpha=0.7,fontsize=22,color=regionLabelColor)
+    plt.text(transformPnet(0.983), transformPnet(0.65), 'L_AL',alpha=0.7,fontsize=22,color=regionLabelColor)
+    plt.text(transformPnet(0.96), transformPnet(0.65), 'T_AL',alpha=0.7,fontsize=22,color=regionLabelColor)
+    plt.text(transformPnet(0.85), transformPnet(0.65), 'NAL_AL',alpha=0.7,fontsize=22,color=regionLabelColor)
+    plt.text(transformPnet(0.60), transformPnet(0.65), 'WAL_AL',alpha=0.7,fontsize=22,color=regionLabelColor)
 
 
     #Region numbering
@@ -215,12 +216,12 @@ def makePlot(outputFile,plotTTbar=False,plotFast=False,multipleSignal=False):
 
 
     plt.savefig("{0}.png".format(outputFile),bbox_inches="tight")
-    plt.savefig("{0}.pdf".format(outputFile),bbox_inches="tight")
+    #plt.savefig("{0}.pdf".format(outputFile),bbox_inches="tight")
 
 
 
 plotFast = False
 
-makePlot("scatterPlots/QCD_1sig",plotTTbar=False,plotFast=plotFast,multipleSignal=False)
-makePlot("scatterPlots/QCD_3sig",plotTTbar=False,plotFast=plotFast,multipleSignal=True)
+#makePlot("scatterPlots/QCD_1sig",plotTTbar=False,plotFast=plotFast,multipleSignal=False)
+#makePlot("scatterPlots/QCD_3sig",plotTTbar=False,plotFast=plotFast,multipleSignal=True)
 makePlot("scatterPlots/QCD_TT_1sig",plotTTbar=True,plotFast=plotFast,multipleSignal=False)
