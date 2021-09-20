@@ -16,7 +16,8 @@ def getLimits(rootFile):
     limitTree = f.Get("limit")
     limits = []
     for limit in limitTree:
-        limits.append(limit.limit*10.)#signal is normalized to 10fb xsec
+        #limits.append(limit.limit*0.5)#signal is normalized to 0.5fb xsec
+        limits.append(limit.limit*1.0)#signal is normalized to 1.0fb xsec
 
     return limits
 
@@ -156,11 +157,9 @@ def mxLimits(my=125,obs=False):
     limits = []
     goodMX = []
     for mx in MX:
-        #file_limits = "limits/DeltaEta/limits_MX{0}_MY{1}.AsymptoticLimits.mH125.root".format(mx,my)
-        if(obs):
-            file_limits = "limits/obsLimits/MX{0}_MY{1}.root".format(int(mx),int(my))
-        else:
-            file_limits = "limits/toyLimits/MX{0}_MY{1}.root".format(int(mx),int(my))            
+        #file_limits = "limits/obsLimits_snapshot/MX{0}_MY{1}.root".format(int(mx),int(my))
+        #file_limits = "limits/obsLimits/MX{0}_MY{1}.root".format(int(mx),int(my))
+        file_limits = "limits/obsLimits_1fb_signal/MX{0}_MY{1}.root".format(int(mx),int(my))
         if not (checkLimitFile(file_limits)):
             continue
         goodMX.append(mx)
@@ -177,18 +176,19 @@ def mxLimits(my=125,obs=False):
     limits = limits.T.tolist() 
 
     plt.style.use(hep.style.CMS)
-    hep.cms.label(loc=1, year='138 $fb^{-1}$', paper=True, llabel='Simulation WiP')
+    hep.cms.label(loc=1, year='138 $fb^{-1}$', paper=True, llabel='Preliminary')
 
     plt.fill_between(goodMX, limits[1], limits[3], color='forestgreen', label='68% expected')
     plt.fill_between(goodMX, limits[0], limits[4], color='darkorange', label='95% expected')
     plt.fill_between(goodMX, limits[1], limits[3], color='forestgreen', label='_nolegend_')
+    print(goodMX,limits[5])
     plt.plot(goodMX, limits[2], color='black', linewidth='2.4', linestyle='--', label=r'Median expected')
     if(obs):
         plt.plot(goodMX, limits[5], color='black', linewidth='2.4', linestyle='-', label=r'Observed')
     plt.xlabel("$M_{X} [GeV]$")
     plt.ylabel(r'$\sigma(pp \rightarrow X \rightarrow HY \rightarrow b\overline{b} b \overline{b})\,[fb]$',horizontalalignment='right', y=1.0)
     plt.xlabel("$M_{X} [GeV]$", horizontalalignment='right', x=1.0)
-    plt.text(3000, 250, r'$M_{Y} = 125\,GeV$')
+    plt.text(3000, 250, r'$M_{Y} = '+str(my)+r'\,GeV$')
     plt.yscale('log')
     plt.ylim(0.01, 10**3)
     plt.legend(loc=(0.10,0.60)
@@ -199,17 +199,17 @@ def mxLimits(my=125,obs=False):
       )
 
 
-    plt.tight_layout()
+    #plt.tight_layout()
 
     fig = matplotlib.pyplot.gcf()
     fig.set_size_inches(4*2.5, 3*2.5, forward=True)
 
     if(obs):
-        fig.savefig('obslim_MX_MY125.pdf')
-        fig.savefig('obslim_MX_MY125.png')
+        fig.savefig('obslim_MX_MY{0}_1.0.pdf'.format(my))
+        fig.savefig('obslim_MX_MY{0}_1.0.png'.format(my))
     else:
-        fig.savefig('explim_MX_MY125.pdf')
-        fig.savefig('explim_MX_MY125.png')
+        fig.savefig('explim_MX_MY{0}_1.0.pdf'.format(my))
+        fig.savefig('explim_MX_MY{0}_1.0.png'.format(my))
     plt.clf()
 
 
@@ -254,7 +254,7 @@ def multipleMY(MY,obs=False):
     for i in range(len(MY)):
         plt.sca(axs[i])
         if(i==0):
-            hep.cms.label(loc=1, year='138 $fb^{-1}$', paper=True, llabel='Simulation WiP')
+            hep.cms.label(loc=1, year='138 $fb^{-1}$', paper=True, llabel='Preliminary')
         plt.fill_between(goodMX[i], limits[i][1], limits[i][3], color='forestgreen', label='68% expected')
         plt.fill_between(goodMX[i], limits[i][0], limits[i][4], color='darkorange',  label='95% expected')
         plt.fill_between(goodMX[i], limits[i][1], limits[i][3], color='forestgreen', label='_nolegend_')
@@ -287,7 +287,8 @@ def multipleMY(MY,obs=False):
 #deltaEtaLimits()
 #wpStudyLimits()
 
-mxLimits()
 #multipleMY([60,90,125,200,300,450,600])
 mxLimits(obs=True)
+#mxLimits(my=90,obs=True)
+#mxLimits(my=80,obs=True)
 #multipleMY([60,90,125,200,300,450,600],obs=True)
