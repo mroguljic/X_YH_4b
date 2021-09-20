@@ -14,8 +14,6 @@ else:
     semiRes    = False
     variations = ["nom","jesUp","jesDown","jerUp","jerDown","jmsUp","jmsDown","jmrUp","jmrDown"]
 for d in directories:
-    if not "MX4000_MY90"==d:
-        continue
     for variation in variations:
         if(semil):
             if(variation!="nom" and ("Single" in d or "EGamma" in d)):
