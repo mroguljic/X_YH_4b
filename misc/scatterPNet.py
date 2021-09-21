@@ -72,7 +72,7 @@ def makePlot(outputFile,plotTTbar=False,plotFast=False,multipleSignal=False):
 
     sigLabels   = ["$M_{X}$=1600 GeV\n$M_{Y}$=125 GeV","$M_{X}$=1000 GeV\n$M_{Y}$=90 GeV","$M_{X}$=3000 GeV\n$M_{Y}$=300 GeV"]
     sigMarkers  = ["s","d","*"]
-    sigColors   = ["cadetblue","thistle","lightsalmon"]
+    sigColors   = ["darkslategray","thistle","lightsalmon"]
     sigHs       = []
     sigYs       = []
 
@@ -85,35 +85,52 @@ def makePlot(outputFile,plotTTbar=False,plotFast=False,multipleSignal=False):
     plt.sca(ax)
 
 
+    colSR = (152./255,251./255,152./255)
+    colNAL = (255./255,211./255,155./255)
+    colWAL = (152./255,245./255,255./255)
+
+    alphaPass = 0.2
+    alphaFail = 0.1
+
+    colSR_LL = (*colSR, alphaPass)
+    colSR_TT = (*colSR, alphaPass)
+    colSR_AL = (*colSR, alphaFail)
+    colSR_AT = (*colSR, alphaFail)
+
+    colNAL_L = (*colNAL, alphaPass)
+    colNAL_T = (*colNAL, alphaPass)
+    colNAL_AL = (*colNAL, alphaFail)
+
+    colWAL_L = (*colWAL, alphaPass)
+    colWAL_T = (*colWAL, alphaPass)
+    colWAL_AL = (*colWAL, alphaFail)
 
     #Rectangles showing ParticleNet regions
     #coordinates are in transformed variable, TODO: rewrite to real ParticleNet score variables
-    LL = patches.Rectangle((-log10(0.06), -log10(0.06)), 2.0+log10(0.06), 2.0+log10(0.06), linewidth=3, edgecolor='black', facecolor='lightgreen',zorder=0)
-    TT = patches.Rectangle((-log10(0.02), -log10(0.02)), 2.0+log10(0.02), 2.0+log10(0.02), linewidth=3, edgecolor='black', facecolor='lightgreen',zorder=0)
-    L_AL = patches.Rectangle((-log10(0.06), 0.0), 2.0+log10(0.06), -log10(0.06), linewidth=3, edgecolor='black', facecolor='palegreen',zorder=0)
-    T_AL = patches.Rectangle((-log10(0.02), 0.0), 2.0+log10(0.02), -log10(0.06), linewidth=3, linestyle='--', edgecolor='black', facecolor='palegreen',zorder=0)
+    LL = patches.Rectangle((-log10(0.06), -log10(0.06)), 2.0+log10(0.06), 2.0+log10(0.06), linewidth=3, edgecolor='black', facecolor=colSR_LL,zorder=0)
+    TT = patches.Rectangle((-log10(0.02), -log10(0.02)), 2.0+log10(0.02), 2.0+log10(0.02), linewidth=3, edgecolor='black', facecolor=colSR_TT,zorder=0,label="Signal regions")
+    L_AL = patches.Rectangle((-log10(0.06), 0.0), 2.0+log10(0.06), -log10(0.06), linewidth=3, edgecolor='black', facecolor=colSR_AL,zorder=0)
+    T_AL = patches.Rectangle((-log10(0.02), 0.0), 2.0+log10(0.02), -log10(0.06), linewidth=3, linestyle='--', edgecolor='black', facecolor=colSR_AT,zorder=0)
 
-    NAL_T = patches.Rectangle((-log10(0.2), -log10(0.02)), -log10(0.06)+log10(0.2), 2.0+log10(0.02), linewidth=3, edgecolor='black', facecolor='bisque',zorder=0)
-    NAL_L = patches.Rectangle((-log10(0.2), -log10(0.06)), -log10(0.06)+log10(0.2), 2.0+log10(0.06), linewidth=3, edgecolor='black', facecolor='bisque',zorder=0)
-    NAL_AL = patches.Rectangle((-log10(0.2), 0.), -log10(0.06)+log10(0.2), -log10(0.06), linewidth=3, edgecolor='black', facecolor='antiquewhite',zorder=0)
+    NAL_T = patches.Rectangle((-log10(0.2), -log10(0.02)), -log10(0.06)+log10(0.2), 2.0+log10(0.02), linewidth=3, edgecolor='black', facecolor=colNAL_T,zorder=0,label="Validation regions")
+    NAL_L = patches.Rectangle((-log10(0.2), -log10(0.06)), -log10(0.06)+log10(0.2), 2.0+log10(0.06), linewidth=3, edgecolor='black', facecolor=colNAL_L,zorder=0)
+    NAL_AL = patches.Rectangle((-log10(0.2), 0.), -log10(0.06)+log10(0.2), -log10(0.06), linewidth=3, edgecolor='black', facecolor=colNAL_AL,zorder=0)
 
-    WAL_T = patches.Rectangle((-log10(0.4), -log10(0.02)), -log10(0.2)+log10(0.4), 2.0+log10(0.02), linewidth=3, edgecolor='black', facecolor='paleturquoise',zorder=0)
-    WAL_L = patches.Rectangle((-log10(0.4), -log10(0.06)), -log10(0.2)+log10(0.4), 2.0+log10(0.06), linewidth=3, edgecolor='black', facecolor='paleturquoise',zorder=0)
-    WAL_AL = patches.Rectangle((-log10(0.4), 0.), -log10(0.2)+log10(0.4), -log10(0.06), linewidth=3, edgecolor='black', facecolor='lightcyan',zorder=0)
-
-
-    # ax.add_patch(WAL_AL)
-    # ax.add_patch(WAL_L)
-    # ax.add_patch(WAL_T)
-    # ax.add_patch(NAL_AL)
-    # ax.add_patch(NAL_L)
-    # ax.add_patch(NAL_T)
-    # ax.add_patch(L_AL)
-    # ax.add_patch(T_AL)
-    # ax.add_patch(TT)
-    # ax.add_patch(LL)
+    WAL_T = patches.Rectangle((-log10(0.4), -log10(0.02)), -log10(0.2)+log10(0.4), 2.0+log10(0.02), linewidth=3, edgecolor='black', facecolor=colWAL_T,zorder=0)
+    WAL_L = patches.Rectangle((-log10(0.4), -log10(0.06)), -log10(0.2)+log10(0.4), 2.0+log10(0.06), linewidth=3, edgecolor='black', facecolor=colWAL_L,zorder=0)
+    WAL_AL = patches.Rectangle((-log10(0.4), 0.), -log10(0.2)+log10(0.4), -log10(0.06), linewidth=3, edgecolor='black', facecolor=colWAL_AL,zorder=0)
 
 
+    ax.add_patch(WAL_AL)
+    ax.add_patch(WAL_L)
+    ax.add_patch(WAL_T)
+    ax.add_patch(NAL_AL)
+    ax.add_patch(NAL_L)
+    ax.add_patch(NAL_T)
+    ax.add_patch(L_AL)
+    ax.add_patch(T_AL)
+    ax.add_patch(TT)
+    ax.add_patch(LL)
 
     for i,signal in enumerate(signals):
         f = r.TFile.Open("/afs/cern.ch/work/m/mrogulji/UL_X_YH/X_YH_4b/results/eventSelection/2017/{0}_nom.root".format(signal))
@@ -128,27 +145,24 @@ def makePlot(outputFile,plotTTbar=False,plotFast=False,multipleSignal=False):
 
     if plotTTbar:
         plt.scatter(ttbarH,ttbarY,marker="v",facecolors="none",edgecolors="dimgrey",label=r"t$\bar{t}$") #Draw ttbar
-    plt.scatter(qcdH,qcdY,marker="o",facecolors="none",edgecolors="tan",label="QCD") #Draw QCD
+    plt.scatter(qcdH,qcdY,marker="o",facecolors="none",edgecolors="saddlebrown",label="QCD") #Draw QCD
     plt.xlabel("H-candidate ParticleNet score",horizontalalignment='right', x=1.0)
     plt.ylabel("Y-candidate ParticleNet score",horizontalalignment='right', y=1.0)
 
     ax.set_ylim([0,2.0])
     ax.set_xlim([0,2.0])
 
-
-
     #Region labels
-    regionLabelColor = "blue"
-    plt.text(transformPnet(0.983), transformPnet(0.983), 'TT',alpha=0.7,fontsize=22,color=regionLabelColor)
-    plt.text(transformPnet(0.96), transformPnet(0.96), 'LL',alpha=0.7,fontsize=22,color=regionLabelColor)
-    plt.text(transformPnet(0.85), transformPnet(0.96), 'NAL_L',alpha=0.7,fontsize=22,color=regionLabelColor)
-    plt.text(transformPnet(0.85), transformPnet(0.983), 'NAL_T',alpha=0.7,fontsize=22,color=regionLabelColor)
-    plt.text(transformPnet(0.62), transformPnet(0.96), 'WAL_L',alpha=0.7,fontsize=22,color=regionLabelColor)
-    plt.text(transformPnet(0.62), transformPnet(0.983), 'WAL_T',alpha=0.7,fontsize=22,color=regionLabelColor)
-    plt.text(transformPnet(0.983), transformPnet(0.65), 'L_AL',alpha=0.7,fontsize=22,color=regionLabelColor)
-    plt.text(transformPnet(0.96), transformPnet(0.65), 'T_AL',alpha=0.7,fontsize=22,color=regionLabelColor)
-    plt.text(transformPnet(0.85), transformPnet(0.65), 'NAL_AL',alpha=0.7,fontsize=22,color=regionLabelColor)
-    plt.text(transformPnet(0.60), transformPnet(0.65), 'WAL_AL',alpha=0.7,fontsize=22,color=regionLabelColor)
+    # plt.text(transformPnet(0.983), transformPnet(0.983), 'TT',alpha=0.7,fontsize=22)
+    # plt.text(transformPnet(0.96), transformPnet(0.96), 'LL',alpha=0.7,fontsize=22)
+    # plt.text(transformPnet(0.85), transformPnet(0.96), 'NAL_L',alpha=0.7,fontsize=22)
+    # plt.text(transformPnet(0.85), transformPnet(0.983), 'NAL_T',alpha=0.7,fontsize=22)
+    # plt.text(transformPnet(0.62), transformPnet(0.96), 'WAL_L',alpha=0.7,fontsize=22)
+    # plt.text(transformPnet(0.62), transformPnet(0.983), 'WAL_T',alpha=0.7,fontsize=22)
+    # plt.text(transformPnet(0.983), transformPnet(0.65), 'L_AL',alpha=0.7,fontsize=22)
+    # plt.text(transformPnet(0.96), transformPnet(0.65), 'T_AL',alpha=0.7,fontsize=22)
+    # plt.text(transformPnet(0.85), transformPnet(0.65), 'NAL_AL',alpha=0.7,fontsize=22)
+    # plt.text(transformPnet(0.62), transformPnet(0.65), 'WAL_AL',alpha=0.7,fontsize=22)
 
 
     #Region numbering
@@ -191,13 +205,15 @@ def makePlot(outputFile,plotTTbar=False,plotFast=False,multipleSignal=False):
     ax.add_patch(LL_edge)
 
     ncol = 2
-    legY = 1.2
+    legY = 1.3
+    legX = 0.0
 
     if plotTTbar:
         ncol = 3
+        legX = -0.05
     if multipleSignal:
-        legY = 1.3
-    ax.legend(loc='upper left', bbox_to_anchor=(0.05, legY),ncol=ncol, fancybox=True, shadow=True)
+        legY = 1.4
+    ax.legend(loc='upper left', bbox_to_anchor=(legX, legY),ncol=ncol, fancybox=True, shadow=True)
 
 
     pnetTicks = [0.6, 0.8, 0.94, 0.98]
@@ -216,12 +232,12 @@ def makePlot(outputFile,plotTTbar=False,plotFast=False,multipleSignal=False):
 
 
     plt.savefig("{0}.png".format(outputFile),bbox_inches="tight")
-    #plt.savefig("{0}.pdf".format(outputFile),bbox_inches="tight")
+    plt.savefig("{0}.pdf".format(outputFile),bbox_inches="tight")
 
 
 
 plotFast = False
 
-#makePlot("scatterPlots/QCD_1sig",plotTTbar=False,plotFast=plotFast,multipleSignal=False)
-#makePlot("scatterPlots/QCD_3sig",plotTTbar=False,plotFast=plotFast,multipleSignal=True)
+makePlot("scatterPlots/QCD_1sig",plotTTbar=False,plotFast=plotFast,multipleSignal=False)
+makePlot("scatterPlots/QCD_3sig",plotTTbar=False,plotFast=plotFast,multipleSignal=True)
 makePlot("scatterPlots/QCD_TT_1sig",plotTTbar=True,plotFast=plotFast,multipleSignal=False)
