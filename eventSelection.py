@@ -249,8 +249,16 @@ a.SetActiveNode(beforeNM1checkpoint)
 a.Cut("MJJ_cut","MJJ>700")
 nMJJ = getNweighted(a,isData)
 
-a.Define("pnet0","FatJet_particleNetMD_Xbb[0]/(FatJet_particleNetMD_Xbb[0]+FatJet_particleNetMD_QCD[0])")
-a.Define("pnet1","FatJet_particleNetMD_Xbb[1]/(FatJet_particleNetMD_Xbb[1]+FatJet_particleNetMD_QCD[1])")
+
+if(year=="2016"):
+    #Pnet_v0
+    a.Define("pnet0","FatJet_ParticleNetMD_probXbb[0]/(FatJet_ParticleNetMD_probXbb[0]+FatJet_ParticleNetMD_probQCDb[0]+FatJet_ParticleNetMD_probQCDbb[0]+FatJet_ParticleNetMD_probQCDc[0]+FatJet_ParticleNetMD_probQCDcc[0]+FatJet_ParticleNetMD_probQCDothers[0])")
+    a.Define("pnet1","FatJet_ParticleNetMD_probXbb[1]/(FatJet_ParticleNetMD_probXbb[1]+FatJet_ParticleNetMD_probQCDb[1]+FatJet_ParticleNetMD_probQCDbb[1]+FatJet_ParticleNetMD_probQCDc[1]+FatJet_ParticleNetMD_probQCDcc[1]+FatJet_ParticleNetMD_probQCDothers[1])")
+else:
+    #Pnet_v1
+    a.Define("pnet0","FatJet_particleNetMD_Xbb[0]/(FatJet_particleNetMD_Xbb[0]+FatJet_particleNetMD_QCD[0])")
+    a.Define("pnet1","FatJet_particleNetMD_Xbb[1]/(FatJet_particleNetMD_Xbb[1]+FatJet_particleNetMD_QCD[1])")
+
 a.Define("pnetLow","particleNetLow(pnet0,pnet1)")
 a.Define("pnetHigh","particleNetHigh(pnet0,pnet1)")
 h_nm1_pnet0     = a.GetActiveNode().DataFrame.Histo1D(('{0}_nm1_pnet0'.format(options.process),';Leading jet ParticleNet score;Events/0.01;',1000,0,1),"pnet0","genWeight")
@@ -292,8 +300,16 @@ candidateColumns.Add('ptjY','{0}[idxY]'.format(ptVar))
 candidateColumns.Add('MJY','correctedMSD[idxY]')
 candidateColumns.Add('MJH','correctedMSD[idxH]')
 candidateColumns.Add('MJJ_halfReduced','MJJ - MJH + 125')
-candidateColumns.Add("pnetH","FatJet_particleNetMD_Xbb[idxH]/(FatJet_particleNetMD_Xbb[idxH]+FatJet_particleNetMD_QCD[idxH])")
-candidateColumns.Add("pnetY","FatJet_particleNetMD_Xbb[idxY]/(FatJet_particleNetMD_Xbb[idxY]+FatJet_particleNetMD_QCD[idxY])")
+
+if(year=="2016"):
+    #Pnet_v0
+    candidateColumns.Add("pnetH","FatJet_ParticleNetMD_probXbb[idxH]/(FatJet_ParticleNetMD_probXbb[idxH]+FatJet_ParticleNetMD_probQCDb[idxH]+FatJet_ParticleNetMD_probQCDbb[idxH]+FatJet_ParticleNetMD_probQCDc[idxH]+FatJet_ParticleNetMD_probQCDcc[idxH]+FatJet_ParticleNetMD_probQCDothers[idxH])")
+    candidateColumns.Add("pnetY","FatJet_ParticleNetMD_probXbb[idxY]/(FatJet_ParticleNetMD_probXbb[idxY]+FatJet_ParticleNetMD_probQCDb[idxY]+FatJet_ParticleNetMD_probQCDbb[idxY]+FatJet_ParticleNetMD_probQCDc[idxY]+FatJet_ParticleNetMD_probQCDcc[idxY]+FatJet_ParticleNetMD_probQCDothers[idxY])")
+else:
+    #Pnet_v1
+    candidateColumns.Add("pnetH","FatJet_particleNetMD_Xbb[idxH]/(FatJet_particleNetMD_Xbb[idxH]+FatJet_particleNetMD_QCD[idxH])")
+    candidateColumns.Add("pnetY","FatJet_particleNetMD_Xbb[idxY]/(FatJet_particleNetMD_Xbb[idxY]+FatJet_particleNetMD_QCD[idxY])")
+
 
 a.Apply([candidateColumns])
 
@@ -319,55 +335,56 @@ checkpoint  = a.GetActiveNode()
 #-----Trigger study part------
 #Separated from the rest of the cut tree
 # if(isData):
-baselineTrigger="HLT_PFJet260"
-a.SetActiveNode(beforeTrigCheckpoint)
-a.Cut("Baseline",baselineTrigger)
-if(isData):
-    a.Cut("MET For Trigger",MetFiltersString)
-#need to change names to create nodes with different names than already existing
-a.Cut("nFatJet_ForTrigger","nFatJet>1")
-a.Cut("Eta_ForTrigger","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
-evtColumns.name = "Event Columns For Trigger"
-a.Apply([evtColumns])
-if(year=="2016"):
-    a.Cut("pT_ForTrigger","FatJet_pt0>350 && FatJet_pt1>350")
-else:
-    a.Cut("pT_ForTrigger","FatJet_pt0>450 && FatJet_pt1>450")
-nJets = getNweighted(a,isData)
+if(varName=="nom"):
+    baselineTrigger="HLT_PFJet260"
+    a.SetActiveNode(beforeTrigCheckpoint)
+    a.Cut("Baseline",baselineTrigger)
+    if(isData):
+        a.Cut("MET For Trigger",MetFiltersString)
+    #need to change names to create nodes with different names than already existing
+    a.Cut("nFatJet_ForTrigger","nFatJet>1")
+    a.Cut("Eta_ForTrigger","abs(FatJet_eta[0])<2.4 && abs(FatJet_eta[1])<2.4")
+    evtColumns.name = "Event Columns For Trigger"
+    a.Apply([evtColumns])
+    if(year=="2016"):
+        a.Cut("pT_ForTrigger","FatJet_pt0>350 && FatJet_pt1>350")
+    else:
+        a.Cut("pT_ForTrigger","FatJet_pt0>450 && FatJet_pt1>450")
+    nJets = getNweighted(a,isData)
 
-dijetColumns.name = "NminusOne Columns For Trigger"
-candidateColumns.name = "candidateColumns For Trigger"
-idxColumns.name = "idxColumns For Trigger"
-idxCuts.name = "idxCuts For Trigger"
-a.Apply([dijetColumns,idxColumns,idxCuts,candidateColumns])
-a.Cut("MJJ_cut_trigger","MJJ>700")
-a.Cut("MJY_cut_trigger","MJY>60")
-triggersStringAll = a.GetTriggerString(triggerList)  
+    dijetColumns.name = "NminusOne Columns For Trigger"
+    candidateColumns.name = "candidateColumns For Trigger"
+    idxColumns.name = "idxColumns For Trigger"
+    idxCuts.name = "idxCuts For Trigger"
+    a.Apply([dijetColumns,idxColumns,idxCuts,candidateColumns])
+    a.Cut("MJJ_cut_trigger","MJJ>700")
+    a.Cut("MJY_cut_trigger","MJY>60")
+    triggersStringAll = a.GetTriggerString(triggerList)  
 
-DEtaStrings = ["DeltaEta>0","DeltaEta<1.3","DeltaEta>1.5"]
-DEtaRegions = ["incl","SR","SB"]
-detaCheckpoint  = a.GetActiveNode()
-for i, tag in enumerate(DEtaRegions):
-    a.SetActiveNode(detaCheckpoint)
-    a.Cut("deta_{0}".format(tag),DEtaStrings[i])
+    DEtaStrings = ["DeltaEta>0","DeltaEta<1.3","DeltaEta>1.5"]
+    DEtaRegions = ["incl","SR","SB"]
+    detaCheckpoint  = a.GetActiveNode()
+    for i, tag in enumerate(DEtaRegions):
+        a.SetActiveNode(detaCheckpoint)
+        a.Cut("deta_{0}".format(tag),DEtaStrings[i])
 
-    h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers_{1}'.format(options.process,tag),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,700,3200,26,60,320),'MJJ','MJY',"genWeight")
-    h_pT0noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT0noTriggers_{1}'.format(options.process,tag),';Leading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt0","genWeight")
-    h_pT1noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT1noTriggers_{1}'.format(options.process,tag),';Subleading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt1","genWeight")
-    a.Cut("triggers_{0}".format(tag),triggersStringAll)
-    h_triggersAll = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersAll_{1}'.format(options.process,tag),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,700,3200,26,60,320),'MJJ','MJY',"genWeight")
-    h_pT0triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT0triggersAll_{1}'.format(options.process,tag),';Leading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt0","genWeight")
-    h_pT1triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT1triggersAll_{1}'.format(options.process,tag),';Subleading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt1","genWeight")
+        h_noTriggers = a.GetActiveNode().DataFrame.Histo2D(('{0}_noTriggers_{1}'.format(options.process,tag),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,700,3200,26,60,320),'MJJ','MJY',"genWeight")
+        h_pT0noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT0noTriggers_{1}'.format(options.process,tag),';Leading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt0","genWeight")
+        h_pT1noTriggers = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT1noTriggers_{1}'.format(options.process,tag),';Subleading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt1","genWeight")
+        a.Cut("triggers_{0}".format(tag),triggersStringAll)
+        h_triggersAll = a.GetActiveNode().DataFrame.Histo2D(('{0}_triggersAll_{1}'.format(options.process,tag),';m_{jj} [GeV] / 10 GeV;mj_{Y} [GeV] / 10 GeV;',250,700,3200,26,60,320),'MJJ','MJY',"genWeight")
+        h_pT0triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT0triggersAll_{1}'.format(options.process,tag),';Leading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt0","genWeight")
+        h_pT1triggersAll = a.GetActiveNode().DataFrame.Histo1D(('{0}_pT1triggersAll_{1}'.format(options.process,tag),';Subleading jet pT [GeV]; Events/10 GeV;',180,200,2000),"FatJet_pt1","genWeight")
 
-    histos.append(h_noTriggers)
-    histos.append(h_pT0noTriggers)
-    histos.append(h_pT1noTriggers)
-    histos.append(h_triggersAll)
-    histos.append(h_pT0triggersAll)
-    histos.append(h_pT1triggersAll)
+        histos.append(h_noTriggers)
+        histos.append(h_pT0noTriggers)
+        histos.append(h_pT1noTriggers)
+        histos.append(h_triggersAll)
+        histos.append(h_pT0triggersAll)
+        histos.append(h_pT1triggersAll)
 
-#return to event selection
-a.SetActiveNode(checkpoint)
+    #return to event selection
+    a.SetActiveNode(checkpoint)
 #-----Trigger study part end------
 
 #Categorize TT jets
