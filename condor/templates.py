@@ -114,6 +114,7 @@ Queue args from ARGFILE
 queue
 """
 
+
 semileptonic_template='''#!/bin/bash
 
 cd /afs/cern.ch/work/m/mrogulji/X_YH_4b/CMSSW_11_1_5/src
@@ -125,7 +126,28 @@ export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
 cd JOB_DIR
 
 echo semiLeptonicSelection.py $*
-python $WORK_DIR/semiLeptonicSelection.py $*
+python $WORK_DIR/semiLeptonicSelection.py $* --var nom
+python $WORK_DIR/semiLeptonicSelection.py $* --var jesDown
+python $WORK_DIR/semiLeptonicSelection.py $* --var jesUp
+python $WORK_DIR/semiLeptonicSelection.py $* --var jerDown
+python $WORK_DIR/semiLeptonicSelection.py $* --var jerUp
+python $WORK_DIR/semiLeptonicSelection.py $* --var sfDown
+python $WORK_DIR/semiLeptonicSelection.py $* --var sfUp
+
+'''
+
+semileptonic_template_data='''#!/bin/bash
+
+cd /afs/cern.ch/work/m/mrogulji/X_YH_4b/CMSSW_11_1_5/src
+eval `scramv1 runtime -sh`
+cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+source timber-env/bin/activate
+
+export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
+cd JOB_DIR
+
+echo semiLeptonicSelection.py $*
+python $WORK_DIR/semiLeptonicSelection.py $* --var nom
 '''
 
 templates_condor = """universe              = vanilla
@@ -164,4 +186,19 @@ python templateMaker.py $* -v trigUp -m UPDATE
 python templateMaker.py $* -v trigDown -m UPDATE
 python templateMaker.py $* -v pnetUp -m UPDATE
 python templateMaker.py $* -v pnetDown -m UPDATE
+'''
+
+
+selection_21_template='''#!/bin/bash
+
+cd /afs/cern.ch/work/m/mrogulji/X_YH_4b/CMSSW_11_1_5/
+eval `scramv1 runtime -sh`
+cd /afs/cern.ch/work/m/mrogulji/X_YH_4b
+source timber-env/bin/activate
+
+export WORK_DIR=/afs/cern.ch/work/m/mrogulji/X_YH_4b/
+cd JOB_DIR
+
+echo semiResolvedSelection.py $*
+python $WORK_DIR/semiResolvedSelection.py $*
 '''

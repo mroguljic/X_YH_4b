@@ -21,7 +21,10 @@ def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nF
       Path(sampleOut_dir).mkdir(parents=True, exist_ok=True)
 
       #Create condor file and sh file
-      exeScript = semileptonic_template.replace("JOB_DIR",sampleJobs_dir)
+      if("data" in sample or "SingleMuon" in sample):
+        exeScript = semileptonic_template_data.replace("JOB_DIR",sampleJobs_dir)
+      else:
+        exeScript = semileptonic_template.replace("JOB_DIR",sampleJobs_dir)
       open(os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), 'w').write(exeScript)
 
       condor_script = re.sub('EXEC',os.path.join(sampleJobs_dir, 'input', 'run_{}.sh'.format(sample)), semileptonic_condor)
@@ -34,14 +37,33 @@ def create_jobs(config, dry=True, queue='',year="2016",jobs_dir="",out_dir="",nF
       skimDirectory = sample_cfg["dataset"]
       skimFiles = [os.path.join(skimDirectory, f) for f in os.listdir(skimDirectory) if os.path.isfile(os.path.join(skimDirectory, f))]
       job_list = split_jobs(skimFiles, nFiles)
-      import subprocess
 
+      # import subprocess
+      # dataset = sample_cfg["dataset"]
+      # if dataset.split('/')[-1] == "USER":
+      #   instance = 'prod/phys03'
+      # else:
+      #   instance = 'prod/global'
+      # das_query=[]
+      # for singleDataset in dataset.split(','):
+      #   query = "dasgoclient -query='file dataset={singleDataset} instance={instance}'".format(**locals())
+      #   das_query.append(query)
+      # allFiles = []
+      # for query in das_query:
+      #   files = subprocess.check_output(das_query, shell=True).split()
+      #   for file in files:
+      #     allFiles.append(file.decode("utf-8"))
+      # job_list = split_jobs(allFiles, nFiles)
+
+
+      
       #Create file with arguments to the python script
       argsFile = open(os.path.join(sampleJobs_dir, 'input', 'args_{}.txt'.format(sample)), 'w')
       for n, l  in enumerate(list(job_list)):
         inputPath = os.path.join(sampleJobs_dir, 'input', 'input_{}.txt'.format(n))
         outputPath = os.path.join(sampleOut_dir,'{0}_{1}.root'.format(sample,n))
-        open(inputPath, 'w').writelines("{}\n".format(root_file) for root_file in l)
+        if not "SingleMuon2016" in sample:#single muon 2016 has some corrupted files, current input is "correct"
+            open(inputPath, 'w').writelines("{}\n".format(root_file) for root_file in l)
         argsFile.write("-i {0} -o {1} -p {2} -y {3} -c {4}\n".format(inputPath,outputPath,sample,year,leptonChannel))
       #Submit
       print("condor_submit {0}".format(os.path.join(sampleJobs_dir, 'input', 'condor_{}.condor'.format(sample))))

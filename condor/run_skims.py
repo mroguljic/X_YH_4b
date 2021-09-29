@@ -37,7 +37,7 @@ def create_jobs(config, dry=True, queue='',jobs_dir="",out_dir="",nFiles=1):
       if dataset.split('/')[-1] == "USER":
         instance = 'prod/phys03'
       else:
-        instance = 'global'
+        instance = 'prod/global'
       das_query=[]
       for singleDataset in dataset.split(','):
         query = "dasgoclient -query='file dataset={singleDataset} instance={instance}'".format(**locals())
@@ -85,7 +85,7 @@ def main():
   print(args)
 
   print("Creating tarball")
-  subprocess.call('tar czf tarball.tgz ../CMSSW_11_1_5/ ../timber-env/ ../TIMBER ../skim.py ../eventSelection.py ../semiLeptonicSelection.py ../columnBlackList.txt ../HLTsToKeep.txt', shell=True)
+  #subprocess.call('tar czf tarball.tgz ../CMSSW_11_1_5/ ../timber-env/ ../TIMBER ../skim.py ../eventSelection.py ../semiLeptonicSelection.py ../columnBlackList.txt ../HLTsToKeep.txt', shell=True)
 
   print("Creating job configs")
   with open(args.config, 'r') as config_file:
