@@ -114,8 +114,8 @@ if(options.isSignal):
 
 
 if not isData:
-    nProc = a.DataFrame.Sum("genWeight").GetValue()
-    #nProc = getNProc(options.input,options.process,options.year)
+    #nProc = a.DataFrame.Sum("genWeight").GetValue()
+    nProc = getNProc(options.input,options.process,options.year)
 else:
 #a lot of data skims had problem with skimInfo hist, when we redo skims, data will get nProc saved too
     nProc = 0
@@ -324,7 +324,8 @@ histos.append(h_nm1_phi0)
 histos.append(h_nm1_phi1)
 
 idxColumns = VarGroup("idxColumns")
-idxColumns.Add("idxH","higgsMassMatchingAlt(mSD0,mSD1)")
+idxColumns.Add("idxH","higgsMassMatching(mSD0,mSD1)")#randomize ambiguous cases
+#idxColumns.Add("idxH","higgsMassMatchingAlternative(mSD0,mSD1)")#choose one closer to
 idxColumns.Add("idxY","1-idxH")
 idxCuts   = CutGroup("idxCuts")
 idxCuts.Add("Higgs-tagged cut","idxH>=0")

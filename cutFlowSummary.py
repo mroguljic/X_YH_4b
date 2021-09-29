@@ -27,6 +27,7 @@ with open(options.json) as json_file:
             datasetType = "sig"
         elif ("JetHT" in sample):
             datasetType = "data"
+            sample = "data_obs"
         else:
             datasetType = "bkg"
             
@@ -38,22 +39,23 @@ with open(options.json) as json_file:
         nBin = h.GetNbinsX()
         totalBkgRow = []
         latexRow = sample+" &"
-        for i in range(1,nBin+1):
+        for i in range(1,nBin):
             if("dak8" in h.GetXaxis().GetBinLabel(i)):
                 continue
             if(labelFlag==False):
-                labels.append(h.GetXaxis().GetBinLabel(i))
+                labels.append(h.GetXaxis().GetBinLabel(i).replace(" ","_"))
             nCut = h.GetBinContent(i)
             if(nCut>10000):
                 latexRow = latexRow +" {0:1.2e} &".format(nCut)
             else:   
-                latexRow = latexRow +" {0:.2f} &".format(nCut)
+                latexRow = latexRow +" {0:.3f} &".format(nCut)
             totalBkgRow.append(nCut)
 
         if(labelFlag==False):
             labelFlag=True
             print(" & ".join(labels), " \\\\")
-        latexRow = latexRow[:-2]+"\\\\"
+        #latexRow = latexRow[:-2]+"\\\\"
+        latexRow = latexRow+" \\\\"
         print(latexRow)
         if(datasetType=="bkg"):
             if(sample=="ttbar"):
@@ -65,11 +67,11 @@ with open(options.json) as json_file:
         # a = latexRow.split(" & ")
         # print("{0} {1} {2}".format(a[0],a[-4],a[-5]))
 
-latexTotalBkg = "Total bkg "
+latexTotalBkg = "Total_bkg "
 for val in totalBkg:
     if(val>10000):
         latexTotalBkg += "& {0:1.2e} ".format(val)
     else:
         latexTotalBkg += "& {0:.2f} ".format(val)
-print(latexTotalBkg+"\\\\")
+print(latexTotalBkg+" \\\\")
 
