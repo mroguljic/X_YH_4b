@@ -1,109 +1,2653 @@
 {
-"2016":{
- "QCD1000": {"valid": 9, "invalid": [], "nProc": 5779928.0, "nSkim": 2689678.0, "xsec": 1207},
- "QCD1500": {"valid": 5, "invalid": [], "nProc": 3105168.0, "nSkim": 1553920.0, "xsec": 120},
- "QCD2000": {"valid": 3, "invalid": [], "nProc": 1953748.0, "nSkim": 980344.0, "xsec": 25.25},
- "QCD500": {"valid": 29, "invalid": [], "nProc": 33241964.0, "nSkim": 1432408.0, "xsec": 32260},
- "QCD700": {"valid": 18, "invalid": [], "nProc": 19097492.0, "nSkim": 4306546.0, "xsec": 6829},
- "ST_antitop": {"valid": 23, "invalid": [], "nProc": 17780700.0, "nSkim": 3489487.0, "xsec": 67.91},
- "ST_sChannel": {"valid": 11, "invalid": [], "nProc": 9842599.0, "nSkim": 4779650.0, "xsec": 3.74},
- "ST_tW_antitop": {"valid": 10, "invalid": [], "nProc": 4980600.0, "nSkim": 1708677.0, "xsec": 34.97},
- "ST_tW_top": {"valid": 7, "invalid": [], "nProc": 4983500.0, "nSkim": 1709195.0, "xsec": 34.91},
- "ST_top": {"valid": 31, "invalid": [], "nProc": 31848000.0, "nSkim": 5750898.0, "xsec": 113.3},
- "TTW": {"valid": 6, "invalid": [], "nProc": 4492341.0, "nSkim": 2641794.0, "xsec": 0.2198},
- "TTZ": {"valid": 11, "invalid": [], "nProc": 5284200.0, "nSkim": 3345319.0, "xsec": 0.0568},
- "WJets400": {"valid": 19, "invalid": [], "nProc": 7959630.0, "nSkim": 264348.0, "xsec": 315.2},
- "WJets600": {"valid": 19, "invalid": [], "nProc": 5819762.0, "nSkim": 554968.0, "xsec": 68.58},
- "WJets800": {"valid": 20, "invalid": [], "nProc": 5644840.0, "nSkim": 2346792.0, "xsec": 34.69},
- "WJetsLNu100": {"valid": 15, "invalid": [], "nProc": 19889758.0, "nSkim": 10130082.0, "xsec": 689.749632},
- "WJetsLNu250": {"valid": 3, "invalid": [], "nProc": 3003750.0, "nSkim": 1902321.0, "xsec": 24.5069015},
- "WJetsLNu400": {"valid": 2, "invalid": [], "nProc": 1903426.0, "nSkim": 1426316.0, "xsec": 3.110130566},
- "WJetsLNu600": {"valid": 2, "invalid": [], "nProc": 1978964.0, "nSkim": 1591126.0, "xsec": 0.4683178368},
- "WminusH": {"valid": 1, "invalid": [], "nProc": 499994.0, "nSkim": 27997.0, "xsec": 0.3654},
- "WplusH": {"valid": 1, "invalid": [], "nProc": 499597.0, "nSkim": 27810.0, "xsec": 0.5716},
- "X1000": {"valid": 30, "invalid": [], "nProc": 3190800.0, "nSkim": 1441898.0, "xsec": 0.01},
- "X1200": {"valid": 26, "invalid": [], "nProc": 2585900.0, "nSkim": 1320340.0, "xsec": 0.01},
- "X1400": {"valid": 31, "invalid": [], "nProc": 3128600.0, "nSkim": 1799849.0, "xsec": 0.01},
- "X1600": {"valid": 43, "invalid": [], "nProc": 3291200.0, "nSkim": 2023114.0, "xsec": 0.01},
- "X1800": {"valid": 60, "invalid": [], "nProc": 3583800.0, "nSkim": 2270295.0, "xsec": 0.01},
- "X2000": {"valid": 48, "invalid": [], "nProc": 3798200.0, "nSkim": 2466395.0, "xsec": 0.01},
- "X800": {"valid": 41, "invalid": [], "nProc": 4914400.0, "nSkim": 1429717.0, "xsec": 0.01},
- "X900": {"valid": 41, "invalid": [], "nProc": 4914400.0, "nSkim": 1429717.0, "xsec": 0.01},
- "X1600_Y125": {"valid": 41, "invalid": [], "nProc": 191000.0, "nSkim": 0.0, "xsec": 0.01},
- "ZH": {"valid": 1, "invalid": [], "nProc": 499200.0, "nSkim": 30268.0, "xsec": 0.5242},
- "ZJets400": {"valid": 21, "invalid": [], "nProc": 8255635.0, "nSkim": 297998.0, "xsec": 145.3},
- "ZJets600": {"valid": 19, "invalid": [], "nProc": 7830974.0, "nSkim": 625202.0, "xsec": 34.29},
- "ZJets800": {"valid": 12, "invalid": [], "nProc": 5668349.0, "nSkim": 2205836.0, "xsec": 18.57},
- "ttH": {"valid": 2, "invalid": ["ttH_2.root"], "nProc": 2679162.0, "nSkim": 1031811.0, "xsec": 0.5401},
- "ttbar": {"valid": 78, "invalid": [], "nProc": 68518800.0, "nSkim": 4542072.0, "xsec": 377.96},
- "ttbarHT": {"valid": 30, "invalid": [], "nProc": 16818338.0, "nSkim": 13679531.0, "xsec": 1.92},
- "ttbarSemi": {"valid": 108, "invalid": ["ttbarSemi_103.root", "ttbarSemi_107.root"], "nProc": 103975100.0, "nSkim": 56816961.0, "xsec": 365.34},
- "lumi":35900
- },
-"2017":{
- "QCD1000": {"valid": 22, "invalid": [], "nProc": 16380424.0, "nSkim": 7073765.0, "xsec": 1207},
- "QCD1500": {"valid": 17, "invalid": [], "nProc": 11634434.0, "nSkim": 5518097.0, "xsec": 120},
- "QCD2000": {"valid": 10, "invalid": [], "nProc": 5941306.0, "nSkim": 2828000.0, "xsec": 25.25},
- "QCD500": {"valid": 68, "invalid": ["QCD500_12.root"], "nProc": 54534937.0, "nSkim": 2748349.0, "xsec": 32260},
- "QCD700": {"valid": 53, "invalid": [], "nProc": 46539799.0, "nSkim": 9489231.0, "xsec": 6829},
- "ST_antitop": {"valid": 43, "invalid": [], "nProc": 64818800.0, "nSkim": 13541957.0, "xsec": 67.91},
- "ST_s_antitop": {"valid": 0, "invalid": ["ST_s_antitop_0.root"], "nProc": 0, "nSkim": 0, "xsec": 3.579},
- "ST_s_top": {"valid": 3, "invalid": [], "nProc": 2953000.0, "nSkim": 1485735.0, "xsec": 5.757},
- "ST_tW_antitop": {"valid": 5, "invalid": [], "nProc": 7745276.0, "nSkim": 2732025.0, "xsec": 34.97},
- "ST_tW_top": {"valid": 4, "invalid": [], "nProc": 7945242.0, "nSkim": 2802031.0, "xsec": 34.91},
- "ST_top": {"valid": 6, "invalid": [], "nProc": 6898000.0, "nSkim": 3370454.0, "xsec": 113.3},
- "TTW": {"valid": 7, "invalid": [], "nProc": 4994543.0, "nSkim": 2941224.0, "xsec": 0.2198},
- "TTZ": {"valid": 12, "invalid": [], "nProc": 7176000.0, "nSkim": 4559813.0, "xsec": 0.0568},
- "WJets400": {"valid": 10, "invalid": [], "nProc": 9738307.0, "nSkim": 431494.0, "xsec": 315.2},
- "WJets600": {"valid": 9, "invalid": [], "nProc": 8798398.0, "nSkim": 835390.0, "xsec": 68.58},
- "WJets800": {"valid": 8, "invalid": ["WJets800_2.root"], "nProc": 6667415.0, "nSkim": 2601852.0, "xsec": 34.69},
- "WJetsLNu100": {"valid": 185, "invalid": [], "nProc": 97377546.0, "nSkim": 51908123.0, "xsec": 689.749632},
- "WJetsLNu250": {"valid": 25, "invalid": [], "nProc": 5768536.0, "nSkim": 3762096.0, "xsec": 24.5069015},
- "WJetsLNu400": {"valid": 7, "invalid": [], "nProc": 1948286.0, "nSkim": 1459278.0, "xsec": 3.110130566},
- "WJetsLNu600": {"valid": 7, "invalid": [], "nProc": 1989303.0, "nSkim": 1599532.0, "xsec": 0.4683178368},
- "WminusH": {"valid": 1, "invalid": [], "nProc": 484662.0, "nSkim": 34797.0, "xsec": 0.3654},
- "WplusH": {"valid": 1, "invalid": [], "nProc": 504997.0, "nSkim": 35948.0, "xsec": 0.5716},
- "ZH": {"valid": 1, "invalid": [], "nProc": 488450.0, "nSkim": 38340.0, "xsec": 0.5242},
- "ZJets400": {"valid": 10, "invalid": [], "nProc": 10316727.0, "nSkim": 505567.0, "xsec": 145.3},
- "ZJets600": {"valid": 10, "invalid": [], "nProc": 8882592.0, "nSkim": 745137.0, "xsec": 34.29},
- "ZJets800": {"valid": 10, "invalid": [], "nProc": 7818660.0, "nSkim": 2884638.0, "xsec": 18.57},
- "ttH": {"valid": 12, "invalid": [], "nProc": 8000000.0, "nSkim": 3169126.0, "xsec": 0.5401},
- "ttbar": {"valid": 22, "invalid": ["ttbar_11.root"], "nProc": 39732048.0, "nSkim": 3267480.0, "xsec": 377.96},
- "ttbarHT": {"valid": 49, "invalid": ["ttbarHT_29.root"], "nProc": 24506714.0, "nSkim": 19741589.0, "xsec": 1.92},
- "ttbarSemi": {"valid": 27, "invalid": ["ttbarSemi_0.root"], "nProc": 42186202.0, "nSkim": 23386328.0, "xsec": 365.34},
- "lumi":41500
- },
- "2018":{
- "QCD1000": {"valid": 42, "invalid": [], "nProc": 15466225.0, "nSkim": 6947994.0, "xsec": 1207},
- "QCD1500": {"valid": 27, "invalid": [], "nProc": 9233440.0, "nSkim": 4585619.0, "xsec": 120},
- "QCD2000": {"valid": 15, "invalid": [], "nProc": 4636642.0, "nSkim": 2326038.0, "xsec": 25.25},
- "QCD500": {"valid": 90, "invalid": [], "nProc": 35874673.0, "nSkim": 2522312.0, "xsec": 32260},
- "QCD700": {"valid": 122, "invalid": [], "nProc": 46328680.0, "nSkim": 10364092.0, "xsec": 6829},
- "ST_antitop": {"valid": 132, "invalid": [], "nProc": 79090800.0, "nSkim": 18909437.0, "xsec": 67.91},
- "ST_s_antitop": {"valid": 3, "invalid": [], "nProc": 1289000.0, "nSkim": 676797.0, "xsec": 3.579},
- "ST_s_top": {"valid": 19, "invalid": [], "nProc": 6934200.0, "nSkim": 3536296.0, "xsec": 5.757},
- "ST_tW_antitop": {"valid": 16, "invalid": [], "nProc": 7623000.0, "nSkim": 2913948.0, "xsec": 34.97},
- "ST_tW_top": {"valid": 18, "invalid": [], "nProc": 9598000.0, "nSkim": 3664738.0, "xsec": 34.91},
- "ST_top": {"valid": 240, "invalid": [], "nProc": 154307600.0, "nSkim": 34337981.0, "xsec": 113.3},
- "TTW": {"valid": 30, "invalid": [], "nProc": 4872005.0, "nSkim": 2958087.0, "xsec": 0.2198},
- "TTZ": {"valid": 40, "invalid": [], "nProc": 7290000.0, "nSkim": 4666156.0, "xsec": 0.0568},
- "WJets400": {"valid": 31, "invalid": [], "nProc": 10071273.0, "nSkim": 636212.0, "xsec": 315.2},
- "WJets600": {"valid": 44, "invalid": [], "nProc": 15298056.0, "nSkim": 1765434.0, "xsec": 68.58},
- "WJets800": {"valid": 41, "invalid": ["WJets800_21.root", "WJets800_42.root"], "nProc": 13537556.0, "nSkim": 5526354.0, "xsec": 34.69},
- "WJetsLNu100": {"valid": 317, "invalid": [], "nProc": 198034770.0, "nSkim": 104894716.0, "xsec": 689.749632},
- "WJetsLNu250": {"valid": 57, "invalid": [], "nProc": 19495884.0, "nSkim": 12654058.0, "xsec": 24.5069015},
- "WJetsLNu400": {"valid": 12, "invalid": [], "nProc": 3935604.0, "nSkim": 2942128.0, "xsec": 3.110130566},
- "WJetsLNu600": {"valid": 16, "invalid": [], "nProc": 3900032.0, "nSkim": 3134860.0, "xsec": 0.4683178368},
- "WminusH": {"valid": 15, "invalid": [], "nProc": 778619.0, "nSkim": 91254.0, "xsec": 0.3654},
- "WplusH": {"valid": 15, "invalid": [], "nProc": 746195.0, "nSkim": 83002.0, "xsec": 0.5716},
- "ZH": {"valid": 7, "invalid": [], "nProc": 761658.0, "nSkim": 96923.0, "xsec": 0.5242},
- "ZJets400": {"valid": 52, "invalid": [], "nProc": 16704355.0, "nSkim": 1231248.0, "xsec": 145.3},
- "ZJets600": {"valid": 46, "invalid": [], "nProc": 14642701.0, "nSkim": 1610537.0, "xsec": 34.29},
- "ZJets800": {"valid": 36, "invalid": [], "nProc": 10561192.0, "nSkim": 4127428.0, "xsec": 18.57},
- "ttH": {"valid": 51, "invalid": [], "nProc": 9580000.0, "nSkim": 4293094.0, "xsec": 0.5401},
- "ttbar": {"valid": 656, "invalid": ["ttbar_182.root", "ttbar_258.root", "ttbar_641.root"], "nProc": 264688000.0, "nSkim": 34383303.0, "xsec": 377.96},
- "ttbarHT": {"valid": 18, "invalid": [], "nProc": 2870793.0, "nSkim": 2381784.0, "xsec": 1.92},
- "ttbarSemi": {"valid": 295, "invalid": [], "nProc": 196115000.0, "nSkim": 114960511.0, "xsec": 365.34},
- "lumi":59800
- }
+    "2016": {
+        "QCD1000": {
+            "valid": 9,
+            "invalid": [],
+            "nProc": 5779928.0,
+            "nSkim": 2689678.0,
+            "xsec": 1207,
+            "avgW": 1.0
+        },
+        "QCD1500": {
+            "valid": 5,
+            "invalid": [],
+            "nProc": 3105168.0,
+            "nSkim": 1553920.0,
+            "xsec": 120,
+            "avgW": 1.0
+        },
+        "QCD2000": {
+            "valid": 3,
+            "invalid": [],
+            "nProc": 1953748.0,
+            "nSkim": 980344.0,
+            "xsec": 25.25,
+            "avgW": 1.0
+        },
+        "QCD500": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 33241964.0,
+            "nSkim": 1432408.0,
+            "xsec": 32260,
+            "avgW": 1.0
+        },
+        "QCD700": {
+            "valid": 18,
+            "invalid": [],
+            "nProc": 19097492.0,
+            "nSkim": 4306546.0,
+            "xsec": 6829,
+            "avgW": 1.0
+        },
+        "ST_antitop": {
+            "valid": 23,
+            "invalid": [],
+            "nProc": 17780700.0,
+            "nSkim": 3489487.0,
+            "xsec": 67.91,
+            "sumgenw": 17771478,
+            "avgW": 0.9994781031375978
+        },
+        "ST_sChannel": {
+            "valid": 11,
+            "invalid": [],
+            "nProc": 9842599.0,
+            "nSkim": 4779650.0,
+            "xsec": 3.74,
+            "sumgenw": 2042718,
+            "avgW": 3.725596657292958
+        },
+        "ST_tW_antitop": {
+            "valid": 10,
+            "invalid": [],
+            "nProc": 4980600.0,
+            "nSkim": 1708677.0,
+            "xsec": 34.97,
+            "sumgenw": 69643832,
+            "avgW": 34.96164588566734
+        },
+        "ST_tW_top": {
+            "valid": 7,
+            "invalid": [],
+            "nProc": 4983500.0,
+            "nSkim": 1709195.0,
+            "xsec": 34.91,
+            "sumgenw": 80142263,
+            "avgW": 34.87016776149713
+        },
+        "ST_top": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 31848000.0,
+            "nSkim": 5750898.0,
+            "xsec": 113.3,
+            "sumgenw": 30611327,
+            "avgW": 0.9996228874811571
+        },
+        "TTW": {
+            "valid": 6,
+            "invalid": [],
+            "nProc": 4492341.0,
+            "nSkim": 2641794.0,
+            "xsec": 0.2198,
+            "sumgenw": 1647304,
+            "avgW": 0.343705105208598
+        },
+        "TTZ": {
+            "valid": 11,
+            "invalid": [],
+            "nProc": 5284200.0,
+            "nSkim": 3345319.0,
+            "xsec": 0.0568,
+            "sumgenw": 266844,
+            "avgW": 0.056617251294665036
+        },
+        "WJets400": {
+            "valid": 19,
+            "invalid": [],
+            "nProc": 7959630.0,
+            "nSkim": 264348.0,
+            "xsec": 315.2,
+            "avgW": 0.9965858127332003
+        },
+        "WJets600": {
+            "valid": 19,
+            "invalid": [],
+            "nProc": 5819762.0,
+            "nSkim": 554968.0,
+            "xsec": 68.58,
+            "avgW": 0.9953300649247142
+        },
+        "WJets800": {
+            "valid": 20,
+            "invalid": [],
+            "nProc": 5644840.0,
+            "nSkim": 2346792.0,
+            "xsec": 34.69,
+            "avgW": 0.9936783986617546
+        },
+        "WJetsLNu100": {
+            "valid": 15,
+            "invalid": [],
+            "nProc": 19889758.0,
+            "nSkim": 10130082.0,
+            "xsec": 689.749632,
+            "sumgenw": 176646559270,
+            "avgW": 1515.00022798135
+        },
+        "WJetsLNu250": {
+            "valid": 3,
+            "invalid": [],
+            "nProc": 3003750.0,
+            "nSkim": 1902321.0,
+            "xsec": 24.5069015,
+            "sumgenw": 610261920,
+            "avgW": 49.26248828708372
+        },
+        "WJetsLNu400": {
+            "valid": 2,
+            "invalid": [],
+            "nProc": 1903426.0,
+            "nSkim": 1426316.0,
+            "xsec": 3.110130566,
+            "sumgenw": 11692372,
+            "avgW": 5.972064276165461
+        },
+        "WJetsLNu600": {
+            "valid": 2,
+            "invalid": [],
+            "nProc": 1978964.0,
+            "nSkim": 1591126.0,
+            "xsec": 0.4683178368,
+            "sumgenw": 1830415,
+            "avgW": 0.9291393691709767
+        },
+        "WminusH": {
+            "valid": 1,
+            "invalid": [],
+            "nProc": 499994.0,
+            "nSkim": 27997.0,
+            "xsec": 0.3654,
+            "avgW": 0.36079683232665977
+        },
+        "WplusH": {
+            "valid": 1,
+            "invalid": [],
+            "nProc": 499597.0,
+            "nSkim": 27810.0,
+            "xsec": 0.5716,
+            "avgW": 0.5714546462967376
+        },
+        "X1000": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 3190800.0,
+            "nSkim": 1441898.0,
+            "xsec": 0.01
+        },
+        "X1200": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 2585900.0,
+            "nSkim": 1320340.0
+        },
+        "X1400": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 3128600.0,
+            "nSkim": 1799849.0
+        },
+        "X1600": {
+            "valid": 43,
+            "invalid": [],
+            "nProc": 3291200.0,
+            "nSkim": 2023114.0
+        },
+        "X1800": {
+            "valid": 60,
+            "invalid": [],
+            "nProc": 3583800.0,
+            "nSkim": 2270295.0
+        },
+        "X2000": {
+            "valid": 48,
+            "invalid": [],
+            "nProc": 3798200.0,
+            "nSkim": 2466395.0
+        },
+        "X800": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 4914400.0,
+            "nSkim": 1429717.0
+        },
+        "X900": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 4914400.0,
+            "nSkim": 1429717.0
+        },
+        "MX1000_MY100": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 199200.0,
+            "nSkim": 127136.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY125": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 200600.0,
+            "nSkim": 126108.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY200": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 201000.0,
+            "nSkim": 105204.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY300": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 205800.0,
+            "nSkim": 90597.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY400": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 198600.0,
+            "nSkim": 73861.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY600": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 192400.0,
+            "nSkim": 51641.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY800": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 395300.0,
+            "nSkim": 131973.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY90": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 211200.0,
+            "nSkim": 134739.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY100": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 170500.0,
+            "nSkim": 121518.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY1000": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 344400.0,
+            "nSkim": 142638.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY125": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 165900.0,
+            "nSkim": 118127.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY200": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 179500.0,
+            "nSkim": 117337.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY300": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 170000.0,
+            "nSkim": 98952.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY400": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 178400.0,
+            "nSkim": 97609.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY600": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 167100.0,
+            "nSkim": 74821.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY800": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 176400.0,
+            "nSkim": 63501.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY90": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 176800.0,
+            "nSkim": 125886.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY100": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 201400.0,
+            "nSkim": 151055.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY1000": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 199600.0,
+            "nSkim": 83877.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY1200": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 392000.0,
+            "nSkim": 177596.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY125": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 189800.0,
+            "nSkim": 142313.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY200": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 187600.0,
+            "nSkim": 134653.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY300": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 198600.0,
+            "nSkim": 130075.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY400": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1400_MY600": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 191600.0,
+            "nSkim": 108983.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY800": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 189800.0,
+            "nSkim": 92734.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY90": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 202600.0,
+            "nSkim": 151883.0,
+            "xsec": 0.01
+        },
+        "MX1600_MY100": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY1000": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY1200": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY125": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY1400": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY200": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY300": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY400": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY600": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY800": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY90": {
+            "valid": 42,
+            "invalid": [],
+            "nProc": 196600.0,
+            "nSkim": 151840.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY100": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 198800.0,
+            "nSkim": 156365.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1000": {
+            "valid": 56,
+            "invalid": [],
+            "nProc": 202100.0,
+            "nSkim": 114566.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1200": {
+            "valid": 58,
+            "invalid": [],
+            "nProc": 209900.0,
+            "nSkim": 107872.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY125": {
+            "valid": 56,
+            "invalid": [],
+            "nProc": 192900.0,
+            "nSkim": 152040.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1400": {
+            "valid": 60,
+            "invalid": [],
+            "nProc": 190700.0,
+            "nSkim": 90620.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1600": {
+            "valid": 59,
+            "invalid": [],
+            "nProc": 412000.0,
+            "nSkim": 198596.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY200": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 192600.0,
+            "nSkim": 149641.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY300": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 201500.0,
+            "nSkim": 148658.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY400": {
+            "valid": 59,
+            "invalid": [],
+            "nProc": 191400.0,
+            "nSkim": 133514.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY600": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 201800.0,
+            "nSkim": 133645.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY800": {
+            "valid": 58,
+            "invalid": [],
+            "nProc": 205400.0,
+            "nSkim": 127827.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY90": {
+            "valid": 59,
+            "invalid": [],
+            "nProc": 193000.0,
+            "nSkim": 151282.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY100": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 205600.0,
+            "nSkim": 163418.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1000": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 202000.0,
+            "nSkim": 123077.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1200": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 212200.0,
+            "nSkim": 119007.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY125": {
+            "valid": 48,
+            "invalid": [],
+            "nProc": 202200.0,
+            "nSkim": 161114.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1400": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 188200.0,
+            "nSkim": 97381.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1600": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 198400.0,
+            "nSkim": 96931.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1800": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 394400.0,
+            "nSkim": 193189.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY200": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 201000.0,
+            "nSkim": 159240.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY300": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 192400.0,
+            "nSkim": 146690.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY400": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 211000.0,
+            "nSkim": 152743.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY600": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX2000_MY800": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 194800.0,
+            "nSkim": 127557.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY90": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 200600.0,
+            "nSkim": 159259.0,
+            "xsec": 0.01
+        },
+        "MX800_MY100": {
+            "valid": 40,
+            "invalid": [],
+            "nProc": 382000.0,
+            "nSkim": 170041.0,
+            "xsec": 0.01
+        },
+        "MX800_MY125": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 391200.0,
+            "nSkim": 163284.0,
+            "xsec": 0.01
+        },
+        "MX800_MY200": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 371200.0,
+            "nSkim": 101947.0,
+            "xsec": 0.01
+        },
+        "MX800_MY300": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 370000.0,
+            "nSkim": 81430.0,
+            "xsec": 0.01
+        },
+        "MX800_MY400": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 381200.0,
+            "nSkim": 74241.0,
+            "xsec": 0.01
+        },
+        "MX800_MY60": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 376800.0,
+            "nSkim": 171482.0,
+            "xsec": 0.01
+        },
+        "MX800_MY600": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 370800.0,
+            "nSkim": 81140.0,
+            "xsec": 0.01
+        },
+        "MX800_MY90": {
+            "valid": 39,
+            "invalid": [],
+            "nProc": 384000.0,
+            "nSkim": 173032.0,
+            "xsec": 0.01
+        },
+        "MX900_MY100": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 201100.0,
+            "nSkim": 114127.0,
+            "xsec": 0.01
+        },
+        "MX900_MY125": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 186900.0,
+            "nSkim": 103110.0,
+            "xsec": 0.01
+        },
+        "MX900_MY200": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 192100.0,
+            "nSkim": 78099.0,
+            "xsec": 0.01
+        },
+        "MX900_MY300": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 187300.0,
+            "nSkim": 59845.0,
+            "xsec": 0.01
+        },
+        "MX900_MY400": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 190200.0,
+            "nSkim": 49328.0,
+            "xsec": 0.01
+        },
+        "MX900_MY60": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 191000.0,
+            "nSkim": 108462.0,
+            "xsec": 0.01
+        },
+        "MX900_MY600": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 189000.0,
+            "nSkim": 43422.0,
+            "xsec": 0.01
+        },
+        "MX900_MY90": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 193100.0,
+            "nSkim": 109733.0,
+            "xsec": 0.01
+        },
+        "MX2200_MY125": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 0.0,
+            "nSkim": 0.0,
+            "xsec": 0.01
+        },
+        "MX2400_MY125": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 0.0,
+            "nSkim": 0.0,
+            "xsec": 0.01
+        },
+        "MX2600_MY125": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 0.0,
+            "nSkim": 0.0,
+            "xsec": 0.01
+        },
+        "MX2800_MY125": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 0.0,
+            "nSkim": 0.0,
+            "xsec": 0.01
+        },
+        "MX3000_MY125": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 0.0,
+            "nSkim": 0.0,
+            "xsec": 0.01
+        },
+        "ZH": {
+            "valid": 1,
+            "invalid": [],
+            "nProc": 499200.0,
+            "nSkim": 30268.0,
+            "xsec": 0.5242,
+            "avgW": 0.5256168160482886
+        },
+        "ZJets400": {
+            "valid": 21,
+            "invalid": [],
+            "nProc": 8255635.0,
+            "nSkim": 297998.0,
+            "xsec": 145.3,
+            "avgW": 0.9975816203143894
+        },
+        "ZJets600": {
+            "valid": 19,
+            "invalid": [],
+            "nProc": 7830974.0,
+            "nSkim": 625202.0,
+            "xsec": 34.29,
+            "avgW": 0.9975816203143894
+        },
+        "ZJets800": {
+            "valid": 12,
+            "invalid": [],
+            "nProc": 5668349.0,
+            "nSkim": 2205836.0,
+            "xsec": 18.57,
+            "avgW": 0.9975816203143894
+        },
+        "ttH": {
+            "valid": 2,
+            "invalid": [
+                "ttH_2.root"
+            ],
+            "nProc": 2679162.0,
+            "nSkim": 1031811.0,
+            "xsec": 0.5401,
+            "avgW": 1.0
+        },
+        "TTbar": {
+            "valid": 78,
+            "invalid": [],
+            "nProc": 68518800.0,
+            "nSkim": 4542072.0,
+            "xsec": 377.96,
+            "avgW": 313.8396184073613
+        },
+        "ttbar": {
+            "valid": 78,
+            "invalid": [],
+            "nProc": 68518800.0,
+            "nSkim": 4542072.0,
+            "xsec": 377.96
+        },
+        "TTbarHT": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 16818338.0,
+            "nSkim": 13679531.0,
+            "xsec": 1.92,
+            "avgW": 1.0
+        },
+        "ttbarSemi": {
+            "valid": 108,
+            "invalid": [
+                "ttbarSemi_103.root",
+                "ttbarSemi_107.root"
+            ],
+            "nProc": 103975100.0,
+            "nSkim": 56816961.0,
+            "xsec": 365.34
+        },
+        "TTbarSemi": {
+            "valid": 108,
+            "invalid": [
+                "ttbarSemi_103.root",
+                "ttbarSemi_107.root"
+            ],
+            "nProc": 103975100.0,
+            "nSkim": 56816961.0,
+            "xsec": 365.34,
+            "sumgenw": 31260488500,
+            "avgW": 300.73213543932684
+        },
+        "lumi": 35900
+    },
+    "2017": {
+        "QCD1000": {
+            "valid": 22,
+            "invalid": [],
+            "nProc": 16380424.0,
+            "nSkim": 7073765.0,
+            "xsec": 1207,
+            "avgW": 0.9929026774330642
+        },
+        "QCD1500": {
+            "valid": 17,
+            "invalid": [],
+            "nProc": 11634434.0,
+            "nSkim": 5518097.0,
+            "xsec": 120,
+            "avgW": 0.9899342019260099
+        },
+        "QCD2000": {
+            "valid": 10,
+            "invalid": [],
+            "nProc": 5941306.0,
+            "nSkim": 2828000.0,
+            "xsec": 25.25,
+            "avgW": 0.9804056252485449
+        },
+        "QCD500": {
+            "valid": 68,
+            "invalid": [
+                "QCD500_12.root"
+            ],
+            "nProc": 54534937.0,
+            "nSkim": 2748349.0,
+            "xsec": 32260,
+            "avgW": 0.9970808246670315
+        },
+        "QCD700": {
+            "valid": 53,
+            "invalid": [],
+            "nProc": 46539799.0,
+            "nSkim": 9489231.0,
+            "xsec": 6829,
+            "avgW": 0.9956359561826411
+        },
+        "ST_antitop": {
+            "valid": 43,
+            "invalid": [],
+            "nProc": 64818800.0,
+            "nSkim": 13541957.0,
+            "xsec": 67.91,
+            "avgW": 0.9993780131345731
+        },
+        "ST_s_antitop": {
+            "valid": 0,
+            "invalid": [
+                "ST_s_antitop_0.root"
+            ],
+            "nProc": 941000,
+            "nSkim": 493903,
+            "xsec": 3.579,
+            "avgW": 1.159336461240595
+        },
+        "ST_s_top": {
+            "valid": 3,
+            "invalid": [],
+            "nProc": 2953000.0,
+            "nSkim": 1485735.0,
+            "xsec": 5.757,
+            "avgW": 1.15899829899839
+        },
+        "ST_tW_antitop": {
+            "valid": 5,
+            "invalid": [],
+            "nProc": 7745276.0,
+            "nSkim": 2732025.0,
+            "xsec": 34.97,
+            "avgW": 34.94642301837148
+        },
+        "ST_tW_top": {
+            "valid": 4,
+            "invalid": [],
+            "nProc": 7945242.0,
+            "nSkim": 2802031.0,
+            "xsec": 34.91,
+            "avgW": 34.892285742735496
+        },
+        "ST_top": {
+            "valid": 6,
+            "invalid": [],
+            "nProc": 6898000.0,
+            "nSkim": 3370454.0,
+            "xsec": 113.3,
+            "avgW": 1.8652414497852325
+        },
+        "TTW": {
+            "valid": 7,
+            "invalid": [],
+            "nProc": 4994543.0,
+            "nSkim": 2941224.0,
+            "xsec": 0.2198,
+            "avgW": 0.34453883201052976
+        },
+        "TTZ": {
+            "valid": 12,
+            "invalid": [],
+            "nProc": 7176000.0,
+            "nSkim": 4559813.0,
+            "xsec": 0.0568,
+            "avgW": 0.05668620358726808
+        },
+        "WJets400": {
+            "valid": 10,
+            "invalid": [],
+            "nProc": 9738307.0,
+            "nSkim": 431494.0,
+            "xsec": 315.2,
+            "avgW": 0.9978209415035504
+        },
+        "WJets600": {
+            "valid": 9,
+            "invalid": [],
+            "nProc": 8798398.0,
+            "nSkim": 835390.0,
+            "xsec": 68.58,
+            "avgW": 0.9968133260908927
+        },
+        "WJets800": {
+            "valid": 8,
+            "invalid": [
+                "WJets800_2.root"
+            ],
+            "nProc": 6667415.0,
+            "nSkim": 2601852.0,
+            "xsec": 34.69,
+            "avgW": 0.9932234918947648
+        },
+        "WJetsLNu100": {
+            "valid": 185,
+            "invalid": [],
+            "nProc": 97377546.0,
+            "nSkim": 51908123.0,
+            "xsec": 689.749632,
+            "avgW": 1650.344455588034
+        },
+        "WJetsLNu250": {
+            "valid": 25,
+            "invalid": [],
+            "nProc": 5768536.0,
+            "nSkim": 3762096.0,
+            "xsec": 24.5069015,
+            "avgW": 61.002141170957884
+        },
+        "WJetsLNu400": {
+            "valid": 7,
+            "invalid": [],
+            "nProc": 1948286.0,
+            "nSkim": 1459278.0,
+            "xsec": 3.110130566,
+            "avgW": 7.609082113077136
+        },
+        "WJetsLNu600": {
+            "valid": 7,
+            "invalid": [],
+            "nProc": 1989303.0,
+            "nSkim": 1599532.0,
+            "xsec": 0.4683178368,
+            "avgW": 1.1648913071281117
+        },
+        "WminusH": {
+            "valid": 1,
+            "invalid": [],
+            "nProc": 484662.0,
+            "nSkim": 34797.0,
+            "xsec": 0.3654,
+            "avgW": 0.3652895694755882
+        },
+        "WplusH": {
+            "valid": 1,
+            "invalid": [],
+            "nProc": 504997.0,
+            "nSkim": 35948.0,
+            "xsec": 0.5716,
+            "avgW": 0.5853714099050267
+        },
+        "ZH": {
+            "valid": 1,
+            "invalid": [],
+            "nProc": 488450.0,
+            "nSkim": 38340.0,
+            "xsec": 0.5242,
+            "avgW": 0.5537735259048872
+        },
+        "ZJets400": {
+            "valid": 10,
+            "invalid": [],
+            "nProc": 10316727.0,
+            "nSkim": 505567.0,
+            "xsec": 145.3,
+            "avgW": 0.9975816203143894
+        },
+        "ZJets600": {
+            "valid": 10,
+            "invalid": [],
+            "nProc": 8882592.0,
+            "nSkim": 745137.0,
+            "xsec": 34.29,
+            "avgW": 0.9964349376114082
+        },
+        "ZJets800": {
+            "valid": 10,
+            "invalid": [],
+            "nProc": 7818660.0,
+            "nSkim": 2884638.0,
+            "xsec": 18.57,
+            "avgW": 0.9934354485776805
+        },
+        "ttH": {
+            "valid": 12,
+            "invalid": [],
+            "nProc": 8000000.0,
+            "nSkim": 3169126.0,
+            "xsec": 0.5401,
+            "avgW": 0.5262674904879807
+        },
+        "TTbar": {
+            "valid": 22,
+            "invalid": [
+                "ttbar_11.root"
+            ],
+            "nProc": 39732048.0,
+            "nSkim": 3267480.0,
+            "xsec": 377.96,
+            "avgW": 1.0
+        },
+        "ttbar": {
+            "valid": 22,
+            "invalid": [
+                "ttbar_11.root"
+            ],
+            "nProc": 39732048.0,
+            "nSkim": 3267480.0,
+            "xsec": 377.96
+        },
+        "TTbarHT": {
+            "valid": 49,
+            "invalid": [
+                "ttbarHT_29.root"
+            ],
+            "nProc": 24506714.0,
+            "nSkim": 19741589.0,
+            "xsec": 1.92,
+            "avgW": 657.6848996201003
+        },
+        "ttbarSemi": {
+            "valid": 27,
+            "invalid": [
+                "ttbarSemi_0.root"
+            ],
+            "nProc": 42186202.0,
+            "nSkim": 23386328.0,
+            "xsec": 365.34
+        },
+        "TTbarSemi": {
+            "valid": 27,
+            "invalid": [
+                "ttbarSemi_0.root"
+            ],
+            "nProc": 42186202.0,
+            "nSkim": 23386328.0,
+            "xsec": 365.34,
+            "avgW": 300.82890997695574
+        },
+        "X1000": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 3190800.0,
+            "nSkim": 1441898.0,
+            "xsec": 0.01
+        },
+        "X1200": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 2585900.0,
+            "nSkim": 1320340.0
+        },
+        "X1400": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 3128600.0,
+            "nSkim": 1799849.0
+        },
+        "X1600": {
+            "valid": 43,
+            "invalid": [],
+            "nProc": 3291200.0,
+            "nSkim": 2023114.0
+        },
+        "X1800": {
+            "valid": 60,
+            "invalid": [],
+            "nProc": 3583800.0,
+            "nSkim": 2270295.0
+        },
+        "X2000": {
+            "valid": 48,
+            "invalid": [],
+            "nProc": 3798200.0,
+            "nSkim": 2466395.0
+        },
+        "X800": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 4914400.0,
+            "nSkim": 1429717.0
+        },
+        "X900": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 4914400.0,
+            "nSkim": 1429717.0
+        },
+        "MX1000_MY100": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 199200.0,
+            "nSkim": 127136.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY125": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 200600.0,
+            "nSkim": 126108.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY200": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 201000.0,
+            "nSkim": 105204.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY300": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 205800.0,
+            "nSkim": 90597.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY400": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 198600.0,
+            "nSkim": 73861.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY600": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 192400.0,
+            "nSkim": 51641.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY800": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 395300.0,
+            "nSkim": 131973.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY90": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 211200.0,
+            "nSkim": 134739.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY100": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 170500.0,
+            "nSkim": 121518.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY1000": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 344400.0,
+            "nSkim": 142638.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY125": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 165900.0,
+            "nSkim": 118127.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY200": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 179500.0,
+            "nSkim": 117337.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY300": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 170000.0,
+            "nSkim": 98952.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY400": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 178400.0,
+            "nSkim": 97609.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY600": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 167100.0,
+            "nSkim": 74821.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY800": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 176400.0,
+            "nSkim": 63501.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY90": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 176800.0,
+            "nSkim": 125886.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY100": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 201400.0,
+            "nSkim": 151055.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY1000": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 199600.0,
+            "nSkim": 83877.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY1200": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 392000.0,
+            "nSkim": 177596.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY125": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 189800.0,
+            "nSkim": 142313.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY200": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 187600.0,
+            "nSkim": 134653.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY300": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 198600.0,
+            "nSkim": 130075.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY400": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1400_MY600": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 191600.0,
+            "nSkim": 108983.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY800": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 189800.0,
+            "nSkim": 92734.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY90": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 202600.0,
+            "nSkim": 151883.0,
+            "xsec": 0.01
+        },
+        "MX1600_MY100": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY1000": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY1200": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY125": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY1400": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY200": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY300": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY400": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY600": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY800": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY90": {
+            "valid": 42,
+            "invalid": [],
+            "nProc": 196600.0,
+            "nSkim": 151840.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY100": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 198800.0,
+            "nSkim": 156365.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1000": {
+            "valid": 56,
+            "invalid": [],
+            "nProc": 202100.0,
+            "nSkim": 114566.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1200": {
+            "valid": 58,
+            "invalid": [],
+            "nProc": 209900.0,
+            "nSkim": 107872.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY125": {
+            "valid": 56,
+            "invalid": [],
+            "nProc": 192900.0,
+            "nSkim": 152040.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1400": {
+            "valid": 60,
+            "invalid": [],
+            "nProc": 190700.0,
+            "nSkim": 90620.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1600": {
+            "valid": 59,
+            "invalid": [],
+            "nProc": 412000.0,
+            "nSkim": 198596.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY200": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 192600.0,
+            "nSkim": 149641.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY300": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 201500.0,
+            "nSkim": 148658.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY400": {
+            "valid": 59,
+            "invalid": [],
+            "nProc": 191400.0,
+            "nSkim": 133514.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY600": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 201800.0,
+            "nSkim": 133645.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY800": {
+            "valid": 58,
+            "invalid": [],
+            "nProc": 205400.0,
+            "nSkim": 127827.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY90": {
+            "valid": 59,
+            "invalid": [],
+            "nProc": 193000.0,
+            "nSkim": 151282.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY100": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 205600.0,
+            "nSkim": 163418.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1000": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 202000.0,
+            "nSkim": 123077.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1200": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 212200.0,
+            "nSkim": 119007.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY125": {
+            "valid": 48,
+            "invalid": [],
+            "nProc": 202200.0,
+            "nSkim": 161114.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1400": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 188200.0,
+            "nSkim": 97381.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1600": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 198400.0,
+            "nSkim": 96931.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1800": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 394400.0,
+            "nSkim": 193189.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY200": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 201000.0,
+            "nSkim": 159240.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY300": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 192400.0,
+            "nSkim": 146690.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY400": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 211000.0,
+            "nSkim": 152743.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY600": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX2000_MY800": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 194800.0,
+            "nSkim": 127557.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY90": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 200600.0,
+            "nSkim": 159259.0,
+            "xsec": 0.01
+        },
+        "MX800_MY100": {
+            "valid": 40,
+            "invalid": [],
+            "nProc": 382000.0,
+            "nSkim": 170041.0,
+            "xsec": 0.01
+        },
+        "MX800_MY125": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 391200.0,
+            "nSkim": 163284.0,
+            "xsec": 0.01
+        },
+        "MX800_MY200": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 371200.0,
+            "nSkim": 101947.0,
+            "xsec": 0.01
+        },
+        "MX800_MY300": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 370000.0,
+            "nSkim": 81430.0,
+            "xsec": 0.01
+        },
+        "MX800_MY400": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 381200.0,
+            "nSkim": 74241.0,
+            "xsec": 0.01
+        },
+        "MX800_MY60": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 376800.0,
+            "nSkim": 171482.0,
+            "xsec": 0.01
+        },
+        "MX800_MY600": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 370800.0,
+            "nSkim": 81140.0,
+            "xsec": 0.01
+        },
+        "MX800_MY90": {
+            "valid": 39,
+            "invalid": [],
+            "nProc": 384000.0,
+            "nSkim": 173032.0,
+            "xsec": 0.01
+        },
+        "MX900_MY100": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 201100.0,
+            "nSkim": 114127.0,
+            "xsec": 0.01
+        },
+        "MX900_MY125": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 186900.0,
+            "nSkim": 103110.0,
+            "xsec": 0.01
+        },
+        "MX900_MY200": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 192100.0,
+            "nSkim": 78099.0,
+            "xsec": 0.01
+        },
+        "MX900_MY300": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 187300.0,
+            "nSkim": 59845.0,
+            "xsec": 0.01
+        },
+        "MX900_MY400": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 190200.0,
+            "nSkim": 49328.0,
+            "xsec": 0.01
+        },
+        "MX900_MY60": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 191000.0,
+            "nSkim": 108462.0,
+            "xsec": 0.01
+        },
+        "MX900_MY600": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 189000.0,
+            "nSkim": 43422.0,
+            "xsec": 0.01
+        },
+        "MX900_MY90": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 193100.0,
+            "nSkim": 109733.0,
+            "xsec": 0.01
+        },
+        "lumi": 41500
+    },
+    "2018": {
+        "QCD1000": {
+            "valid": 42,
+            "invalid": [],
+            "nProc": 15466225.0,
+            "nSkim": 6947994.0,
+            "xsec": 1207,
+            "avgW": 0.9958697635172351
+        },
+        "QCD1500": {
+            "valid": 27,
+            "invalid": [],
+            "nProc": 9233440.0,
+            "nSkim": 4585619.0,
+            "xsec": 120,
+            "avgW": 0.9930412941860451
+        },
+        "QCD2000": {
+            "valid": 15,
+            "invalid": [],
+            "nProc": 4636642.0,
+            "nSkim": 2326038.0,
+            "xsec": 25.25,
+            "avgW": 0.9880495447054504
+        },
+        "QCD500": {
+            "valid": 90,
+            "invalid": [],
+            "nProc": 35874673.0,
+            "nSkim": 2522312.0,
+            "xsec": 32260,
+            "avgW": 0.9981355099682144
+        },
+        "QCD700": {
+            "valid": 122,
+            "invalid": [],
+            "nProc": 46328680.0,
+            "nSkim": 10364092.0,
+            "xsec": 6829,
+            "avgW": 0.9970202546433019
+        },
+        "ST_antitop": {
+            "valid": 132,
+            "invalid": [],
+            "nProc": 79090800.0,
+            "nSkim": 18909437.0,
+            "xsec": 67.91,
+            "avgW": 64.8500117150718
+        },
+        "ST_s_antitop": {
+            "valid": 3,
+            "invalid": [],
+            "nProc": 1289000.0,
+            "nSkim": 676797.0,
+            "xsec": 3.579,
+            "avgW": 1.159336461240595
+        },
+        "ST_s_top": {
+            "valid": 19,
+            "invalid": [],
+            "nProc": 6934200.0,
+            "nSkim": 3536296.0,
+            "xsec": 5.757,
+            "avgW": 1.8644227490015328
+        },
+        "ST_tW_antitop": {
+            "valid": 16,
+            "invalid": [],
+            "nProc": 7623000.0,
+            "nSkim": 2913948.0,
+            "xsec": 34.97,
+            "avgW": 34.95465959099361
+        },
+        "ST_tW_top": {
+            "valid": 18,
+            "invalid": [],
+            "nProc": 9598000.0,
+            "nSkim": 3664738.0,
+            "xsec": 34.91,
+            "avgW": 34.882191044395036
+        },
+        "ST_top": {
+            "valid": 240,
+            "invalid": [],
+            "nProc": 154307600.0,
+            "nSkim": 34337981.0,
+            "xsec": 113.3,
+            "avgW": 107.63186443739407
+        },
+        "TTW": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 4872005.0,
+            "nSkim": 2958087.0,
+            "xsec": 0.2198,
+            "avgW": 0.34540195859998907
+        },
+        "TTZ": {
+            "valid": 40,
+            "invalid": [],
+            "nProc": 7290000.0,
+            "nSkim": 4666156.0,
+            "xsec": 0.0568,
+            "avgW": 0.05645941029240688
+        },
+        "WJets400": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 10071273.0,
+            "nSkim": 636212.0,
+            "xsec": 315.2,
+            "avgW": 0.9977978297137358
+        },
+        "WJets600": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 15298056.0,
+            "nSkim": 1765434.0,
+            "xsec": 68.58,
+            "avgW": 0.9965562773673302
+        },
+        "WJets800": {
+            "valid": 41,
+            "invalid": [
+                "WJets800_21.root",
+                "WJets800_42.root"
+            ],
+            "nProc": 13537556.0,
+            "nSkim": 5526354.0,
+            "xsec": 34.69,
+            "avgW": 0.9952030300734078
+        },
+        "WJetsLNu100": {
+            "valid": 317,
+            "invalid": [],
+            "nProc": 198034770.0,
+            "nSkim": 104894716.0,
+            "xsec": 689.749632,
+            "avgW": 1716.5027847719757
+        },
+        "WJetsLNu250": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 19495884.0,
+            "nSkim": 12654058.0,
+            "xsec": 24.5069015,
+            "avgW": 61.51157394526524
+        },
+        "WJetsLNu400": {
+            "valid": 12,
+            "invalid": [],
+            "nProc": 3935604.0,
+            "nSkim": 2942128.0,
+            "xsec": 3.110130566,
+            "avgW": 7.836921193996466
+        },
+        "WJetsLNu600": {
+            "valid": 16,
+            "invalid": [],
+            "nProc": 3900032.0,
+            "nSkim": 3134860.0,
+            "xsec": 0.4683178368,
+            "avgW": 1.1587676765793067
+        },
+        "WminusH": {
+            "valid": 15,
+            "invalid": [],
+            "nProc": 778619.0,
+            "nSkim": 91254.0,
+            "xsec": 0.3654,
+            "avgW": 0.364140851549188
+        },
+        "WplusH": {
+            "valid": 15,
+            "invalid": [],
+            "nProc": 746195.0,
+            "nSkim": 83002.0,
+            "xsec": 0.5716,
+            "avgW": 0.5871731961676568
+        },
+        "ZH": {
+            "valid": 7,
+            "invalid": [],
+            "nProc": 761658.0,
+            "nSkim": 96923.0,
+            "xsec": 0.5242,
+            "avgW": 0.5553099108382734
+        },
+        "ZJets400": {
+            "valid": 52,
+            "invalid": [],
+            "nProc": 16704355.0,
+            "nSkim": 1231248.0,
+            "xsec": 145.3,
+            "avgW": 0.997968374607146
+        },
+        "ZJets600": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 14642701.0,
+            "nSkim": 1610537.0,
+            "xsec": 34.29,
+            "avgW": 0.9973588848549589
+        },
+        "ZJets800": {
+            "valid": 36,
+            "invalid": [],
+            "nProc": 10561192.0,
+            "nSkim": 4127428.0,
+            "xsec": 18.57,
+            "avgW": 0.9937649935473285
+        },
+        "ttH": {
+            "valid": 51,
+            "invalid": [],
+            "nProc": 9580000.0,
+            "nSkim": 4293094.0,
+            "xsec": 0.5401,
+            "avgW": 0.5266780061219868
+        },
+        "TTbar": {
+            "valid": 656,
+            "invalid": [
+                "ttbar_182.root",
+                "ttbar_258.root",
+                "ttbar_641.root"
+            ],
+            "nProc": 264688000.0,
+            "nSkim": 34383303.0,
+            "xsec": 377.96,
+            "avgW": 313.9543025745392
+        },
+        "ttbar": {
+            "valid": 656,
+            "invalid": [
+                "ttbar_182.root",
+                "ttbar_258.root",
+                "ttbar_641.root"
+            ],
+            "nProc": 264688000.0,
+            "nSkim": 34383303.0,
+            "xsec": 377.96
+        },
+        "TTbarHT": {
+            "valid": 18,
+            "invalid": [],
+            "nProc": 2870793.0,
+            "nSkim": 2381784.0,
+            "xsec": 1.92,
+            "avgW": 663.2851659334623
+        },
+        "ttbarSemi": {
+            "valid": 295,
+            "invalid": [],
+            "nProc": 196115000.0,
+            "nSkim": 114960511.0,
+            "xsec": 365.34
+        },
+        "TTbarSemi": {
+            "valid": 295,
+            "invalid": [],
+            "nProc": 196115000.0,
+            "nSkim": 114960511.0,
+            "xsec": 365.34,
+            "avgW": 300.60609715915257
+        },
+        "X1000": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 3190800.0,
+            "nSkim": 1441898.0,
+            "xsec": 0.01
+        },
+        "X1200": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 2585900.0,
+            "nSkim": 1320340.0
+        },
+        "X1400": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 3128600.0,
+            "nSkim": 1799849.0
+        },
+        "X1600": {
+            "valid": 43,
+            "invalid": [],
+            "nProc": 3291200.0,
+            "nSkim": 2023114.0
+        },
+        "X1800": {
+            "valid": 60,
+            "invalid": [],
+            "nProc": 3583800.0,
+            "nSkim": 2270295.0
+        },
+        "X2000": {
+            "valid": 48,
+            "invalid": [],
+            "nProc": 3798200.0,
+            "nSkim": 2466395.0
+        },
+        "X800": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 4914400.0,
+            "nSkim": 1429717.0
+        },
+        "X900": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 4914400.0,
+            "nSkim": 1429717.0
+        },
+        "MX1000_MY100": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 199200.0,
+            "nSkim": 127136.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY125": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 200600.0,
+            "nSkim": 126108.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY200": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 201000.0,
+            "nSkim": 105204.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY300": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 205800.0,
+            "nSkim": 90597.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY400": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 198600.0,
+            "nSkim": 73861.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY600": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 192400.0,
+            "nSkim": 51641.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY800": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 395300.0,
+            "nSkim": 131973.0,
+            "xsec": 0.01
+        },
+        "MX1000_MY90": {
+            "valid": 29,
+            "invalid": [],
+            "nProc": 211200.0,
+            "nSkim": 134739.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY100": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 170500.0,
+            "nSkim": 121518.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY1000": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 344400.0,
+            "nSkim": 142638.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY125": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 165900.0,
+            "nSkim": 118127.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY200": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 179500.0,
+            "nSkim": 117337.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY300": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 170000.0,
+            "nSkim": 98952.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY400": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 178400.0,
+            "nSkim": 97609.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY600": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 167100.0,
+            "nSkim": 74821.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY800": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 176400.0,
+            "nSkim": 63501.0,
+            "xsec": 0.01
+        },
+        "MX1200_MY90": {
+            "valid": 26,
+            "invalid": [],
+            "nProc": 176800.0,
+            "nSkim": 125886.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY100": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 201400.0,
+            "nSkim": 151055.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY1000": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 199600.0,
+            "nSkim": 83877.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY1200": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 392000.0,
+            "nSkim": 177596.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY125": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 189800.0,
+            "nSkim": 142313.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY200": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 187600.0,
+            "nSkim": 134653.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY300": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 198600.0,
+            "nSkim": 130075.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY400": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1400_MY600": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 191600.0,
+            "nSkim": 108983.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY800": {
+            "valid": 31,
+            "invalid": [],
+            "nProc": 189800.0,
+            "nSkim": 92734.0,
+            "xsec": 0.01
+        },
+        "MX1400_MY90": {
+            "valid": 30,
+            "invalid": [],
+            "nProc": 202600.0,
+            "nSkim": 151883.0,
+            "xsec": 0.01
+        },
+        "MX1600_MY100": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY1000": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY1200": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY125": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY1400": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY200": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY300": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY400": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY600": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY800": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX1600_MY90": {
+            "valid": 42,
+            "invalid": [],
+            "nProc": 196600.0,
+            "nSkim": 151840.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY100": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 198800.0,
+            "nSkim": 156365.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1000": {
+            "valid": 56,
+            "invalid": [],
+            "nProc": 202100.0,
+            "nSkim": 114566.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1200": {
+            "valid": 58,
+            "invalid": [],
+            "nProc": 209900.0,
+            "nSkim": 107872.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY125": {
+            "valid": 56,
+            "invalid": [],
+            "nProc": 192900.0,
+            "nSkim": 152040.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1400": {
+            "valid": 60,
+            "invalid": [],
+            "nProc": 190700.0,
+            "nSkim": 90620.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY1600": {
+            "valid": 59,
+            "invalid": [],
+            "nProc": 412000.0,
+            "nSkim": 198596.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY200": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 192600.0,
+            "nSkim": 149641.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY300": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 201500.0,
+            "nSkim": 148658.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY400": {
+            "valid": 59,
+            "invalid": [],
+            "nProc": 191400.0,
+            "nSkim": 133514.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY600": {
+            "valid": 57,
+            "invalid": [],
+            "nProc": 201800.0,
+            "nSkim": 133645.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY800": {
+            "valid": 58,
+            "invalid": [],
+            "nProc": 205400.0,
+            "nSkim": 127827.0,
+            "xsec": 0.01
+        },
+        "MX1800_MY90": {
+            "valid": 59,
+            "invalid": [],
+            "nProc": 193000.0,
+            "nSkim": 151282.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY100": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 205600.0,
+            "nSkim": 163418.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1000": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 202000.0,
+            "nSkim": 123077.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1200": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 212200.0,
+            "nSkim": 119007.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY125": {
+            "valid": 48,
+            "invalid": [],
+            "nProc": 202200.0,
+            "nSkim": 161114.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1400": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 188200.0,
+            "nSkim": 97381.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1600": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 198400.0,
+            "nSkim": 96931.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY1800": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 394400.0,
+            "nSkim": 193189.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY200": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 201000.0,
+            "nSkim": 159240.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY300": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 192400.0,
+            "nSkim": 146690.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY400": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 211000.0,
+            "nSkim": 152743.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY600": {
+            "valid": 0,
+            "invalid": [],
+            "nProc": 0,
+            "nSkim": 0,
+            "xsec": 0.01
+        },
+        "MX2000_MY800": {
+            "valid": 47,
+            "invalid": [],
+            "nProc": 194800.0,
+            "nSkim": 127557.0,
+            "xsec": 0.01
+        },
+        "MX2000_MY90": {
+            "valid": 46,
+            "invalid": [],
+            "nProc": 200600.0,
+            "nSkim": 159259.0,
+            "xsec": 0.01
+        },
+        "MX800_MY100": {
+            "valid": 40,
+            "invalid": [],
+            "nProc": 382000.0,
+            "nSkim": 170041.0,
+            "xsec": 0.01
+        },
+        "MX800_MY125": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 391200.0,
+            "nSkim": 163284.0,
+            "xsec": 0.01
+        },
+        "MX800_MY200": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 371200.0,
+            "nSkim": 101947.0,
+            "xsec": 0.01
+        },
+        "MX800_MY300": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 370000.0,
+            "nSkim": 81430.0,
+            "xsec": 0.01
+        },
+        "MX800_MY400": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 381200.0,
+            "nSkim": 74241.0,
+            "xsec": 0.01
+        },
+        "MX800_MY60": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 376800.0,
+            "nSkim": 171482.0,
+            "xsec": 0.01
+        },
+        "MX800_MY600": {
+            "valid": 41,
+            "invalid": [],
+            "nProc": 370800.0,
+            "nSkim": 81140.0,
+            "xsec": 0.01
+        },
+        "MX800_MY90": {
+            "valid": 39,
+            "invalid": [],
+            "nProc": 384000.0,
+            "nSkim": 173032.0,
+            "xsec": 0.01
+        },
+        "MX900_MY100": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 201100.0,
+            "nSkim": 114127.0,
+            "xsec": 0.01
+        },
+        "MX900_MY125": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 186900.0,
+            "nSkim": 103110.0,
+            "xsec": 0.01
+        },
+        "MX900_MY200": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 192100.0,
+            "nSkim": 78099.0,
+            "xsec": 0.01
+        },
+        "MX900_MY300": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 187300.0,
+            "nSkim": 59845.0,
+            "xsec": 0.01
+        },
+        "MX900_MY400": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 190200.0,
+            "nSkim": 49328.0,
+            "xsec": 0.01
+        },
+        "MX900_MY60": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 191000.0,
+            "nSkim": 108462.0,
+            "xsec": 0.01
+        },
+        "MX900_MY600": {
+            "valid": 44,
+            "invalid": [],
+            "nProc": 189000.0,
+            "nSkim": 43422.0,
+            "xsec": 0.01
+        },
+        "MX900_MY90": {
+            "valid": 45,
+            "invalid": [],
+            "nProc": 193100.0,
+            "nSkim": 109733.0,
+            "xsec": 0.01
+        },
+        "lumi": 59800
+    }
 }
