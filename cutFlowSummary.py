@@ -17,7 +17,6 @@ parser.add_option('-j', '--json', metavar='IFILE', type='string', action='store'
 totalBkg = []
 
 additionalRegions = ["L_AL","T_AL"]
-additionalRegions = []
 
 with open(options.json) as json_file:
     labels = ["Sample"]
@@ -44,7 +43,7 @@ with open(options.json) as json_file:
             if(labelFlag==False):
                 labels.append(h.GetXaxis().GetBinLabel(i).replace(" ","_"))
             nCut = h.GetBinContent(i)
-            #nCut = nCut/(h.GetBinContent(1))
+            nCut = nCut/(h.GetBinContent(1))
             if(nCut>10000):
                 latexRow = latexRow +" {0:1.2e} &".format(nCut)
             else:   
@@ -58,7 +57,7 @@ with open(options.json) as json_file:
         #Additional regions
         for region in additionalRegions:
             nCut = f.Get("{0}_mJY_mJJ_{1}_nom".format(sample,region)).Integral()
-            #nCut = nCut/(h.GetBinContent(1))
+            nCut = nCut/(h.GetBinContent(1))
             if(nCut>10000):
                 latexRow = latexRow +" {0:1.2e} &".format(nCut)
             else:   
