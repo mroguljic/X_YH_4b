@@ -285,7 +285,8 @@ histos.append(h_nm1_phi0)
 histos.append(h_nm1_phi1)
 
 idxColumns = VarGroup("idxColumns")
-idxColumns.Add("idxH","higgsMassMatchingAlt(mSD0,mSD1)")
+idxColumns.Add("idxH","higgsMassMatching(mSD0,mSD1)")#randomize ambiguous cases
+#idxColumns.Add("idxH","higgsMassMatchingAlternative(mSD0,mSD1)")#choose one closer to
 idxColumns.Add("idxY","1-idxH")
 idxCuts   = CutGroup("idxCuts")
 idxCuts.Add("Higgs-tagged cut","idxH>=0")
