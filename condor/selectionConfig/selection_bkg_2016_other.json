@@ -1,0 +1,92 @@
+{
+  "ZJets400": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ZJets400",
+    "xsec": 315.2,
+    "color": 44
+  },
+  "ZJets600": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ZJets600",
+    "xsec": 68.58,
+    "color": 44
+  },
+  "ZJets800": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ZJets800",
+    "xsec": 34.69,
+    "color": 44
+  },
+  "WJets400": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/WJets400",
+    "xsec": 315.2,
+    "color": 44
+  },
+  "WJets600": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/WJets600",
+    "xsec": 68.58,
+    "color": 44
+  },
+  "WJets800": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/WJets800",
+    "xsec": 34.69,
+    "color": 44
+  },
+  "ST_antitop": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ST_antitop",
+    "xsec": 67.91,
+    "color": 46
+  },
+  "ST_top": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ST_top",
+    "xsec": 113.3,
+    "color": 47
+  },
+  "ST_sChannel": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ST_sChannel",
+    "xsec": 113.3,
+    "color": 47
+  },
+  "ST_tW_top": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ST_tW_top",
+    "xsec": 34.91,
+    "color": 48
+  },
+  "ST_tW_antitop": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ST_tW_antitop",
+    "xsec": 34.97,
+    "color": 49
+  },
+  "WminusH": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/WminusH",
+    "xsec": 0.36,
+    "color": 49
+  },
+  "WplusH": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/WplusH",
+    "xsec": 0.57,
+    "color": 49
+  },
+  "ZH": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ZH",
+    "xsec": 0.52,
+    "color": 49
+  },
+  "ttH": {
+    "maxEvents": -1,
+    "dataset":"/eos/cms/store/group/phys_b2g/XToHYTo4B/UL_skims/2016/ttH",
+    "xsec": 0.54,
+    "color": 49
+  }
+}
