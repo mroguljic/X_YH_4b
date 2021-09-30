@@ -99,12 +99,19 @@ if("TTbar" in options.process):
     a.Define("MTT",'analyzer::invariantMass(topVector,antitopVector)')
     a.Define("topPt",'GenPart_pt[topIdx]')
     a.Define("antitopPt",'GenPart_pt[antitopIdx]')
-    if(options.process=="TTbar" or options.process=="TTbarSemi"):
-        hMTTincl  = a.DataFrame.Histo1D(('{0}_MTT_skim_incl'.format(options.process),';M_{TT} [GeV];;',30,0,3000.),"MTT","genWeight")
-        histos.append(hMTTincl)
-        a.Cut("MTTcut","MTT<700")        
-    hMTT  = a.DataFrame.Histo1D(('{0}_MTT_skim'.format(options.process),';M_{TT} [GeV];;',30,0,3000.),"MTT","genWeight")
-    histos.append(hMTT)
+    if(year=="2016"):
+        a.Define("ttHTFlag","highHTFlag(nGenPart,GenPart_pdgId,GenPart_pt,GenPart_phi,GenPart_eta,GenPart_mass,nGenJetAK8,GenJetAK8_pt,GenJetAK8_phi,GenJetAK8_eta,GenJetAK8_mass)")
+        if("HT" in options.process):
+            a.Cut("ttHTCut","ttHTFlag==1")
+        else(options.process.lower()=="ttbar"):
+           a.Cut("ttHTCut","ttHTFlag==0")
+    else:
+        if(options.process=="TTbar" or options.process=="TTbarSemi"):
+            hMTTincl  = a.DataFrame.Histo1D(('{0}_MTT_skim_incl'.format(options.process),';M_{TT} [GeV];;',30,0,3000.),"MTT","genWeight")
+            histos.append(hMTTincl)
+            a.Cut("MTTcut","MTT<700")
+        hMTT  = a.DataFrame.Histo1D(('{0}_MTT_skim'.format(options.process),';M_{TT} [GeV];;',30,0,3000.),"MTT","genWeight")
+        histos.append(hMTT)
 
 
 nSkimmed = getNweighted(a,isData)
