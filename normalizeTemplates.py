@@ -12,7 +12,7 @@ def normalizeProcess(process,year,inFile,outFile):
     json_file = open("xsecs.json")
     config = json.load(json_file)
     if("MX" in process):
-        xsec = 0.0005#0.5 fb
+        xsec = 0.001#1 fb
     else:
         xsec    = config[year][process]["xsec"]
     luminosity  = config[year]["lumi"]
@@ -66,11 +66,11 @@ def mergeSamples(inFiles,outFile,regexMatch,regexReplace):
 
 
 def scaleMuonTemplates():
-    semilepProcesses16 = ["TTbarSemi","ST_top","ST_antitop","ST_tW_antitop","ST_tW_top","ST_sChannel","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600"]
+    semilepProcesses16 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_tW_antitop","ST_tW_top","ST_s","WJetsLNu100","WJetsLNu250","WJetsLNu400","WJetsLNu600","QCDHT700","QCDHT1000","QCDHT1500","QCDHT2000"]
     semilepProcesses17 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
     semilepProcesses18 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
 
-    for year in ['2016','2017','2018']:
+    for year in ['2016']:#,'2017','2018']:
         print(year)
         muonDir = "results/templates_semileptonic/muon/"
         nonScaledDir = "{0}/{1}/nonScaled/".format(muonDir,year)
@@ -88,20 +88,20 @@ def scaleMuonTemplates():
         ttSamples = [lumiScaledDir+f for f in ttSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
         mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarSemi|TTbar","TTbar")
 
-        if(year=="2016"):
-            STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_sChannel"]
-            STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-            mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),"ST.+top_|ST.+nel","ST_")
+        QCDsamples = ["QCDHT700.root","QCDHT1000.root","QCDHT1500.root","QCDHT2000.root"]
+        QCDsamples = [lumiScaledDir+f for f in QCDsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(QCDsamples,"{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"QCDHT\d+_","QCD_")
 
+        STsamples = ["ST_t_top.root","ST_t_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_s.root"]
+        STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),"ST.+top_|ST_s_","ST_")
+
+        if(year=="2016"):
             WJetsSamples = ["WJetsLNu100.root","WJetsLNu250.root","WJetsLNu400.root","WJetsLNu600.root"]
             WJetsSamples = [lumiScaledDir+f for f in WJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
             mergeSamples(WJetsSamples,"{0}/WJets{1}.root".format(lumiScaledDir,year[-2:]),"WJets.+\d+_","WJets_")
             
         else:
-            STsamples = ["ST_t_top.root","ST_t_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_s.root"]
-            STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-            mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),"ST.+top_|ST_s_","ST_")
-
             WJetsSamples = ["WJets.root"]
             WJetsSamples = [lumiScaledDir+f for f in WJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
             mergeSamples(WJetsSamples,"{0}/WJets{1}.root".format(lumiScaledDir,year[-2:]),"WJetsLNu_","WJets_")
@@ -138,11 +138,12 @@ def scaleHadronicTemplates():
     srProcesses18 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbarSemi"]
 
 
-    srProcesses16=srProcesses16+signalPoints
+    #srProcesses16=srProcesses16+signalPoints
     srProcesses17=srProcesses17+signalPoints
     srProcesses18=srProcesses18+signalPoints
 
-    for year in ['2016','2017','2018']:
+    #for year in ['2016','2017','2018']:
+    for year in ['2016']:
         print(year)
         nonScaledDir = "results/templates_hadronic/{0}/nonScaled/".format(year)
         lumiScaledDir = "results/templates_hadronic/{0}/scaled/".format(year)
@@ -175,7 +176,8 @@ def scaleHadronicTemplates():
             STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
             mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),".+top_","ST_")
 
-            VJetsSamples = ["WJets400.root","WJets600.root","WJets800.root","ZJets400.root","ZJets600.root","ZJets800.root"]
+            #VJetsSamples = ["WJets400.root","WJets600.root","WJets800.root","ZJets400.root","ZJets600.root","ZJets800.root"]
+            VJetsSamples = ["WJets600.root","WJets800.root","ZJets600.root","ZJets800.root"]
             VJetsSamples = [lumiScaledDir+f for f in VJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
             mergeSamples(VJetsSamples,"{0}/VJets{1}.root".format(lumiScaledDir,year[-2:]),"[A-Z]Jets\d+_","VJets_")
 
@@ -199,7 +201,8 @@ def scaleElectronTemplates():
     semilepProcesses17 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
     semilepProcesses18 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
 
-    for year in ['2016','2017','2018']:
+    #for year in ['2016','2017','2018']:
+    for year in ['2016',"2017","2018"]:
         print(year)
         eleDir = "results/templates_semileptonic/electron/"
         nonScaledDir = "{0}/{1}/nonScaled/".format(eleDir,year)
@@ -217,13 +220,13 @@ def scaleElectronTemplates():
         ttSamples = [lumiScaledDir+f for f in ttSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
         mergeSamples(ttSamples,"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:]),"TTbarSemi|TTbar","TTbar")
         
-        STsamples = ["ST_top.root","ST_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_s"]
+        STsamples = ["ST_t_top.root","ST_t_antitop.root","ST_tW_antitop.root","ST_tW_top.root","ST_s.root"]
         STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),"ST.+top_|ST_s","ST_")
+        mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),"ST.+top_|ST_s_","ST_")
 
-        # QCDsamples = ["QCDHT700.root","QCDHT1000.root","QCDHT1500.root","QCDHT2000.root"]
-        # QCDsamples = [lumiScaledDir+f for f in QCDsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
-        # mergeSamples(QCDsamples,"{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"QCDHT\d+_","QCD_")
+        QCDsamples = ["QCDHT700.root","QCDHT1000.root","QCDHT1500.root","QCDHT2000.root"]
+        QCDsamples = [lumiScaledDir+f for f in QCDsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
+        mergeSamples(QCDsamples,"{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"QCDHT\d+_","QCD_")
 
         if(year=="2016"):
             WJetsSamples = ["WJetsLNu100.root","WJetsLNu250.root","WJetsLNu400.root","WJetsLNu600.root"]
@@ -300,7 +303,7 @@ def scaleSemiResolvedTemplates():
 
 if __name__ == '__main__':
 
-    scaleHadronicTemplates()
+    #scaleHadronicTemplates()
     #scaleMuonTemplates()
-    #scaleElectronTemplates()
+    scaleElectronTemplates()
     #scaleSemiResolvedTemplates()
