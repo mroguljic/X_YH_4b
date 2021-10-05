@@ -70,7 +70,7 @@ def scaleMuonTemplates():
     semilepProcesses17 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
     semilepProcesses18 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
 
-    for year in ['2016']:#,'2017','2018']:
+    for year in ['2016','2017','2018']:
         print(year)
         muonDir = "results/templates_semileptonic/muon/"
         nonScaledDir = "{0}/{1}/nonScaled/".format(muonDir,year)
@@ -201,8 +201,7 @@ def scaleElectronTemplates():
     semilepProcesses17 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
     semilepProcesses18 = ["TTbarSemi","ST_t_top","ST_t_antitop","ST_s","ST_tW_antitop","ST_tW_top","WJets"]
 
-    #for year in ['2016','2017','2018']:
-    for year in ['2016',"2017","2018"]:
+    for year in ['2016','2017','2018']:
         print(year)
         eleDir = "results/templates_semileptonic/electron/"
         nonScaledDir = "{0}/{1}/nonScaled/".format(eleDir,year)
