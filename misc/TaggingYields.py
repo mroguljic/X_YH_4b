@@ -2,8 +2,8 @@ import ROOT as r
 
 years       = ["16","17","18"]
 regions     = ["NAL_T","NAL_L","NAL_AL","TT","LL","L_AL","T_AL"]
-processes   = ["data_obs","TTbar","QCD","MX1600_MY125"]
-files       = ["JetHT.root","TTbar.root","QCD.root","MX1600_MY125.root"]
+processes   = ["data_obs","TTbar","QCD","MX1600_MY150"]
+files       = ["JetHT.root","TTbar.root","QCD.root","MX1600_MY150.root"]
 
 for year in years:
     tplDir = "/afs/cern.ch/user/m/mrogulji/UL_X_YH/X_YH_4b/results/templates_hadronic/20{0}/scaled/".format(year)
@@ -24,8 +24,6 @@ for year in years:
             yUp  = h2.GetYaxis().FindBin(4000)
             #nEvt = h2.Integral(xLow,xUp,yLow,yUp)
             nEvt = h2.Integral()
-            if("MX" in files[i]):
-                nEvt=nEvt/10.
             #print(xLow,xUp,yLow,yUp)
             line+= " & {0:.2f}".format(nEvt)
         line+="\\\\"

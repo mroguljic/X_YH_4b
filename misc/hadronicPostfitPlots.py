@@ -19,11 +19,20 @@ r.gStyle.SetOptFit(111)
 
 def getPoissonErrors(hist):
     hist.SetBinErrorOption(1)
+
+    #This is needed due to some nasty float precision inaccuracy causing some data content to be 0.9999998
+    #The kPoisson error does not get calculated correctly in that case for some reason
+    tempHist   = hist.Clone("tempHist_forErrs")
+    tempHist.Reset()
+    tempHist.SetBinErrorOption(1)
+
     errors_low = []
     errors_hi  = []
     for i in range(1,hist.GetNbinsX()+1):
-        errors_low.append(hist.GetBinErrorLow(i))
-        errors_hi.append(hist.GetBinErrorUp(i))
+        tempHist.SetBinContent(i,int(round(hist.GetBinContent(i))))
+        #print(int(hist.GetBinContent(i)),tempHist.GetBinErrorLow(i),tempHist.GetBinErrorUp(i))
+        errors_low.append(tempHist.GetBinErrorLow(i))
+        errors_hi.append(tempHist.GetBinErrorUp(i))
 
     return [errors_low,errors_hi]
 
@@ -139,7 +148,7 @@ def calculatePull(hData,dataErrors,hTotBkg,uncBand):
     return np.array(pulls)
 
 
-def plotShapes(hData,hQCD,hTTbar,hTotBkg,uncBand,hSignals,labelsSig,colorsSig,xlabel,outputFile,xRange=[],yRange=[]):
+def plotShapes(hData,hQCD,hTTbar,hTotBkg,uncBand,hSignals,labelsSig,colorsSig,xlabel,outputFile,xRange=[],yRange=[],projectionText=""):
 
     print(outputFile)
     print("Data\ttotal\tQCD\tTTbar")
@@ -202,14 +211,22 @@ def plotShapes(hData,hQCD,hTTbar,hTotBkg,uncBand,hSignals,labelsSig,colorsSig,xl
         axs[0].set_xlim(xRange)
     if(yRange):
         axs[0].set_ylim(yRange)
+    else:
+        yMaximum = max(hData)*1.5+10.
+        axs[0].set_ylim([0.,yMaximum])
 
     lumiText = "138$fb^{-1} (13 TeV)$"    
     hep.cms.lumitext(lumiText)
     hep.cms.text("Preliminary",loc=1)
-    plt.legend(loc='best',ncol=2,bbox_to_anchor=[0.35,0.45])
+    #plt.legend(loc='best',ncol=2,bbox_to_anchor=[0.35,0.45])
+    plt.legend(loc='upper right',ncol=2)
 
     if(len(hSignals)>0):
         plt.text(0.65, 0.40, r"$\sigma$(pp$\rightarrow$X$\rightarrow$HY$\rightarrow b\bar{b} b\bar{b}$) = 1 fb", horizontalalignment='center',verticalalignment='center',transform=axs[0].transAxes, fontsize=22)
+
+    if(projectionText):
+        plt.text(0.65, 0.30, projectionText, horizontalalignment='center',verticalalignment='center',transform=axs[0].transAxes, fontsize=22)
+
 
     plt.sca(axs[1])#switch to lower pad
     axs[1].axhline(y=0.0, xmin=0, xmax=1, color="r")
@@ -248,14 +265,29 @@ def getSignals(signalsToPlot,region):
         histos.append(hSignal)
     return histos
 
+#testFile    = "/afs/cern.ch/user/m/mrogulji/UL_X_YH/X_YH_4b/CMSSW_10_6_14/src/2DAlphabet/RunII_SR_data_11_CR_new_skims/postfitshapes_b.root"
+#testFile    = "/afs/cern.ch/user/m/mrogulji/UL_X_YH/X_YH_4b/CMSSW_10_6_14/src/2DAlphabet/RunII_SR_data_11_CR_zeroFail/postfitshapes_b.root"
+#testFile    = "/afs/cern.ch/user/m/mrogulji/UL_X_YH/X_YH_4b/CMSSW_10_6_14/src/2DAlphabet/RunII_NAL_11_CR_new_skims/postfitshapes_b.root"
+testFile    = "/afs/cern.ch/user/m/mrogulji/UL_X_YH/X_YH_4b/CMSSW_10_6_14/src/2DAlphabet/RunII_NAL_11_CR_zeroFail/postfitshapes_b.root"
 
-testFile    = "/afs/cern.ch/user/m/mrogulji/UL_X_YH/X_YH_4b/CMSSW_10_6_14/src/2DAlphabet/RunII_SR_data_11_CR_zeroFail/postfitshapes_b.root"
 TTprocesses = ["16_TTbar_bqq","17_TTbar_bqq","18_TTbar_bqq","16_TTbar_bq","17_TTbar_bq","18_TTbar_bq","16_TTbar_Other","17_TTbar_Other","18_TTbar_Other"]
 
-ymax = {"LL":320.,"TT":45.,"NAL_L":420.,"NAL_T":200.,"NAL_AL":5000,"T_AL":300,"L_AL":1000}
+massPointsToPlot = ["MX1600_MY125","MX2000_MY300","MX3000_MY400"]
+labelsSignal     = ["$M_{X}$=1600 GeV\n$M_{Y}$=125 GeV","$M_{X}$=2000 GeV\n$M_{Y}$=300 GeV","$M_{X}$=3000 GeV\n$M_{Y}$=400 GeV"]
+massPointsToPlot = []
+#regionsToPlot    = ["TT","LL","L_AL","T_AL"]
+regionsToPlot    = ["NAL_L","NAL_T"]
+#regionsToPlot    = ["LL","TT"]
+plotSlices = False
 
-#for region in ["NAL_L","NAL_T","NAL_AL"]:
-for region in ["TT","LL","L_AL","T_AL"]:
+
+if(plotSlices):
+    ymax = {"LL":80.,"TT":10.}
+else:
+    ymax = {"LL":320.,"TT":45.,"NAL_L":420.,"NAL_T":200.,"NAL_AL":5000,"T_AL":300,"L_AL":1000}
+
+
+for region in regionsToPlot:
     if(region=="NAL_AL"):
         taggingCat = "fail"
         dirRegion  = "NAL_T"
@@ -269,6 +301,7 @@ for region in ["TT","LL","L_AL","T_AL"]:
         taggingCat = "pass"
         dirRegion  = region
 
+    #Merge sliced histograms
     TTshapes    = []
     for process in TTprocesses:
         TTshapes.append(get2DPostfitPlot(testFile,process,dirRegion,taggingCat))
@@ -280,45 +313,86 @@ for region in ["TT","LL","L_AL","T_AL"]:
     qcdShape    = get2DPostfitPlot(testFile,"qcd",dirRegion,taggingCat)
     totalBkg    = get2DPostfitPlot(testFile,"TotalBkg".format(region),dirRegion,taggingCat)
     print("Total bkg in {0}: {1}".format(region,totalBkg.Integral()))
+    print("Total QCD in {0}: {1}".format(region,qcdShape.Integral()))
+    print("Total TT  in {0}: {1}".format(region,TTshape.Integral()))
+
+
+    if(plotSlices):
+        #Plot MJY
+        for i in range(1,dataShape.GetNbinsY()+1):
+            data_proj       = dataShape.ProjectionX("data_projx_{0}".format(i),i,i)
+            qcd_proj        = qcdShape.ProjectionX("qcd_projx_{0}".format(i),i,i)
+            ttbar_proj      = TTshape.ProjectionX("ttbar_projx_{0}".format(i),i,i)
+            totalBkg_proj   = totalBkg.ProjectionX("totalbkg_projx_{0}".format(i),i,i)
+            data_proj       = dataShape.ProjectionX("data_projx_{0}".format(i),i,i)
+            uncBand_proj    = getUncBand(totalBkg_proj)
+
+            signalHistos    = getSignals(massPointsToPlot,dirRegion)
+            rebinnedSignal  = []
+            for j in range(len(massPointsToPlot)):
+                rebinnedSignal.append(rebinHisto(dataShape,signalHistos[j],"{0}_{1}_rebinned".format(massPointsToPlot[j],region),scale=1.0).ProjectionX("{0}_{1}_projx_{2}".format(massPointsToPlot[j],region,i),i,i))
+
+            if("NAL" in region):
+                rebinnedSignal = []
+            projLowEdge     = int(dataShape.GetYaxis().GetBinLowEdge(i))
+            projUpEdge      = int(dataShape.GetYaxis().GetBinUpEdge(i))
+            projectionText  = "{0}".format(projLowEdge)+"<$M_{JJ}$<"+"{0} GeV".format(projUpEdge)
+            plotShapes(data_proj,qcd_proj,ttbar_proj,totalBkg_proj,uncBand_proj,rebinnedSignal,labelsSignal,["red","blue","magenta"],"$M_{JY}$ [GeV]","hadronicPostfitPlots/{0}_MJY_{1}.png".format(region,i),xRange=[60.,640.],projectionText=projectionText)
+
+        #Plot MJJ
+        for i in range(1,dataShape.GetNbinsX()+1):
+            data_proj       = dataShape.ProjectionY("data_projy_{0}".format(i),i,i)
+            qcd_proj        = qcdShape.ProjectionY("qcd_projy_{0}".format(i),i,i)
+            ttbar_proj      = TTshape.ProjectionY("ttbar_projy_{0}".format(i),i,i)
+            totalBkg_proj   = totalBkg.ProjectionY("totalbkg_projy_{0}".format(i),i,i)
+            data_proj       = dataShape.ProjectionY("data_projy_{0}".format(i),i,i)
+            uncBand_proj    = getUncBand(totalBkg_proj)
+
+            signalHistos    = getSignals(massPointsToPlot,dirRegion)
+            rebinnedSignal  = []
+            for j in range(len(massPointsToPlot)):
+                rebinnedSignal.append(rebinHisto(dataShape,signalHistos[j],"{0}_{1}_rebinned".format(massPointsToPlot[j],region),scale=1.0).ProjectionY("{0}_{1}_projy_{2}".format(massPointsToPlot[j],region,i),i,i))
+
+            if("NAL" in region):
+                rebinnedSignal = []
+            projLowEdge     = int(dataShape.GetXaxis().GetBinLowEdge(i))
+            projUpEdge      = int(dataShape.GetXaxis().GetBinUpEdge(i))
+            projectionText  = "{0}".format(projLowEdge)+"<$M_{JY}$<"+"{0} GeV".format(projUpEdge)
+            plotShapes(data_proj,qcd_proj,ttbar_proj,totalBkg_proj,uncBand_proj,rebinnedSignal,labelsSignal,["red","blue","magenta"],"$M_{JJ}$ [GeV]","hadronicPostfitPlots/{0}_MJJ_{1}.png".format(region,i),xRange=[800.,4000.],projectionText=projectionText)
 
 
 
+    else:
+        data_proj           = dataShape.ProjectionX("data_projx")
+        qcd_proj            = qcdShape.ProjectionX("qcd_projx")
+        ttbar_proj          = TTshape.ProjectionX("ttbar_projx")
+        totalBkg_proj       = totalBkg.ProjectionX("totalbkg_projx")
+        data_proj           = dataShape.ProjectionX("data_projx")
+        uncBand_proj        = getUncBand(totalBkg_proj)
+
+        signalHistos        = getSignals(massPointsToPlot,dirRegion)
+        rebinnedSignal      = []
+        for j in range(len(massPointsToPlot)):
+            rebinnedSignal.append(rebinHisto(dataShape,signalHistos[j],"{0}_{1}_rebinned".format(massPointsToPlot[j],region),scale=1.0).ProjectionX("{0}_{1}_projx".format(massPointsToPlot[j],region)))
+
+        if("NAL" in region):
+            rebinnedSignal  = []
+        plotShapes(data_proj,qcd_proj,ttbar_proj,totalBkg_proj,uncBand_proj,rebinnedSignal,labelsSignal,["red","blue","magenta"],"$M_{JY}$ [GeV]","hadronicPostfitPlots/{0}_MJY.png".format(region),xRange=[60.,640.],yRange=[0.,ymax[region]])
 
 
-    massPointsToPlot = ["MX1600_MY125","MX2000_MY300","MX3000_MY400"]
-    labelsSignal     = ["$M_{X}$=1600 GeV\n$M_{Y}$=125 GeV","$M_{X}$=2000 GeV\n$M_{Y}$=300 GeV","$M_{X}$=3000 GeV\n$M_{Y}$=400 GeV"]
+
+        data_proj    = dataShape.ProjectionY("data_projy")
+        qcd_proj     = qcdShape.ProjectionY("qcd_projy")
+        ttbar_proj   = TTshape.ProjectionY("ttbar_projy")
+        totalBkg_proj= totalBkg.ProjectionY("totalbkg_projy")
+        data_proj    = dataShape.ProjectionY("data_projy")
+        uncBand_proj = getUncBand(totalBkg_proj)
 
 
-    data_proj    = dataShape.ProjectionX("data_projx")
-    qcd_proj     = qcdShape.ProjectionX("qcd_projx")
-    ttbar_proj   = TTshape.ProjectionX("ttbar_projx")
-    totalBkg_proj= totalBkg.ProjectionX("totalbkg_projx")
-    data_proj    = dataShape.ProjectionX("data_projx")
-    uncBand_proj = getUncBand(totalBkg_proj)
-
-
-    signalHistos     = getSignals(massPointsToPlot,dirRegion)
-    rebinnedSignal   = []
-    for i in range(len(massPointsToPlot)):
-        rebinnedSignal.append(rebinHisto(dataShape,signalHistos[i],"{0}_{1}_rebinned".format(massPointsToPlot[i],region),scale=1.0).ProjectionX("{0}_{1}_projx".format(massPointsToPlot[i],region)))
-
-    if("NAL" in region):
-        rebinnedSignal = []
-    plotShapes(data_proj,qcd_proj,ttbar_proj,totalBkg_proj,uncBand_proj,rebinnedSignal,labelsSignal,["red","blue","magenta"],"$M_{JY}$ [GeV]","{0}_MJY.png".format(region),xRange=[60.,640.],yRange=[0.,ymax[region]])
-
-
-    data_proj    = dataShape.ProjectionY("data_projx")
-    qcd_proj     = qcdShape.ProjectionY("qcd_projx")
-    ttbar_proj   = TTshape.ProjectionY("ttbar_projx")
-    totalBkg_proj= totalBkg.ProjectionY("totalbkg_projx")
-    data_proj    = dataShape.ProjectionY("data_projx")
-    uncBand_proj = getUncBand(totalBkg_proj)
-
-
-    signalHistos     = getSignals(massPointsToPlot,dirRegion)
-    rebinnedSignal   = []
-    for i in range(len(massPointsToPlot)):
-        rebinnedSignal.append(rebinHisto(dataShape,signalHistos[i],"{0}_{1}_rebinned".format(massPointsToPlot[i],region),scale=1.0).ProjectionY("{0}_{1}_projx".format(massPointsToPlot[i],region)))
-    if("NAL" in region):
-        rebinnedSignal = []
-    plotShapes(data_proj,qcd_proj,ttbar_proj,totalBkg_proj,uncBand_proj,rebinnedSignal,labelsSignal,["red","blue","magenta"],"$M_{JJ}$ [GeV]","{0}_MJJ.png".format(region),xRange=[800.,4000.],yRange=[0.,ymax[region]])
+        signalHistos     = getSignals(massPointsToPlot,dirRegion)
+        rebinnedSignal   = []
+        for i in range(len(massPointsToPlot)):
+            rebinnedSignal.append(rebinHisto(dataShape,signalHistos[i],"{0}_{1}_rebinned".format(massPointsToPlot[i],region),scale=1.0).ProjectionY("{0}_{1}_projy".format(massPointsToPlot[i],region)))
+        if("NAL" in region):
+            rebinnedSignal = []
+        plotShapes(data_proj,qcd_proj,ttbar_proj,totalBkg_proj,uncBand_proj,rebinnedSignal,labelsSignal,["red","blue","magenta"],"$M_{JJ}$ [GeV]","hadronicPostfitPlots/{0}_MJJ.png".format(region),xRange=[800.,4000.],yRange=[0.,ymax[region]])
