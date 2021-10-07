@@ -138,11 +138,10 @@ def scaleHadronicTemplates():
     srProcesses18 = ["QCD700","QCD1000","QCD1500","QCD2000","TTbar","TTbarMtt700","TTbarMtt1000","TTbarSemi"]
 
 
-    #srProcesses16=srProcesses16+signalPoints
+    srProcesses16=srProcesses16+signalPoints
     srProcesses17=srProcesses17+signalPoints
     srProcesses18=srProcesses18+signalPoints
 
-    #for year in ['2016','2017','2018']:
     for year in ['2016']:
         print(year)
         nonScaledDir = "results/templates_hadronic/{0}/nonScaled/".format(year)
@@ -176,8 +175,7 @@ def scaleHadronicTemplates():
             STsamples = [lumiScaledDir+f for f in STsamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
             mergeSamples(STsamples,"{0}/ST{1}.root".format(lumiScaledDir,year[-2:]),".+top_","ST_")
 
-            #VJetsSamples = ["WJets400.root","WJets600.root","WJets800.root","ZJets400.root","ZJets600.root","ZJets800.root"]
-            VJetsSamples = ["WJets600.root","WJets800.root","ZJets600.root","ZJets800.root"]
+            VJetsSamples = ["WJets400.root","WJets600.root","WJets800.root","ZJets400.root","ZJets600.root","ZJets800.root"]
             VJetsSamples = [lumiScaledDir+f for f in VJetsSamples if (os.path.isfile(os.path.join(lumiScaledDir, f)))]
             mergeSamples(VJetsSamples,"{0}/VJets{1}.root".format(lumiScaledDir,year[-2:]),"[A-Z]Jets\d+_","VJets_")
 
@@ -302,7 +300,7 @@ def scaleSemiResolvedTemplates():
 
 if __name__ == '__main__':
 
-    #scaleHadronicTemplates()
+    scaleHadronicTemplates()
     #scaleMuonTemplates()
-    scaleElectronTemplates()
+    #scaleElectronTemplates()
     #scaleSemiResolvedTemplates()
