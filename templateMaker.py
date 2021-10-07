@@ -23,7 +23,7 @@ def separateTopHistos(analyzer,process,region):
     for cat in cats:
         analyzer.SetActiveNode(beforeNode)
         analyzer.Cut("{0}_{1}_{2}_cut".format(process,cat,region),"jetCatY=={0}".format(cats[cat]))
-        hist = analyzer.DataFrame.Histo2D(('{0}_{1}_mJY_mJJ_{2}'.format(process,cat,region),';mJY [GeV];mJJ [GeV];',33,60,720,34,800.,4200.),"MJY","MJJ","evtWeight")
+        hist = analyzer.DataFrame.Histo2D(('{0}_{1}_mJY_mJJ_{2}'.format(process,cat,region),';mJY [GeV];mJJ [GeV];',33,60,720,34,800.,4200.),"MJY_recalc","MJJ","evtWeight")
         separatedHistos.append(hist)
     analyzer.SetActiveNode(beforeNode)
     return separatedHistos
@@ -79,8 +79,11 @@ variation = options.variation
 iFile = options.input
 if not variation in iFile:
     if("je" in variation or "jm" in variation):
-        iFile = iFile.replace(".root","_{0}.root".format(variation))
-        print("{0} not in {1}, swapping input to {2}".format(variation,options.input,iFile))
+        if("jmspt" in variation):
+            iFile = iFile.replace(".root","_{0}.root".format(variation.replace("pt","")))
+        else:
+            iFile = iFile.replace(".root","_{0}.root".format(variation))
+            print("{0} not in {1}, swapping input to {2}".format(variation,options.input,iFile))
     else:
         if not("nom" in iFile):
             iFile = iFile.replace(".root","_nom.root")
@@ -184,22 +187,22 @@ nDeltaEta  = getNweighted(a,isData)
 #     hMTT  = a.DataFrame.Histo1D(('{0}_MTT'.format(options.process),';M_{TT} [GeV];;',30,0,3000.),"MTT","evtWeight")
 #     histos.append(hMTT)
 
-# if("TTbar" in options.process and "jms" in options.variation):
-#     #recalculate MJY according to pt-dependent jms for bqq
-#     CompileCpp("TIMBER/Framework/src/JMSUncShifter.cc") 
-#     CompileCpp("JMSUncShifter jmsShifter = JMSUncShifter();") 
-#     if(options.variation=="jmsUp"):
-#         a.Define("MJY_recalc","jmsShifter.ptDependentJMS(MJY,ptjY,1,jetCatY)")
-#     elif(options.variation=="jmsDown"):
-#         a.Define("MJY_recalc","jmsShifter.ptDependentJMS(MJY,ptjY,-1,jetCatY)")
-#     else:
-#         print("JMS uncertainty unkown")
-#         sys.exit()
-# else:
-#     a.Define("MJY_recalc","MJY")
+if("TTbar" in options.process and "jmspt" in options.variation):
+    #recalculate 300 according to pt-dependent jms for bqq
+    CompileCpp("TIMBER/Framework/src/JMSUncShifter.cc") 
+    CompileCpp("JMSUncShifter jmsShifter = JMSUncShifter();") 
+    if(options.variation=="jmsptUp"):
+        a.Define("MJY_recalc","jmsShifter.ptDependentJMS(MJY,ptjY,1,jetCatY)")
+    elif(options.variation=="jmsptDown"):
+        a.Define("MJY_recalc","jmsShifter.ptDependentJMS(MJY,ptjY,-1,jetCatY)")
+    else:
+        print("JMS uncertainty unkown")
+        sys.exit()
+else:
+    a.Define("MJY_recalc","MJY")
 
 
-a.Cut("MJY_SR","MJY>60")
+a.Cut("MJY_SR","MJY_recalc>60")
 
 if variation=="nom":
     if not isData:
@@ -225,13 +228,13 @@ checkpoint = a.GetActiveNode()
 for region,cut in regionDefs:
     a.SetActiveNode(checkpoint)
     a.Cut("{0}_cut".format(region),cut)
-    h2d = a.DataFrame.Histo2D(('{0}_mJY_mJJ_{1}'.format(options.process,region),';mJY [GeV];mJJ [GeV];',33,60,720,34,800.,4200.),"MJY","MJJ","evtWeight")
+    h2d = a.DataFrame.Histo2D(('{0}_mJY_mJJ_{1}'.format(options.process,region),';mJY [GeV];mJJ [GeV];',33,60,720,34,800.,4200.),"MJY_recalc","MJJ","evtWeight")
     histos.append(h2d)
     regionYields[region] = getNweighted(a,isData)
     if("TTbar" in options.process):
         categorizedHistos = separateTopHistos(a,options.process,region)
         histos.extend(categorizedHistos)
-        h2d_pt = a.DataFrame.Histo2D(('{0}_mJY_pT_{1}'.format(options.process,region),';mJY [GeV];pT [GeV];',15,60,360,17,300.,2000.),"MJY","ptjY","evtWeight")
+        h2d_pt = a.DataFrame.Histo2D(('{0}_mJY_pT_{1}'.format(options.process,region),';mJY [GeV];pT [GeV];',15,60,360,17,300.,2000.),"MJY_recalc","ptjY","evtWeight")
         histos.append(h2d_pt)
 
 

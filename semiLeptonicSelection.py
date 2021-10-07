@@ -130,6 +130,11 @@ else:
     print("Define lepton channel '-c mu' or '-c e'!")
     sys.exit()
 
+
+if(isData and options.channel=="e")
+    a.Cut("nFatJetCut","nFatJet>0")
+    a.Cut("FatJetPtcut","FatJet_pt[0]>300")#Align skimming conditions to MC
+
 nSkimmed = getNweighted(a,isData)
 
 
@@ -177,6 +182,23 @@ a.Define("lEta","leptonEta(Electron_eta,Muon_eta,lIdx,{0})".format(lGeneration))
 a.Cut("lPtCut","lPt>40")
 
 nlPt = getNweighted(a,isData)
+
+#Diagnostics
+# a.Define("abslEta","abs(lEta)")
+# a.Define("LeadingFatJetPt","FatJet_pt[0]")
+# a.Define("LeadingJetPt","Jet_pt[0]")
+
+# hlEta   = a.DataFrame.Histo1D(('{0}_lEta'.format(options.process),";Lepton eta;;",80,0,4),"abslEta","genWeight")
+# hlpT    = a.DataFrame.Histo1D(('{0}_lPt'.format(options.process),";Lepton pT [GeV];;",50,40,540),"lPt","genWeight")
+# hAK8pT  = a.DataFrame.Histo1D(('{0}_FatJet_pt'.format(options.process),";Leading AK8 pT [GeV];;",20,0,1000),"LeadingFatJetPt","genWeight")
+# hAK4pT  = a.DataFrame.Histo1D(('{0}_Jet_pt'.format(options.process),";Leading AK4 pT [GeV];;",20,0,1000),"LeadingJetPt","genWeight")
+# hMET    = a.DataFrame.Histo1D(('{0}_MET'.format(options.process),';MET [GeV];;',100,0,1000.),"METpt","genWeight")
+
+# histos.append(hlEta)
+# histos.append(hlpT)
+# histos.append(hAK8pT)
+# histos.append(hAK4pT)
+# histos.append(hMET)
 
 a.Cut("lEtaCut","abs(lEta)<2.4")
 a.Cut("METcut","METpt>60")
