@@ -209,11 +209,7 @@ print("Using weight string ", weightString)
 if isData:
     a.Define("genWeight","1")
 
-if(year=="2018"):
-    #a.Define("evtWeight","genWeight*HEMweight*{0}".format(weightString)) #uncomment when trees with HEM weights are calculated
-    a.Define("evtWeight","genWeight*{0}".format(weightString))
-else:
-    a.Define("evtWeight","genWeight*{0}".format(weightString))
+a.Define("evtWeight","genWeight*{0}".format(weightString))
 
 pnetHi = options.wps[1]
 pnetLo = options.wps[0]

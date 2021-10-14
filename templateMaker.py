@@ -134,10 +134,8 @@ if("puRwt" in variation):
     if(variation=="puRwtDown"):
         weightString = "weight__puReweighting_down"
 
-if(year=="2018"):
-    a.Define("evtWeight","genWeight*HEMweight*{0}".format(weightString)) #uncomment when trees with HEM weights are calculated
-else:
-    a.Define("evtWeight","genWeight*{0}".format(weightString))
+
+a.Define("evtWeight","genWeight*{0}".format(weightString))
 
 CompileCpp('TIMBER/Framework/src/btagSFHandler.cc')
 if(variation=="pnetUp"):

@@ -421,7 +421,6 @@ else:
         a.Define("Jet1_HEM","FatJet_phi[1]>-1.57 && FatJet_phi[1]<-0.8 && FatJet_eta[1]<-1.3")
         a.Define("HEMflag","Jet0_HEM || Jet1_HEM")
         a.Define("HEMweight","HEMweightMC(HEMflag)")        
-        snapshotColumns.append("HEMweight")
 
 outputFile = options.output.replace(".root","_{0}.root".format(varName))
 
@@ -433,6 +432,9 @@ if not isData:
         snapshotColumns.append("antitopPt")
         snapshotColumns.append("jetCatH")
         snapshotColumns.append("jetCatY")
+    if(year=="2018"):
+        snapshotColumns.append("HEMweight")
+    
 opts = ROOT.RDF.RSnapshotOptions()
 opts.fMode = "RECREATE"
 opts.fLazy = False
