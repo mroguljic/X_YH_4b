@@ -176,21 +176,23 @@ def multipleMY(MY,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
         p2sigma = limits[i][4]
         obsLim  = limits[i][5]
 
+        splineType = "quadratic"
+
         mxPtsSmooth    = np.linspace(mxPts[0],mxPts[-1],100,dtype="float64")
-        m2sigmaSmooth  = interp1d(mxPts, m2sigma, kind='cubic')
-        m1sigmaSmooth  = interp1d(mxPts, m1sigma, kind='cubic')
-        medianSmooth   = interp1d(mxPts, median, kind='cubic')
-        p1sigmaSmooth  = interp1d(mxPts, p1sigma, kind='cubic')
-        p2sigmaSmooth  = interp1d(mxPts, p2sigma, kind='cubic')
-        obsLimSmooth   = interp1d(mxPts, obsLim, kind='cubic')
+        m2sigmaSmooth  = interp1d(mxPts, np.log(m2sigma), kind=splineType)
+        m1sigmaSmooth  = interp1d(mxPts, np.log(m1sigma), kind=splineType)
+        medianSmooth   = interp1d(mxPts, np.log(median), kind=splineType)
+        p1sigmaSmooth  = interp1d(mxPts, np.log(p1sigma), kind=splineType)
+        p2sigmaSmooth  = interp1d(mxPts, np.log(p2sigma), kind=splineType)
+        obsLimSmooth   = interp1d(mxPts, np.log(obsLim), kind=splineType)
 
         if(smooth):
-            plt.fill_between(mxPtsSmooth, m1sigmaSmooth(mxPtsSmooth), p1sigmaSmooth(mxPtsSmooth), color='forestgreen', label='_nolegend_')
-            plt.fill_between(mxPtsSmooth, m2sigmaSmooth(mxPtsSmooth), p2sigmaSmooth(mxPtsSmooth), color='darkorange',  label='_nolegend_')
-            plt.fill_between(mxPtsSmooth, m1sigmaSmooth(mxPtsSmooth), p1sigmaSmooth(mxPtsSmooth), color='forestgreen', label='_nolegend_')
-            plt.plot(mxPtsSmooth, medianSmooth(mxPtsSmooth), color='black', linewidth='2.4', linestyle='--', label='_nolegend_')
+            plt.fill_between(mxPtsSmooth, np.exp(m1sigmaSmooth(mxPtsSmooth)), np.exp(p1sigmaSmooth(mxPtsSmooth)), color='forestgreen', label='_nolegend_')
+            plt.fill_between(mxPtsSmooth, np.exp(m2sigmaSmooth(mxPtsSmooth)), np.exp(p2sigmaSmooth(mxPtsSmooth)), color='darkorange',  label='_nolegend_')
+            plt.fill_between(mxPtsSmooth, np.exp(m1sigmaSmooth(mxPtsSmooth)), np.exp(p1sigmaSmooth(mxPtsSmooth)), color='forestgreen', label='_nolegend_')
+            plt.plot(mxPtsSmooth, np.exp(medianSmooth(mxPtsSmooth)), color='black', linewidth='2.4', linestyle='--', label='_nolegend_')
             if(obs):
-                plt.plot(mxPtsSmooth, obsLimSmooth(mxPtsSmooth), color='black', linewidth='2.4', linestyle='-', label='_nolegend_')            
+                plt.plot(mxPtsSmooth, np.exp(obsLimSmooth(mxPtsSmooth)), color='black', linewidth='2.4', linestyle='-', label='_nolegend_')            
         else:
             plt.fill_between(mxPts, m1sigma, p1sigma, color='forestgreen', label='_nolegend_')
             plt.fill_between(mxPts, m2sigma, p2sigma, color='darkorange',  label='_nolegend_')
@@ -279,21 +281,23 @@ def multipleMX(MX,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
         p2sigma = limits[i][4]
         obsLim  = limits[i][5]
 
+
         #Interpolation
-        myPtsSmooth    = np.linspace(myPts[0],myPts[-1],100,dtype="float64")
-        m2sigmaSmooth  = interp1d(myPts, m2sigma, kind='cubic')
-        m1sigmaSmooth  = interp1d(myPts, m1sigma, kind='cubic')
-        medianSmooth   = interp1d(myPts, median, kind='cubic')
-        p1sigmaSmooth  = interp1d(myPts, p1sigma, kind='cubic')
-        p2sigmaSmooth  = interp1d(myPts, p2sigma, kind='cubic')
-        obsLimSmooth   = interp1d(myPts, obsLim, kind='cubic')
+        splineType     = "quadratic"
+        myPtsSmooth    = np.linspace(myPts[0],myPts[-1],1000,dtype="float64")
+        m2sigmaSmooth  = interp1d(myPts, np.log(m2sigma), kind=splineType)
+        m1sigmaSmooth  = interp1d(myPts, np.log(m1sigma), kind=splineType)
+        medianSmooth   = interp1d(myPts, np.log(median), kind=splineType)
+        p1sigmaSmooth  = interp1d(myPts, np.log(p1sigma), kind=splineType)
+        p2sigmaSmooth  = interp1d(myPts, np.log(p2sigma), kind=splineType)
+        obsLimSmooth   = interp1d(myPts, np.log(obsLim), kind=splineType)
 
 
         if(smooth):
-            plt.fill_between(myPtsSmooth, m1sigmaSmooth(myPtsSmooth), p1sigmaSmooth(myPtsSmooth), color='forestgreen', label='_nolegend_')
-            plt.fill_between(myPtsSmooth, m2sigmaSmooth(myPtsSmooth), p2sigmaSmooth(myPtsSmooth), color='darkorange',  label='_nolegend_')
-            plt.fill_between(myPtsSmooth, m1sigmaSmooth(myPtsSmooth), p1sigmaSmooth(myPtsSmooth), color='forestgreen', label='_nolegend_')
-            plt.plot(myPtsSmooth, medianSmooth(myPtsSmooth), color='black', linewidth='2.4', linestyle='--', label='_nolegend_')
+            plt.fill_between(myPtsSmooth, np.exp(m1sigmaSmooth(myPtsSmooth)), np.exp(p1sigmaSmooth(myPtsSmooth)), color='forestgreen', label='_nolegend_')
+            plt.fill_between(myPtsSmooth, np.exp(m2sigmaSmooth(myPtsSmooth)), np.exp(p2sigmaSmooth(myPtsSmooth)), color='darkorange',  label='_nolegend_')
+            plt.fill_between(myPtsSmooth, np.exp(m1sigmaSmooth(myPtsSmooth)), np.exp(p1sigmaSmooth(myPtsSmooth)), color='forestgreen', label='_nolegend_')
+            plt.plot(myPtsSmooth, np.exp(medianSmooth(myPtsSmooth)), color='black', linewidth='2.4', linestyle='--', label='_nolegend_')
             
             #Point original (unsmoothed) points
             plt.scatter(myPts, median, color='black', linewidth='2.4', marker='o', label='_nolegend_')
@@ -304,7 +308,7 @@ def multipleMX(MX,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
 
             print("Minimum of ", MX[i],minMY)
             if(obs):
-                plt.plot(myPtsSmooth, obsLimSmooth(myPtsSmooth), color='black', linewidth='2.4', linestyle='-', label='_nolegend_')            
+                plt.plot(myPtsSmooth, np.exp(obsLimSmooth(myPtsSmooth)), color='black', linewidth='2.4', linestyle='-', label='_nolegend_')            
         else:
             plt.fill_between(myPts, m1sigma, p1sigma, color='forestgreen', label='_nolegend_')
             plt.fill_between(myPts, m2sigma, p2sigma, color='darkorange',  label='_nolegend_')
@@ -349,7 +353,7 @@ def multipleMX(MX,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
 
 xsecs = readXsecs("NMSSM_xsecs.csv",scale=1)
 #multipleMY([60,90,125,200,300,450,600],obs=True,xsecs=xsecs,outputFile="limitPlots/obslim_2D_slices")
-#multipleMY([60,90,125,200,300,450,600],obs=True,xsecs=xsecs,outputFile="limitPlots/obslim_2D_slices_smooth",smooth=True)
+multipleMY([60,90,125,200,300,450,600],obs=True,xsecs=xsecs,outputFile="limitPlots/obslim_2D_slices_smooth",smooth=True)
 
 #multipleMX([900,1200,1600,2000,2600,3000],obs=True,xsecs=xsecs)
 multipleMX([900,1200,1600,2000,2600,3000],obs=True,xsecs=xsecs,smooth=True,outputFile="limitPlots/obslim_2D_slices_MX_smooth")

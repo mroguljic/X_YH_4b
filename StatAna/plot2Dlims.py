@@ -140,7 +140,7 @@ def plot2Dlims(h2,MX,MY,outputFile,obs=False, excluded=True):
         clb.set_label('Expected exclusion limits [fb]')
 
     if(obs and excluded):
-        excluded_obs_points = [(1050,95),(1150,95),(1150,155),(1050,155),(1050,135),(950,135),(950,125),(1050,125)]
+        excluded_obs_points = [(1050,105),(1150,105),(1150,145),(1050,145),(1050,135),(950,135),(950,125),(1050,125)]
         obs_excluded_patch = patches.Polygon(excluded_obs_points,closed=True,hatch='//',edgecolor="red",facecolor="none")
         ax.add_patch(obs_excluded_patch)
 
@@ -148,11 +148,11 @@ def plot2Dlims(h2,MX,MY,outputFile,obs=False, excluded=True):
         extra_obs_patch = patches.Polygon(extra_obs_points,closed=True,hatch='//',edgecolor="red",facecolor="none")
         ax.add_patch(extra_obs_patch)
     if(obs==False and excluded):
-        excluded_exp_points = [(850,65),(950,65),(950,135),(850,135)]
+        excluded_exp_points = [(850,65),(950,65),(950,85),(850,85)]
         exp_excluded_patch = patches.Polygon(excluded_exp_points,closed=True,hatch='//',edgecolor="red",facecolor="none")
         ax.add_patch(exp_excluded_patch)
 
-        extra_exp_points = [(1050,125),(1150,125),(1150,135),(1050,135)]
+        extra_exp_points = [(850,105),(950,105),(950,135),(850,135)]
         extra_exp_patch = patches.Polygon(extra_exp_points,closed=True,hatch='//',edgecolor="red",facecolor="none")
         ax.add_patch(extra_exp_patch)
 
@@ -182,37 +182,37 @@ def printExcludedMasses(h2_limits,h2_xsecs):
 
 
 if __name__ == '__main__':
-    #Orig limits and xsecs
-    limsToHisto("limits_granulated.root")
-    limsToHisto("limits_granulated.root",obs=True)
-    xsecsToHisto("limits_granulated.root")
-    #Smoothing
-    f = r.TFile.Open("limits_granulated.root")
+    # #Orig limits and xsecs
+    # limsToHisto("limits_granulated.root")
+    # limsToHisto("limits_granulated.root",obs=True)
+    # xsecsToHisto("limits_granulated.root")
+    # #Smoothing
+    # f = r.TFile.Open("limits_granulated.root")
 
-    xsecs = f.Get("NMSSM_orig")
-    xsecs_first_pass  = interp.interpolateHisto(xsecs,direction="horizontal",hName="NMSSM_horizontal")
-    xsecs_smooth      = interp.interpolateHisto(xsecs_first_pass,direction="vert",hName="NMSSM_horizontal_vertical")
+    # xsecs = f.Get("NMSSM_orig")
+    # xsecs_first_pass  = interp.interpolateHisto(xsecs,direction="horizontal",hName="NMSSM_horizontal")
+    # xsecs_smooth      = interp.interpolateHisto(xsecs_first_pass,direction="vert",hName="NMSSM_horizontal_vertical")
 
-    h2_exp = f.Get("exp_limits")
-    h2_exp_first_pass     = interp.interpolateHisto(h2_exp,direction="horizontal",hName="exp_horizontal")
-    h2_exp_smooth         = interp.interpolateHisto(h2_exp_first_pass,direction="vert",hName="exp_horizontal_vertical")
+    # h2_exp = f.Get("exp_limits")
+    # h2_exp_first_pass     = interp.interpolateHisto(h2_exp,direction="horizontal",hName="exp_horizontal")
+    # h2_exp_smooth         = interp.interpolateHisto(h2_exp_first_pass,direction="vert",hName="exp_horizontal_vertical")
 
-    h2_obs = f.Get("obs_limits")
-    h2_obs_first_pass     = interp.interpolateHisto(h2_obs,direction="horizontal",hName="obs_horizontal")
-    h2_obs_smooth         = interp.interpolateHisto(h2_obs_first_pass,direction="vert",hName="obs_horizontal_vertical")
+    # h2_obs = f.Get("obs_limits")
+    # h2_obs_first_pass     = interp.interpolateHisto(h2_obs,direction="horizontal",hName="obs_horizontal")
+    # h2_obs_smooth         = interp.interpolateHisto(h2_obs_first_pass,direction="vert",hName="obs_horizontal_vertical")
 
-    g = r.TFile.Open("smooth_limits.root","RECREATE")
-    g.cd()
-    xsecs.Write()
-    xsecs_first_pass.Write()
-    xsecs_smooth.Write()
-    h2_exp.Write()
-    h2_exp_first_pass.Write()
-    h2_exp_smooth.Write()
-    h2_obs.Write()
-    h2_obs_first_pass.Write()
-    h2_obs_smooth.Write()
-    g.Close()
+    # g = r.TFile.Open("smooth_limits.root","RECREATE")
+    # g.cd()
+    # xsecs.Write()
+    # xsecs_first_pass.Write()
+    # xsecs_smooth.Write()
+    # h2_exp.Write()
+    # h2_exp_first_pass.Write()
+    # h2_exp_smooth.Write()
+    # h2_obs.Write()
+    # h2_obs_first_pass.Write()
+    # h2_obs_smooth.Write()
+    # g.Close()
 
 
 

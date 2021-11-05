@@ -38,8 +38,10 @@ def findNeighbors(h2,i,j,direction="vert"):
 
 def logInterpolation(coord,coordLo,coordHi,valLo,valHi):
     logDist = (np.log(coord)-np.log(coordLo))/(np.log(coordHi)-np.log(coordLo))
-    logInt  = (valHi-valLo)*logDist + valLo
-    return logInt
+    relDist = (coord-coordLo)/(coordHi-coordLo)
+    logInt  = (np.log(valHi)-np.log(valLo))*relDist + np.log(valLo)
+    interVal = np.exp(logInt)
+    return interVal
 
 def interpolateBin(h2,i,j,binLo,binHi,direction="vert"):
     if(direction=="vert"):
