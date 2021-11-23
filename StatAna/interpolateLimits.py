@@ -28,16 +28,8 @@ def findNeighbors(h2,i,j,direction="vert"):
                 break        
     return binLow,binHigh       
 
-# def logInterpolation(coord,coordLo,coordHi,valLo,valHi):
-#     logLo   = np.log(valLo)
-#     logHi   = np.log(valHi)
-#     logDist = (coord-coordLo)/(coordHi-coordLo)
-#     logInt  = (logHi-logLo)*relDist + logLo
-#     intVal  = np.exp(logInt)
-#     return intVal
 
 def logInterpolation(coord,coordLo,coordHi,valLo,valHi):
-    logDist = (np.log(coord)-np.log(coordLo))/(np.log(coordHi)-np.log(coordLo))
     relDist = (coord-coordLo)/(coordHi-coordLo)
     logInt  = (np.log(valHi)-np.log(valLo))*relDist + np.log(valLo)
     interVal = np.exp(logInt)
@@ -64,7 +56,7 @@ def interpolateBin(h2,i,j,binLo,binHi,direction="vert"):
     return val
 
 
-def interpolateHisto(h2,direction="vert",hName=""):
+def interpolateHisto(h2,direction="vert",hName="",boostedCond=True):
     if(hName):
         h2_inter = h2.Clone(hName)
     else:
@@ -73,14 +65,18 @@ def interpolateHisto(h2,direction="vert",hName=""):
     nx = h2.GetNbinsX()
     ny = h2.GetNbinsY()
 
+    print(nx)
+
     for i in range(1,nx+1):
+        if(i%10==0):
+            print(i)
         for j in range(1,ny+1):
             if(h2.GetBinContent(i,j)!=0):
                 continue
             mx = h2.GetXaxis().GetBinCenter(i)
             my = h2.GetYaxis().GetBinCenter(j)
 
-            if not (mx>(6*min(my, 125) + max(my, 125))):
+            if(boostedCond and not (mx>(6*min(my, 125) + max(my, 125)))):
                 #Boosted condition
                 continue
             binLow,binHigh = findNeighbors(h2,i,j,direction)

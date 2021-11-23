@@ -8,7 +8,6 @@ from matplotlib import colors as mcolors
 import ROOT as r
 import os
 from matplotlib.ticker import AutoMinorLocator, MultipleLocator
-from plot2Dlims import readXsecs
 from scipy.interpolate import interp1d
 
 matplotlib.use('Agg')
@@ -37,23 +36,28 @@ def checkLimitFile(file):
         print("Missing file: {0}".format(file))
         return False
 
-def getTheoryLine(fixedVar,mass,xsecs):
+def getTheoryLine(fixedVar,mass,NMSSM=True):
     #fixedVar should be "my" or "mx"
     line = []
-    for massPoint in xsecs:
-        mx = massPoint[0]
-        my = massPoint[1]
-        if(fixedVar=="my" and my!=mass):
-            continue
-        if(fixedVar=="mx" and mx!=mass):
-            continue
-        xsec = xsecs[massPoint]
+    f = r.TFile.Open("smooth_limits.root")
+    if(NMSSM):
+        h2Xsec = f.Get("NMSSM_horizontal_vertical")
+    else:
+        h2Xsec = f.Get("TRSSE_horizontal_vertical")
+    if(fixedVar=="my"):
+        projBin = h2Xsec.GetYaxis().FindBin(mass)
+        hXsecProj = h2Xsec.ProjectionX("tempProj",projBin,projBin)
+    else:
+        projBin = h2Xsec.GetXaxis().FindBin(mass)
+        hXsecProj = h2Xsec.ProjectionY("tempProj",projBin,projBin)
 
-        if(fixedVar=="my"):
-            line.append((mx,xsec))
-        if(fixedVar=="mx"):
-            line.append((my,xsec))
+    for i in range(1,hXsecProj.GetNbinsX()+1):
+        coord = hXsecProj.GetBinCenter(i)
+        val   = hXsecProj.GetBinContent(i)
+        line.append((coord,val))
+
     return line
+
 
 def mxLimits(my=125,obs=False):
     MX = [900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2200,2400,2600,2800,3000,3500,4000]
@@ -101,10 +105,9 @@ def mxLimits(my=125,obs=False):
       )
 
 
-    #plt.tight_layout()
 
     fig = matplotlib.pyplot.gcf()
-    fig.set_size_inches(4*2.5, 3*2.5, forward=True)
+    #fig.set_size_inches(4*2.5, 3*2.5, forward=True)
 
     if(obs):
         fig.savefig('obslim_MX_MY{0}.pdf'.format(my))
@@ -124,14 +127,17 @@ def theoryCutoff(lastMY,theory_my):
             return lastIdx
     return lastIdx
 
-def multipleMY(MY,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_2D_slices"):
+def multipleMY(MY,obs=False,theory=False,smooth=False,outputFile="limitPlots/obslim_2D_slices",theoryName="NMSSM"):
     MX = [900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2200,2400,2600,2800,3000,3500,4000]
     limits = []#MY,significance,MX
     theoryLines = []
     goodMX = []#MY, good MX
     for my in MY:
-        if(xsecs):
-            theoryLine = getTheoryLine("my",my,xsecs)
+        if(theory):
+            if(theoryName=="NMSSM"):
+                theoryLine = getTheoryLine("my",my,NMSSM=True)
+            else:
+                theoryLine = getTheoryLine("my",my,NMSSM=False)
             theoryLines.append(theoryLine)
         tempLimits = []
         tempMX     = []
@@ -161,12 +167,14 @@ def multipleMY(MY,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
 
     plt.style.use(hep.style.CMS)
     matplotlib.rcParams.update({'font.size': 40})
-    f, axs = plt.subplots(len(MY),1, sharex=True, sharey=False,gridspec_kw={'hspace': 0.03})
+    #f, axs = plt.subplots(len(MY),1, sharex=True, sharey=False,gridspec_kw={'hspace': 0.03})
+    gs_kw = dict(height_ratios=[2,1,1,1],width_ratios=[1],hspace=0.03)
+    f, axs = plt.subplots(len(MY),1, sharex=True, sharey=False,gridspec_kw=gs_kw)
     plt.subplots_adjust(top=0.95, bottom=0.05)
     for i in range(len(MY)):
         plt.sca(axs[i])
         if(i==0):
-            hep.cms.label(loc=1, year='138 $fb^{-1}$', paper=True, llabel='Preliminary')
+            hep.cms.label(loc=0, year='138 $fb^{-1}$', paper=True, llabel='Preliminary')
 
         mxPts   = goodMX[i]
         m2sigma = limits[i][0]
@@ -195,33 +203,36 @@ def multipleMY(MY,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
                 plt.plot(mxPtsSmooth, np.exp(obsLimSmooth(mxPtsSmooth)), color='black', linewidth='2.4', linestyle='-', label='_nolegend_')            
         else:
             plt.fill_between(mxPts, m1sigma, p1sigma, color='forestgreen', label='_nolegend_')
-            plt.fill_between(mxPts, m2sigma, p2sigma, color='darkorange',  label='_nolegend_')
-            plt.fill_between(mxPts, m1sigma, p1sigma, color='forestgreen', label='_nolegend_')
-            plt.plot(mxPts, median, color='black', linewidth='2.4', linestyle='--', label='_nolegend_')
+            plt.fill_between(mxPts, m2sigma, p2sigma, color='darkorange',  label='95% expected')
+            plt.fill_between(mxPts, m1sigma, p1sigma, color='forestgreen', label='68% expected')
+            plt.plot(mxPts, median, color='black', linewidth='2.4', linestyle='--', label='Median expected')
             if(obs):
-                plt.plot(mxPts, obsLim, color='black', linewidth='2.4', linestyle='-', label='_nolegend_')
-        if(xsecs):
+                plt.plot(mxPts, obsLim, color='black', linewidth='2.4', linestyle='-', label='Observed')
+        if(theory):
             theory_mx, theory_my = list(zip(*theoryLines[i]))
-            plt.plot(theory_mx, theory_my, color='red', linewidth='2.4', linestyle='-', label=r'NMSSM maximum cross-section')
+            plt.plot(theory_mx, theory_my, color='red', linewidth='2.4', linestyle='-', label='{0} maximum\ncross section'.format(theoryName))
 
 
         plt.text(3000, 10, r'$M_{Y} = '+str(MY[i])+r'\,GeV$')
         plt.yscale('log')
-        axs[i].set_ylim(0.03,500)
+        if(i==0):
+            axs[i].set_ylim(0.1,5000)
+        else:
+            axs[i].set_ylim(0.03,500)
         axs[i].tick_params(axis='y', which='minor', direction='in')
         axs[i].yaxis.set_minor_locator(AutoMinorLocator())
         axs[i].minorticks_on()
 
         if(i==0):
-            plt.legend(loc=4)
+            plt.legend(loc=0,ncol=2)
 
     plt.xlabel("$M_{X} [GeV]$", horizontalalignment='right', x=1.0)
 
 
 
-
     fig = matplotlib.pyplot.gcf()
-    fig.set_size_inches(6*2.5, (2*len(MY))*2.0, forward=True)
+    fig.set_size_inches(6*2.5, (2*len(MY))*2.7, forward=True)
+    #fig.set_size_inches(6*2.5, (2*len(MY))*2.0, forward=True)
     #fig.text(0.03, 0.5, r'$\sigma(pp \rightarrow X \rightarrow HY \rightarrow b\overline{b} b \overline{b})\,[fb]$', va="center", rotation='vertical',fontsize=50)
     fig.text(0.03, 0.5, r'$\sigma(pp \rightarrow X \rightarrow HY \rightarrow b\overline{b} b \overline{b})\,[fb]$', va="center", rotation='vertical')
     
@@ -229,14 +240,14 @@ def multipleMY(MY,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
     fig.savefig(outputFile+".pdf")
     plt.clf()
 
-def multipleMX(MX,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_2D_slices_MX"):
+def multipleMX(MX,obs=False,theory=False,smooth=False,outputFile="limitPlots/obslim_2D_slices_MX"):
     MY = [60,70,80,90,100,125,150,200,250,300,350,400,450,500,600]
     limits = []#MX,limit at CL,MY
     theoryLines = []
     goodMY = []#MX, good MY
     for mx in MX:
-        if(xsecs):
-            theoryLine = getTheoryLine("mx",mx,xsecs)
+        if(theory):
+            theoryLine = getTheoryLine("mx",mx)
             theoryLines.append(theoryLine)
         tempLimits = []
         tempMY     = []
@@ -271,7 +282,7 @@ def multipleMX(MX,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
     for i in range(len(MX)):
         plt.sca(axs[i])
         if(i==0):
-            hep.cms.label(loc=1, year='138 $fb^{-1}$', paper=True, llabel='Preliminary')
+            hep.cms.label(loc=0, year='138 $fb^{-1}$', paper=True, llabel='Preliminary')
 
         myPts   = goodMY[i]
         m2sigma = limits[i][0]
@@ -317,7 +328,7 @@ def multipleMX(MX,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
             if(obs):
                 plt.plot(myPts, obsLim, color='black', linewidth='2.4', linestyle='-', label='_nolegend_')
 
-        if(xsecs):
+        if(theory):
             lastMY = goodMY[i][-1]
             theory_x, theory_y = list(zip(*theoryLines[i]))
             theory_cutoffIdx = theoryCutoff(lastMY,theory_x)
@@ -351,9 +362,11 @@ def multipleMX(MX,obs=False,xsecs="",smooth=False,outputFile="limitPlots/obslim_
 
 #mxLimits(my=125,obs=True)
 
-xsecs = readXsecs("NMSSM_xsecs.csv",scale=1)
-#multipleMY([60,90,125,200,300,450,600],obs=True,xsecs=xsecs,outputFile="limitPlots/obslim_2D_slices")
-multipleMY([60,90,125,200,300,450,600],obs=True,xsecs=xsecs,outputFile="limitPlots/obslim_2D_slices_smooth",smooth=True)
+#multipleMY([60,90,125,200,300,450,600],obs=True,theory=True,outputFile="limitPlots/obslim_2D_slices")
+#multipleMY([60,90,125,200,300,450],obs=True,theory=True,outputFile="limitPlots/obslim_2D_slices")
+multipleMY([60,100,125,150],obs=True,theory=True,outputFile="TRSSM",theoryName="TRSSM")
+multipleMY([60,100,125,150],obs=True,theory=True,outputFile="NMSSM",theoryName="NMSSM")
 
-#multipleMX([900,1200,1600,2000,2600,3000],obs=True,xsecs=xsecs)
-multipleMX([900,1200,1600,2000,2600,3000],obs=True,xsecs=xsecs,smooth=True,outputFile="limitPlots/obslim_2D_slices_MX_smooth")
+
+#multipleMX([900,1200,1600,2000,2600,3000],obs=True,theory=True,outputFile="limitPlots/obslim_2D_slices_MX")
+#multipleMX([900,1200,1600,2000,2600,3000],obs=True,theory=True,smooth=True,outputFile="limitPlots/obslim_2D_slices_MX_smooth")
