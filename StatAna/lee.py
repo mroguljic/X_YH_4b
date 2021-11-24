@@ -1,6 +1,8 @@
 import ROOT as r
 import numpy as np
 import ctypes
+import os
+import numpy
 
 r.gROOT.SetBatch(True)
 r.gStyle.SetOptStat(0000)
@@ -10,8 +12,8 @@ def significanceToHistos(output):
     MY = np.array([60,70,80,90,100,125,150,200,250,300,350,400,450,500,600,700],dtype='float64')
 
     h2Ds = []
-    for i in range(20):
-        h2D = r.TH2D("pval_toy_{0}".format(i),"",len(MX)-1,MX,len(MY)-1,MY)
+    for i in range(100):
+        h2D = r.TH2D("q_toy_{0}".format(i),"",len(MX)-1,MX,len(MY)-1,MY)
         h2Ds.append(h2D)
 
     for mx in MX:
@@ -20,22 +22,26 @@ def significanceToHistos(output):
                 continue
             if(mx>4000 or my>600):
                 continue
-            tempFileName = "limits/lee/MX{0}_MY{1}.root".format(int(mx),int(my))
+            tempFileName = "limits/lee_pvals/MX{0}_MY{1}.root".format(int(mx),int(my))
             fTemp = r.TFile.Open(tempFileName)
             ttree = fTemp.Get("limit")
             nToys = ttree.GetEntriesFast()
-            if(nToys!=20):
-                print("n toys != 20")
+            if(nToys!=100):
+                print("n toys != 100")
             for i in range(nToys):
                 ttree.GetEntry(i)
                 pval = ttree.limit
+
+
+                if(pval>=0.5):
+                    q = 0#q is 2*DeltaNLL
+                else:
+                    zscore  = r.RooStats.PValueToSignificance(pval)
+                    q = zscore**2
+
                 binx = h2Ds[i].GetXaxis().FindBin(mx)
                 biny = h2Ds[i].GetYaxis().FindBin(my)
-                #Saving 1-pvalue to cutoff all bins with fluctuations 
-                #less significant than X using h2.SetMinimum() with colz option
-                if((1.0-pval)>1.):
-                    print(pval)
-                h2Ds[i].SetBinContent(binx,biny,1.0-pval)
+                h2Ds[i].SetBinContent(binx,biny,q)
             fTemp.Close()
 
     f = r.TFile.Open(output,"RECREATE")
@@ -44,43 +50,42 @@ def significanceToHistos(output):
         h2D.Write()
     f.Close()
 
-def plotMaps(inputFile,pval):
+def plotMaps(inputFile,level,N=20):
     f = r.TFile.Open(inputFile)
     c = r.TCanvas("c","",1500,1200)
     c.SetMargin(0.15,0.15,0.15,0.15)
-    for i in range(20):
-        h2D = f.Get("pval_toy_{0}".format(i))
-        h2D.SetMinimum(1-pval)
+    for i in range(N):
+        h2D = f.Get("q_toy_{0}".format(i))
+        h2D.SetMinimum(level)
         h2D.Draw("colz")
-        c.SaveAs("lee_plots/pval_{1}_toy_{0}.png".format(i,pval))
+        c.SaveAs("lee_plots/q_{1}_toy_{0}.png".format(i,level))
 
 
-def findNeighbours(h2,i,j,pval_cutoff):
-#Returns bins neighbouring i,j which satisfy pval<pval_cutoff
-#pval!=1 condition protects against empty bins
-#Not checking against overflow bins, pval!=1 cond will remove them
+def findNeighbours(h2,i,j,q_cutoff):
+#Returns bins neighbouring i,j which satisfy q>q_cutoff
+#q!=0 condition protects against empty and overflow bins 
 #Bins returned as global bin numbers!
 
     globalBins = []
     #left
     globBin  = h2.GetBin(i-1,j)
-    pval     = 1-h2.GetBinContent(globBin)
-    if (pval!=1 and pval<pval_cutoff):
+    q        = h2.GetBinContent(globBin)
+    if (q!=0 and q>q_cutoff):
         globalBins.append(globBin)
     #right
     globBin  = h2.GetBin(i+1,j)
-    pval     = 1-h2.GetBinContent(globBin)
-    if (pval!=1 and pval<pval_cutoff):
+    q        = h2.GetBinContent(globBin)
+    if (q!=0 and q>q_cutoff):
         globalBins.append(globBin)
     #top
     globBin  = h2.GetBin(i,j+1)
-    pval     = 1-h2.GetBinContent(globBin)
-    if (pval!=1 and pval<pval_cutoff):
+    q        = h2.GetBinContent(globBin)
+    if (q!=0 and q>q_cutoff):
         globalBins.append(globBin)
     #bottom
     globBin  = h2.GetBin(i,j-1)
-    pval     = 1-h2.GetBinContent(globBin)
-    if (pval!=1 and pval<pval_cutoff):
+    q        = h2.GetBinContent(globBin)
+    if (q!=0 and q>q_cutoff):
         globalBins.append(globBin)
 
     return globalBins
@@ -109,19 +114,19 @@ def updateClusters(clusters,globBin,clusterFlag,usedBins):
             clusters[newCluster] = [globBin]
     usedBins.append(globBin)
 
-def initialClusters(h2,clusters,usedBins,pval_cutoff):
+def initialClusters(h2,clusters,usedBins,q_cutoff):
     NX = h2.GetNbinsX()
     NY = h2.GetNbinsY()
     for i in range(1,NX+1):
         for j in range(1,NY+1):
-            pval        = 1-h2.GetBinContent(i,j)#Histos contain 1-pval
+            q           = h2.GetBinContent(i,j)
             globBin     = h2.GetBin(i,j)
-            if(pval==1 or pval>pval_cutoff):#pval==1 gets rid of empty bins
+            if(q<q_cutoff):
                 continue
             if(globBin in usedBins):
                 continue
 
-            neighbBins  = findNeighbours(h2,i,j,pval_cutoff)
+            neighbBins  = findNeighbours(h2,i,j,q_cutoff)
             clusterFlag = checkForCluster(neighbBins,clusters)
             updateClusters(clusters,globBin,clusterFlag,usedBins)
 
@@ -174,10 +179,10 @@ def mergeClusters(h2,clusters):
 
     return True
 
-def getNClusters(h2,pval_cutoff):
+def getNClusters(h2,level):
     clusters = {}
     usedBins = []
-    initialClusters(h2,clusters,usedBins,pval_cutoff)
+    initialClusters(h2,clusters,usedBins,level)
     mergeFlag = True
     while(mergeFlag):   
         mergeFlag = mergeClusters(h2,clusters)
@@ -186,14 +191,32 @@ def getNClusters(h2,pval_cutoff):
 
 
 #significanceToHistos("lee.root")
-#plotMaps("lee.root",0.4)
-#plotMaps("lee.root",0.2)
-#plotMaps("lee.root",0.15)
-#plotMaps("lee.root",0.05)
-plotMaps("lee.root",0.001)
+level1  = 1
+level2  = 4
+zscore1 = np.sqrt(level1)
+zscore2 = np.sqrt(level2)
 
+print("q levels: {0}, {1}".format(level1,level2))
+print("p-values: {0:.3f}, {1:.3f}".format(r.RooStats.SignificanceToPValue(zscore1),r.RooStats.SignificanceToPValue(zscore2)))
+#plotMaps("lee.root",level1)
+#plotMaps("lee.root",level2)
 
-# f = r.TFile.Open("lee.root")
-# for i in range(0,20):
-#     h2D = f.Get("pval_toy_{0}".format(i))
-#     print(getNClusters(h2D,0.15))
+f = r.TFile.Open("lee.root")
+phis_1 = []
+phis_2 = []
+counter = 0
+for i in range(0,100):
+    h2D    = f.Get("q_toy_{0}".format(i))
+    if(h2D.GetMaximum()>9.56):
+        counter+=1
+print(counter)
+#     phi1   = getNClusters(h2D,level1)
+#     phi2   = getNClusters(h2D,level2)
+#     phis_1.append(phi1)
+#     phis_2.append(phi2)
+
+# #print(phis_1)
+# #print(phis_2)
+
+# print("q>{0}: E[Phi]={1:.2f}+/-{2:.2f}".format(level1,np.mean(phis_1),np.std(phis_1)/np.sqrt(len(phis_1))))
+# print("q>{0}: E[Phi]={1:.2f}+/-{2:.2f}".format(level2,np.mean(phis_2),np.std(phis_2)/np.sqrt(len(phis_2))))
