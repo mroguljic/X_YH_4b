@@ -209,7 +209,7 @@ phis_2 = []
 counter = 0
 for i in range(0,100):
     h2D    = f.Get("q_toy_{0}".format(i))
-    if(h2D.GetMaximum()>9.56):
+    if(h2D.GetMaximum()>9.34):#largest q in data
         counter+=1
     phi1   = getNClusters(h2D,level1)
     phi2   = getNClusters(h2D,level2)
