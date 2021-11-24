@@ -195,9 +195,11 @@ level1  = 1
 level2  = 4
 zscore1 = np.sqrt(level1)
 zscore2 = np.sqrt(level2)
+pval1   = r.RooStats.SignificanceToPValue(zscore1)
+pval2   = r.RooStats.SignificanceToPValue(zscore2)
 
 print("q levels: {0}, {1}".format(level1,level2))
-print("p-values: {0:.3f}, {1:.3f}".format(r.RooStats.SignificanceToPValue(zscore1),r.RooStats.SignificanceToPValue(zscore2)))
+print("p-values: {0:.3f}, {1:.3f}".format(pval1,pval2))
 #plotMaps("lee.root",level1)
 #plotMaps("lee.root",level2)
 
@@ -209,14 +211,31 @@ for i in range(0,100):
     h2D    = f.Get("q_toy_{0}".format(i))
     if(h2D.GetMaximum()>9.56):
         counter+=1
+    phi1   = getNClusters(h2D,level1)
+    phi2   = getNClusters(h2D,level2)
+    phis_1.append(phi1)
+    phis_2.append(phi2)
 print(counter)
-#     phi1   = getNClusters(h2D,level1)
-#     phi2   = getNClusters(h2D,level2)
-#     phis_1.append(phi1)
-#     phis_2.append(phi2)
+
 
 # #print(phis_1)
 # #print(phis_2)
+E1 = np.mean(phis_1)
+E2 = np.mean(phis_2)
 
-# print("q>{0}: E[Phi]={1:.2f}+/-{2:.2f}".format(level1,np.mean(phis_1),np.std(phis_1)/np.sqrt(len(phis_1))))
-# print("q>{0}: E[Phi]={1:.2f}+/-{2:.2f}".format(level2,np.mean(phis_2),np.std(phis_2)/np.sqrt(len(phis_2))))
+print("q>{0}: E[Phi]={1:.2f}+/-{2:.2f}".format(level1,np.mean(phis_1),np.std(phis_1)/np.sqrt(len(phis_1))))
+print("q>{0}: E[Phi]={1:.2f}+/-{2:.2f}".format(level2,np.mean(phis_2),np.std(phis_2)/np.sqrt(len(phis_2))))
+
+
+A = np.array([[np.exp(-level1/2),np.exp(-level1/2)*np.sqrt(level1)],[np.exp(-level2/2),np.exp(-level2/2)*np.sqrt(level2)]])
+B = np.array([E1-pval1,E2-pval2])
+
+N1, N2 = np.linalg.solve(A, B)
+print("N1: {0:.2f}, N2:{1:.2f}".format(N1, N2))
+
+zmax = 3.06
+qmax = zmax*zmax
+pmax = r.RooStats.SignificanceToPValue(zmax)
+
+pglobal = pmax+np.exp(-qmax/2.)*(N1+np.sqrt(qmax)*N2)
+print("Global significance {0:.2f} (p-value: {1:.3f})".format(r.RooStats.PValueToSignificance(pglobal),pglobal))
