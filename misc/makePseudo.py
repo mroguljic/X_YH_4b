@@ -2,63 +2,9 @@ import re
 import ROOT as r
 import sys
 import random
-#For generating pseudo data
-def mergeSamples(inFiles,outFile,regexMatch,regexReplace):
-    scalings2016 = {"bqq":{"L":0.84,"T":0.76},"bq":{"L":0.91,"T":1.07}}
-    scalings2017 = {"bqq":{"L":0.82,"T":0.87},"bq":{"L":1.32,"T":1.31}}
-    scalings2018 = {"bqq":{"L":0.83,"T":0.90},"bq":{"L":1.12,"T":1.35}}
-    scalings = {"2016":scalings2017,"2017":scalings2017,"2018":scalings2018}
-    h_dict = {}
-    print("Merging to {0}".format(outFile))
-    if("16" in inFiles[0]):
-        year = "2016"
-    if("17" in inFiles[0]):
-        year = "2017"
-    if("18" in inFiles[0]):
-        year = "2018"    
-    for inFile in inFiles:
-        print(inFile)
-        f        = r.TFile.Open(inFile) 
-        for key in f.GetListOfKeys():
-            h = key.ReadObj()
-            hName = h.GetName()
-            if("mJY_mJJ_TT" in hName and "bqq_" in hName):
-                scaling = scalings[year]["bqq"]["T"]
-            if("mJY_mJJ_TT" in hName and "bq_" in hName):
-                scaling = scalings[year]["bq"]["T"]
-            elif("mJY_mJJ_LL" in hName and "bqq_" in hName):
-                scaling = scalings[year]["bqq"]["L"]
-            elif("mJY_mJJ_LL" in hName and "bq_" in hName):
-                scaling = scalings[year]["bq"]["L"]
-            else:
-                scaling = 1.0
-            if(scaling!=1.0):
-                print(scaling, hName)
-            h.Scale(scaling)
-            h.SetDirectory(0)
-            hKey = re.sub(regexMatch,regexReplace,hName,count=1)
-            if not hKey in h_dict:
-                h.SetName(hKey)
-                h_dict[hKey] = h
-            else:
-                h_dict[hKey].Add(h)
-        f.Close()
-    f = r.TFile(outFile,"recreate")
-    f.cd()
-    for key in h_dict:
-        histo = h_dict[key]
-        histo.Write()
-    f.Close()
-    print("\n")
-
-def generatePseudo():
-    for year in ['2016','2017','2018']:
-        print(year)
-        lumiScaledDir = "/afs/cern.ch/user/m/mrogulji/UL_X_YH/X_YH_4b/CMSSW_10_6_14/src/2DAlphabet/templates/WP_0.94_0.98/corrected_mSD/{0}/".format(year)
-        pseudoSamples = ["{0}/QCD{1}.root".format(lumiScaledDir,year[-2:]),"{0}/TTbar{1}.root".format(lumiScaledDir,year[-2:])]
-        mergeSamples(pseudoSamples,"{0}/pseudo{1}.root".format(lumiScaledDir,year[-2:]),"QCD|TTbar","data_obs")
 
 #For generating data-like toys
+
 def getYear(inFile):
     if("16") in inFile:
         year = "2016"
