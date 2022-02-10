@@ -326,7 +326,7 @@ def plot2Dlims_bothExclusions(h2,MX,MY,outputFile,obs,excludedNMSSM,excludedTRSS
     plt.xlabel("$M_{X} [TeV]$", horizontalalignment='right', x=1.0)
     plt.ylabel("$M_{Y} [GeV]$", horizontalalignment='right', y=1.0)
 
-    if(m1TRSM.any()):
+    if(m1TRSM!=[]):
         m1Flag = True
     else:
         m1Flag = False
@@ -343,42 +343,48 @@ def plot2Dlims_bothExclusions(h2,MX,MY,outputFile,obs,excludedNMSSM,excludedTRSS
 
 
     #NMSSM
-    cluster1, cluster2 = splitExcludedIntoClusters(excludedNMSSM,obs=obs)
-    hull = ConvexHull(cluster1)
+    #cluster1, cluster2 = splitExcludedIntoClusters(excludedNMSSM,obs=obs)
+
     if obs:
-        excl_label = "Observed limits for NMSSM"
+        excl_label = "Observed for NMSSM"
     else:
-        excl_label = "Expected limits for NMSSM"
-    polygonPts = np.array(cluster1)[hull.vertices]
-    if(obs):
-        #polygonPts = np.insert(polygonPts,1,[ 1000.,125.5],0)#Hotfix to not go away into MX,MY space we didn't explore
-        polygonPts = np.insert(polygonPts,1,[ 1.,125.5],0)#Hotfix to not go away into MX,MY space we didn't explore
-    exp_excluded_patch = patches.Polygon(polygonPts,closed=True,edgecolor="red",facecolor="none",label=excl_label)
-    ax.add_patch(exp_excluded_patch)
+        excl_label = "Expected for NMSSM"   
+    if(len(excludedNMSSM)!=0):
+        #x, y = list(zip(*excludedNMSSM))
+        #plt.scatter(x,y,s=0.8, color='red')
 
-    if(cluster2):
-        hull = ConvexHull(cluster2)
-        exp_excluded_patch = patches.Polygon(np.array(cluster2)[hull.vertices],closed=True,edgecolor="red",facecolor="none")
+        hull = ConvexHull(excludedNMSSM)
+
+        polygonPts = np.array(excludedNMSSM)[hull.vertices]
+        print(polygonPts)
+        exp_excluded_patch = patches.Polygon(polygonPts,closed=True,edgecolor="red",facecolor="none",label=excl_label)
         ax.add_patch(exp_excluded_patch)
+    #if(obs):
+        #polygonPts = np.insert(polygonPts,1,[ 1000.,125.5],0)#Hotfix to not go away into MX,MY space we didn't explore
+        #polygonPts = np.insert(polygonPts,1,[ 1.,125.5],0)#Hotfix to not go away into MX,MY space we didn't explore
 
-        print("NMSSM 1")
-        #print(polygonPts, cluster2)
-        print("NMSSM 2")
-        #print(cluster2)
+    # if(cluster2):
+    #     hull = ConvexHull(cluster2)
+    #     exp_excluded_patch = patches.Polygon(np.array(cluster2)[hull.vertices],closed=True,edgecolor="red",facecolor="none")
+    #     ax.add_patch(exp_excluded_patch)
+
+    #     print("NMSSM 1")
+    #     print(polygonPts)
+    #     print("NMSSM 2")
+    #     print(np.array(cluster2)[hull.vertices])
 
     #For TRSSM
     hull = ConvexHull(excludedTRSSM)
     if obs:
-        excl_label = "Observed limits for TRSM"
+        excl_label = "Observed for TRSM"
     else:
-        excl_label = "Expected limits for TRSM"
+        excl_label = "Expected for TRSM"
     polygonPts = np.array(excludedTRSSM)[hull.vertices]
-    print("TRSM")
-    #print(polygonPts)
     if(obs):
         #polygonPts = np.insert(polygonPts,6,[ 1000.,125.5],0)#Hotfix to not go away into MX,MY space we didn't explore
         polygonPts = np.insert(polygonPts,6,[ 1.,125.5],0)#Hotfix to not go away into MX,MY space we didn't explore
-
+    print("TRSM")
+    print(polygonPts)
 
     exp_excluded_patch = patches.Polygon(polygonPts,closed=True,edgecolor=colorTest,facecolor="none",label=excl_label)
     ax.add_patch(exp_excluded_patch)
@@ -395,16 +401,30 @@ def plot2Dlims_bothExclusions(h2,MX,MY,outputFile,obs,excludedNMSSM,excludedTRSS
         # make proxy artists
         line = [[(0, 0)]]
         # set up the proxy artist
-        lcNMSSM = mcol.LineCollection(2 * line, linestyles=["-","--"], colors=["red","red"])
-        lcTRSM  = mcol.LineCollection(2 * line, linestyles=["-","--"], colors=[colorTest,colorTest])
-        labelNMSSM = "Median expected and -1$\sigma$\nlimits for NMSSM"
-        labelTRSM = "Median expected and -1$\sigma$\nlimits for TRSM"
+        lcNMSSM_med = mcol.LineCollection(1 * line, linestyles=["-"], colors=["red"])
+        lcNMSSM_m1 = mcol.LineCollection(1 * line, linestyles=["--"], colors=["red"])
+        lcTRSM_med  = mcol.LineCollection(1 * line, linestyles=["-"], colors=[colorTest])
+        lcTRSM_m1  = mcol.LineCollection(1 * line, linestyles=["--"], colors=[colorTest])
+        labelNMSSM_med = "Median expected for NMSSM"
+        labelNMSSM_m1 = "-1$\sigma$ for NMSSM"
+        labelTRSM_med = "Median expected for TRSM"
+        labelTRSM_m1 = "-1$\sigma$ for TRSM"
         # create the legend
-        leg = plt.legend([lcNMSSM,lcTRSM], [labelNMSSM,labelTRSM], handler_map={type(lcNMSSM): HandlerDashedLines()},
-                   handlelength=2, handleheight=2)
+        leg = plt.legend([lcNMSSM_med,lcNMSSM_m1,lcTRSM_med,lcTRSM_m1], [labelNMSSM_med,labelNMSSM_m1,labelTRSM_med,labelTRSM_m1], handler_map={type(lcNMSSM_med): HandlerDashedLines()},
+                   handlelength=2, handleheight=0.5)
 
     else:
-        leg = plt.legend(loc=1)
+        line = [[(0, 0)]]
+        # set up the proxy artist
+        lcNMSSM = mcol.LineCollection(1 * line, linestyles=["-"], colors=["red"])
+        lcTRSM  = mcol.LineCollection(1 * line, linestyles=["-"], colors=[colorTest])
+        labelNMSSM = "Observed for NMSSM"
+        labelTRSM = "Observed for TRSM"
+        # create the legend
+        leg = plt.legend([lcNMSSM,lcTRSM], [labelNMSSM,labelTRSM], handler_map={type(lcNMSSM): HandlerDashedLines()},
+                   handlelength=2, handleheight=1)        
+
+        #leg = plt.legend(loc=1)
     
     for text in leg.get_texts():
         text.set_color("black")
@@ -458,6 +478,9 @@ def plot2Dlims_m1(h2,MX,MY,outputFile,obs,excludedNMSSM,excludedTRSSM,xRange=[],
 
     #NMSSM
     hull = ConvexHull(excludedNMSSM)
+    x, y = list(zip(*excludedNMSSM))
+    plt.scatter(x,y,s=0.8, color='red')
+
     excl_label = "Expected - 1$\sigma$ limits for NMSSM"
     polygonPts = np.array(excludedNMSSM)[hull.vertices]
     print("NMSSM pts")
@@ -467,7 +490,7 @@ def plot2Dlims_m1(h2,MX,MY,outputFile,obs,excludedNMSSM,excludedTRSSM,xRange=[],
     ax.add_patch(exp_excluded_patch)
 
 
-        #For TRSSM
+    #For TRSSM
     hull = ConvexHull(excludedTRSSM)
     excl_label = "Expected - 1$\sigma$ limits for TRSM"
     polygonPts = np.array(excludedTRSSM)[hull.vertices]
@@ -569,10 +592,10 @@ if __name__ == '__main__':
     #print("Significances")
     #sigToHisto("limits_granulated.root")
 
-    # print("NMSSM Cross-sections")
-    # xsecsToHisto("limits_granulated.root")
-    # print("TRSSE Cross-sections")
-    # xsecsToHisto("limits_granulated.root",NMSSM=False)
+    #print("NMSSM Cross-sections")
+    #xsecsToHisto("limits_granulated.root")
+    #print("TRSSE Cross-sections")
+    #xsecsToHisto("limits_granulated.root",NMSSM=False)
 
 
     # #Smoothing
@@ -647,6 +670,13 @@ if __name__ == '__main__':
     # h2_z.Write()
     # g.Close()
 
+    # g = r.TFile.Open("smooth_limits.root","UPDATE")
+    # g.cd()
+    # xsecs.Write()
+    # xsecs_first_pass.Write()
+    # xsecs_smooth.Write()
+    # g.Close()
+
     #NMSSM -1/-2sigma
     # f = r.TFile.Open("smooth_limits.root")
     # h2_xsecs = f.Get("NMSSM_horizontal_vertical")
@@ -711,24 +741,24 @@ if __name__ == '__main__':
 
     #BOTH
     #Obs
-    # f = r.TFile.Open("smooth_limits.root")
-    # h2_TRSSM = f.Get("TRSSE_horizontal_vertical")
-    # h2_NMSSM = f.Get("NMSSM_horizontal_vertical")
+    f = r.TFile.Open("smooth_limits.root")
+    h2_TRSSM = f.Get("TRSSE_horizontal_vertical")
+    h2_NMSSM = f.Get("NMSSM_horizontal_vertical")
 
-    # h2_smooth = f.Get("obs_horizontal_vertical")
-    # limit_vals_2d,MX,MY=h2ToArray(h2_smooth)
-    # excludedTRSSM = getExcludedMasses(h2_smooth,h2_TRSSM,mxScale=0.001)
-    # excludedNMSSM = getExcludedMasses(h2_smooth,h2_NMSSM,mxScale=0.001)
-    # MX = [float(mx)/1000. for mx in MX]
+    h2_smooth = f.Get("obs_horizontal_vertical")
+    limit_vals_2d,MX,MY=h2ToArray(h2_smooth)
+    excludedTRSSM = getExcludedMasses(h2_smooth,h2_TRSSM,mxScale=0.001)
+    excludedNMSSM = getExcludedMasses(h2_smooth,h2_NMSSM,mxScale=0.001)
+    MX = [float(mx)/1000. for mx in MX]
 
-    # print("Excluded TRSM")
-    # print(excludedTRSSM)
+    print("Excluded TRSM")
+    print(excludedTRSSM)
 
-    # print("Excluded NMSSM")
-    # print(excludedNMSSM)
+    print("Excluded NMSSM")
+    print(excludedNMSSM)
 
 
-    # plot2Dlims_bothExclusions(limit_vals_2d,MX,MY,"2D_both_theories.png",True,excludedNMSSM,excludedTRSSM,xRange=[],yRange=[])
+    plot2Dlims_bothExclusions(limit_vals_2d,MX,MY,"2D_both_theories.png",True,excludedNMSSM,excludedTRSSM,xRange=[],yRange=[60,2300])
     
     #colors = ["black","white","darkorange","orange","peru","aqua"]
     #for color in colors:
@@ -736,35 +766,35 @@ if __name__ == '__main__':
     #plot2Dlims_bothExclusions(limit_vals_2d,MX,MY,"2D_both_theories_zoomed.png",True,excludedNMSSM,excludedTRSSM,xRange=[900,1500],yRange=[60,200])
 
     #Exp -1sigma
-    f = r.TFile.Open("smooth_limits.root")
-    h2_TRSSM = f.Get("TRSSE_horizontal_vertical")
-    h2_NMSSM = f.Get("NMSSM_horizontal_vertical")
-    h2_smooth = f.Get("m1_horizontal_vertical")
-    limit_vals_2d,MX,MY=h2ToArray(h2_smooth)
-    MX = [float(mx)/1000. for mx in MX]
-    excludedTRSSM = getExcludedMasses(h2_smooth,h2_TRSSM,mxScale=0.001)
-    excludedNMSSM = getExcludedMasses(h2_smooth,h2_NMSSM,mxScale=0.001)
+    # f = r.TFile.Open("smooth_limits.root")
+    # h2_TRSSM = f.Get("TRSSE_horizontal_vertical")
+    # h2_NMSSM = f.Get("NMSSM_horizontal_vertical")
+    # h2_smooth = f.Get("m1_horizontal_vertical")
+    # limit_vals_2d,MX,MY=h2ToArray(h2_smooth)
+    # MX = [float(mx)/1000. for mx in MX]
+    # excludedTRSSM = getExcludedMasses(h2_smooth,h2_TRSSM,mxScale=0.001)
+    # excludedNMSSM = getExcludedMasses(h2_smooth,h2_NMSSM,mxScale=0.001)
 
-    m1NMSSM, m1TRSM = plot2Dlims_m1(limit_vals_2d,MX,MY,"test.png",False,excludedNMSSM,excludedTRSSM,xRange=[],yRange=[])
+    # m1NMSSM, m1TRSM = plot2Dlims_m1(limit_vals_2d,MX,MY,"test.png",False,excludedNMSSM,excludedTRSSM,xRange=[],yRange=[])
 
-    # #Exp
-    f = r.TFile.Open("smooth_limits.root")
-    h2_TRSSM = f.Get("TRSSE_horizontal_vertical")
-    h2_NMSSM = f.Get("NMSSM_horizontal_vertical")
-    h2_smooth = f.Get("exp_horizontal_vertical")
-    limit_vals_2d,MX,MY=h2ToArray(h2_smooth)
-    MX = [float(mx)/1000. for mx in MX]
-    excludedTRSSM = getExcludedMasses(h2_smooth,h2_TRSSM,mxScale=0.001)
-    excludedNMSSM = getExcludedMasses(h2_smooth,h2_NMSSM,mxScale=0.001)
+    # # #Exp
+    # f = r.TFile.Open("smooth_limits.root")
+    # h2_TRSSM = f.Get("TRSSE_horizontal_vertical")
+    # h2_NMSSM = f.Get("NMSSM_horizontal_vertical")
+    # h2_smooth = f.Get("exp_horizontal_vertical")
+    # limit_vals_2d,MX,MY=h2ToArray(h2_smooth)
+    # MX = [float(mx)/1000. for mx in MX]
+    # excludedTRSSM = getExcludedMasses(h2_smooth,h2_TRSSM,mxScale=0.001)
+    # excludedNMSSM = getExcludedMasses(h2_smooth,h2_NMSSM,mxScale=0.001)
 
-    # print("Excluded TRSM")
-    # print(excludedTRSSM)
+    # #print("Excluded TRSM")
+    # #print(excludedTRSSM)
 
-    # print("Excluded NMSSM")
-    # print(excludedNMSSM)
+    # #print("Excluded NMSSM")
+    # #print(excludedNMSSM)
 
-    plot2Dlims_bothExclusions(limit_vals_2d,MX,MY,"2D_both_theories_exp.png",False,excludedNMSSM,excludedTRSSM,m1NMSSM=m1NMSSM,m1TRSM=m1TRSM)
-    # plot2Dlims_bothExclusions(limit_vals_2d,MX,MY,"2D_both_theories_zoomed_exp.png",False,excludedNMSSM,excludedTRSSM,xRange=[900,1500],yRange=[60,200])
+    # plot2Dlims_bothExclusions(limit_vals_2d,MX,MY,"2D_both_theories_exp.png",False,excludedNMSSM,excludedTRSSM,m1NMSSM=m1NMSSM,m1TRSM=m1TRSM,yRange=[60,2300])
+    # #plot2Dlims_bothExclusions(limit_vals_2d,MX,MY,"2D_both_theories_zoomed_exp.png",False,excludedNMSSM,excludedTRSSM,xRange=[900,1500],yRange=[60,200])
 
 
 
